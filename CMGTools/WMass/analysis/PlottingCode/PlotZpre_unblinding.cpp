@@ -14,7 +14,7 @@
 
 const int goodColors[] = {2, 3, 7, 9, 11};
 
-void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMCQCD, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title, double xmin, double xmax, int rebinfactor, std::vector<TFile*> systfiles_MCsum, std::vector<TString> systnames){
+void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWKTT, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title, double xmin, double xmax, int rebinfactor, std::vector<TFile*> systfiles_MCsum, std::vector<TString> systnames){
 
   std::cout << "retrieving hMCsig  = " << HistoName_st.Data() << std::endl;
   TH1D*hMCsig=(TH1D*)fMCsig->Get(HistoName_st.Data());
@@ -28,24 +28,11 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hMCsig2->SetLineStyle(2);
   hMCsig2->SetLineWidth(2);
   
-  std::cout << "retrieving hMCEWK  = " << HistoName_st.Data() << std::endl;
-  TH1D*hMCEWK=(TH1D*)fMCEWK->Get(HistoName_st.Data());
-  hMCEWK->SetFillColor(kOrange+7);
-  hMCEWK->SetLineColor(kOrange+10);
-  hMCEWK->Rebin(rebinfactor);
-  
-  std::cout << "retrieving hMCTT   = " << HistoName_st.Data() << std::endl;
-  TH1D*hMCTT=(TH1D*)fMCTT->Get(HistoName_st.Data());
-  hMCTT->SetFillColor(kGreen);
-  hMCTT->SetLineColor(kGreen+2);
-  hMCTT->Rebin(rebinfactor);
-  
-  std::cout << "retrieving hMCQCD  = " << HistoName_st.Data() << std::endl;
-  TH1D*hMCQCD=(TH1D*)fMCQCD->Get(HistoName_st.Data());
-  if(!hMCQCD) hMCQCD = hMCdummy;
-  hMCQCD->SetFillColor(kViolet-5);
-  hMCQCD->SetLineColor(kViolet+2);
-  hMCQCD->Rebin(rebinfactor);
+  std::cout << "retrieving hMCEWKTT  = " << HistoName_st.Data() << std::endl;
+  TH1D*hMCEWKTT=(TH1D*)fMCEWKTT->Get(HistoName_st.Data());
+  hMCEWKTT->SetFillColor(kOrange+7);
+  hMCEWKTT->SetLineColor(kOrange+10);
+  hMCEWKTT->Rebin(rebinfactor);
   
   std::cout << "retrieving hDATA   = " << HistoName_st.Data() << std::endl;
   TH1D*hDATA=(TH1D*)fDATA->Get(HistoName_st.Data());
@@ -55,37 +42,29 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATA->SetMarkerSize(0.7);
   hDATA->Rebin(rebinfactor);
 
-  TH1D MCsum=(*hMCsig)+(*hMCEWK)+(*hMCTT)+(*hMCQCD);
+  TH1D MCsum=(*hMCsig)+(*hMCEWKTT);
   
   std::cout << "Total DATA/MC scaling factor = " << hDATA->Integral()/MCsum.Integral() << std::endl;
   if(scaleMCtoDATA){
     hMCsig2->Scale(hDATA->Integral()/MCsum.Integral());
     hMCsig->Scale(hDATA->Integral()/MCsum.Integral());
-    hMCEWK->Scale(hDATA->Integral()/MCsum.Integral());
-    hMCTT->Scale(hDATA->Integral()/MCsum.Integral());
-    hMCQCD->Scale(hDATA->Integral()/MCsum.Integral());
+    hMCEWKTT->Scale(hDATA->Integral()/MCsum.Integral());
     MCsum.Scale(hDATA->Integral()/MCsum.Integral());
   }
   
   // compute % fractions
   double fsig = hMCsig->Integral()/MCsum.Integral()*100;
-  double fewk = hMCEWK->Integral()/MCsum.Integral()*100;
-  double ftt = hMCTT->Integral()/MCsum.Integral()*100;
-  double fqcd = hMCQCD->Integral()/MCsum.Integral()*100;
+  double fewktt = hMCEWKTT->Integral()/MCsum.Integral()*100;
 
   THStack *hs= new THStack("hs","test stacked histograms");
-  hs->Add(hMCTT);
-  hs->Add(hMCQCD);
-  hs->Add(hMCEWK);
+  hs->Add(hMCEWKTT);
   hs->Add(hMCsig);
 
   std::cout << "Integrals: hDATA= " << hDATA->Integral()
             << " hMCsig= " << hMCsig->Integral()
-            << " hMCEWK= " << hMCEWK->Integral()
-            << " hMCTT= "  << hMCTT->Integral()
-            << " hMCQCD= " << hMCQCD->Integral()
+            << " hMCEWKTT= " << hMCEWKTT->Integral()
             << " MCsum= "  << MCsum.Integral() << std::endl;
-  // std::cout << "Entries hDATA= " << hDATA->GetEntries() << " hMCsig= " << hMCsig->GetEntries() << " hMCEWK= " << hMCEWK->GetEntries() << " hMCTT= " << hMCTT->GetEntries() << " MCsum= " << MCsum.GetEntries() << std::endl;
+  // std::cout << "Entries hDATA= " << hDATA->GetEntries() << " hMCsig= " << hMCsig->GetEntries() << " hMCEWKTT= " << hMCEWKTT->GetEntries() << " MCsum= " << MCsum.GetEntries() << std::endl;
   
   // Double_t TH1::Chi2TestX(const TH1* h2,  Double_t &chi2, Int_t &ndf, Int_t &igood, Option_t *option,  Double_t *res) const
   Double_t chi2; Int_t ndf; Int_t igood;
@@ -144,8 +123,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATA->Draw("pe");
   hs->Draw("hist same");
   hMCsig2->Draw("hist same");
-  hMCEWK->Draw("hist same");
-  hMCTT->Draw("hist same");
+  hMCEWKTT->Draw("hist same");
   hDATA->Draw("same pe");
   pad1->RedrawAxis();
   
@@ -160,9 +138,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   leg->SetFillStyle(1001);
   leg->AddEntry(hDATA,"DATA","pl");
   leg->AddEntry(hMCsig2,Form("%s (%.1f \%%)",LegendEvTypeTeX.Data(), fsig),"f");
-  leg->AddEntry(hMCEWK,Form("EWK (%.1f \%%)",fewk),"f");
-  leg->AddEntry(hMCQCD,Form("QCD (%.1f \%%)",fqcd),"f");
-  leg->AddEntry(hMCTT,Form("TT (%.1f \%%)",ftt),"f");
+  leg->AddEntry(hMCEWKTT,Form("Background (%.1f \%%)",fewktt),"f");
   leg->Draw();
 
   t->DrawLatex(0.15,0.85,Form("stat chi2/ndf: %.2f, prob: %.3e",(chi2/ndf),TMath::Prob(chi2,ndf)));
@@ -242,6 +218,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   if(xmin!=-1)extra_ouput_str+=Form("_xmin%.f",xmin);
   if(xmax!=-1)extra_ouput_str+=Form("_xmax%.f",xmax);
   c1->SaveAs(HistoName_st+extra_ouput_str+".png");
+  c1->SaveAs(HistoName_st+extra_ouput_str+".pdf");
   c1->SaveAs(HistoName_st+extra_ouput_str+".root");
 }
 
@@ -251,9 +228,7 @@ void PlotZpre_unblinding(){
   gStyle->SetOptStat(0);
   
   TString folderMCsig = "output_DYJetsPow/";
-  TString folderMCEWK = "output_EWK/";
-  TString folderMCTT  = "output_TT/";
-  TString folderMCQCD = "output_QCD/";
+  TString folderMCEWKTT = "output_EWKTT/";
   TString folderDATA  = "output_DATA/";
   TString folderMCsum = "output_MCDATALIKEPOW/";
   
@@ -262,30 +237,28 @@ void PlotZpre_unblinding(){
   TString posNeg_str = "Pos";
   const int mass = 91188;
 
-  TString prefix = "FEB29_mu" + posNeg_str;
+  TString prefix = "OCT25_mu" + posNeg_str;
 
   TString destinationfolder = "../JobOutputs/"+prefix+"_pre_unblinding_plots";
   
   TString templatefolder = basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/";
   
   TString systfolders[] = {
-    basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
-    basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma-1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
-    basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    // basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    // basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_globalScaleSigma-1_RecoilCorr2_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
+    // basefolder+prefix+"_tkmet_ewk0_polariz1_KalmanCorrParam_RecoilCorr3_EffHeinerSFCorr_PtSFCorr0_PileupSFCorr/",
   };
   TString systnames_IHATECXX98[] = {
-    "Lepton scale +1",
-    "Lepton scale -1",
-    "Recoil alt model",
+    // "Lepton scale +1",
+    // "Lepton scale -1",
+    // "Recoil alt model",
   };
   
   const int systtotnum = sizeof(systfolders)/sizeof(TString);
   std::vector<TString> systnames(systnames_IHATECXX98, systnames_IHATECXX98 + systtotnum);
   
   TFile *fMCsig= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCsig.Data()));
-  TFile *fMCEWK= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCEWK.Data()));
-  TFile *fMCTT = new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCTT.Data() ));
-  TFile *fMCQCD= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCQCD.Data()));
+  TFile *fMCEWKTT= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCEWKTT.Data()));
   TFile *fDATA = new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderDATA.Data() ));
 
   std::vector<TFile*> systfiles_MCsum;
@@ -300,23 +273,23 @@ void PlotZpre_unblinding(){
   
   TString LegendEvTypeTeX=Form("Wlike%s#rightarrow#mu#nu",posNeg_str.Data());
   
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_Recoil_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_Zmass_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_Zrap_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#cos{#theta^{*}_{CS}};Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_phi_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#phi^{*}_{CS} [rad];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Recoil_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Zmass_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Zrap_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#cos{#theta^{*}_{CS}};Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_phi_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#phi^{*}_{CS} [rad];Counts"),-1,-1,1,systfiles_MCsum,systnames);
 
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_METNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; E_{T}^{miss} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_MtNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; M_{T} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_PtNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; P_{T}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_METNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; E_{T}^{miss} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_MtNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; M_{T} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_PtNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; P_{T}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
 
   /*
   bool logy=1;
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_U1Z_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#parallel}^{Z} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_U2Z_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#perp}^{Z} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_U1lep_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#parallel}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_U2lep_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#perp}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_U1Z_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#parallel}^{Z} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_U2Z_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#perp}^{Z} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_U1lep_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#parallel}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_U2lep_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#perp}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
   */
 
 }
