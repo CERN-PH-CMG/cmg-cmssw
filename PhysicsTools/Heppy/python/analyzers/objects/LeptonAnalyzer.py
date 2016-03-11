@@ -7,6 +7,7 @@ from PhysicsTools.Heppy.physicsobjects.Muon import Muon
 from PhysicsTools.HeppyCore.utils.deltar import bestMatch
 from PhysicsTools.Heppy.physicsutils.RochesterCorrections import rochcor
 from PhysicsTools.Heppy.physicsutils.MuScleFitCorrector   import MuScleFitCorr
+from PhysicsTools.Heppy.physicsutils.KalmanMuonCorrector   import KalmanMuonCorrector
 from PhysicsTools.Heppy.physicsutils.ElectronCalibrator import Run2ElectronCalibrator
 #from CMGTools.TTHAnalysis.electronCalibrator import ElectronCalibrator
 import PhysicsTools.HeppyCore.framework.config as cfg
@@ -28,7 +29,13 @@ class LeptonAnalyzer( Analyzer ):
             raise RuntimeError, "doRochesterCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'Rochester', <name> )"
         if self.cfg_ana.doMuonScaleCorrections:
             algo, options = self.cfg_ana.doMuonScaleCorrections
-            if algo == "Rochester":
+            if algo == "Kalman":
+                corr = options['MC' if self.cfg_comp.isMC else 'Data']
+                self.muonScaleCorrector = KalmanMuonCorrector(corr, 
+                                                    self.cfg_comp.isMC,
+                                                    options['isSync'] if 'isSync' in options else False,
+                                                    options['smearMode'] if 'smearMode' in options else "ebe")
+            elif algo == "Rochester":
                 print "WARNING: the Rochester correction in heppy is still from Run 1"
                 self.muonScaleCorrector = RochesterCorrections()
             elif algo == "MuScleFit":
@@ -45,8 +52,7 @@ class LeptonAnalyzer( Analyzer ):
         if self.cfg_ana.doElectronScaleCorrections:
             conf = cfg_ana.doElectronScaleCorrections
             self.electronEnergyCalibrator = Run2ElectronCalibrator(
-                conf['scales']    if 'scales'    in conf else [ 0.99544,0.99882,0.99662,1.0065,0.98633,0.99536,0.97859,0.98567,0.98633, 0.99536 ],
-                conf['smearings'] if 'smearings' in conf else [ 0.013654,0.014142,0.020859,0.017120,0.028083,0.027289,0.031793,0.030831,0.028083, 0.027289 ],
+                conf['data'],
                 conf['GBRForest'],
                 cfg_comp.isMC,
                 conf['isSync'] if 'isSync' in conf else False,
