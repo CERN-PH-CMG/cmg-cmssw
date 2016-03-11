@@ -6,7 +6,6 @@ class Lepton( PhysicsObject):
         '''3D impact parameter value.'''
         return abs(self.dB(self.PV3D))
 
-
     def sip3D(self):
         '''3D impact parameter significance.'''
         return abs(self.dB(self.PV3D) / self.edB(self.PV3D))
@@ -22,7 +21,7 @@ class Lepton( PhysicsObject):
 
     def relIso(self, dBetaFactor=0, allCharged=0):
         '''Relative isolation with default cone size of 0.4.'''
-        rel = self.absIsoR(dBetaFactor, allCharged)/self.pt()
+        rel = self.absIsoR(dBetaFactor=dBetaFactor, allCharged=allCharged)/self.pt()
         return rel
 
     def absIsoR(self, R=0.4, dBetaFactor=0, allCharged=False):
@@ -45,3 +44,12 @@ class Lepton( PhysicsObject):
 	else :	
 		return self.innerTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS)	
 
+    def p4WithFSR(self):
+        ret = self.p4()
+        for p in getattr(self, 'ownFsrPhotons', getattr(self, 'fsrPhotons', [])):
+            ret += p.p4()
+        return ret
+
+    def __str__(self):
+        ptc = super(Lepton, self).__str__()
+        return '{ptc}, iso={iso:5.2f}'.format(ptc=ptc, iso=self.relIso())
