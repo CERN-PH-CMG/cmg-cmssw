@@ -12,9 +12,7 @@
 #include "TLine.h"
 #include "TSystem.h"
 
-const int goodColors[] = {2, 3, 7, 9, 11};
-
-void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWK, TFile*fMCTT, TFile*fMCQCD, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title, double xmin, double xmax, int rebinfactor, std::vector<TFile*> systfiles_MCsum, std::vector<TString> systnames){
+void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEWKTT, TFile*fDATA, TString HistoName_st, int logx, int logy, int logz, int scaleMCtoDATA, TString title, double xmin, double xmax, int rebinfactor, std::vector<TFile*> systfiles_MCsum, std::vector<TString> systnames){
 
   std::cout << "retrieving hMCsig  = " << HistoName_st.Data() << std::endl;
   TH1D*hMCsig=(TH1D*)fMCsig->Get(HistoName_st.Data());
@@ -28,69 +26,45 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hMCsig2->SetLineStyle(2);
   hMCsig2->SetLineWidth(2);
   
-  std::cout << "retrieving hMCEWK  = " << HistoName_st.Data() << std::endl;
-  TH1D*hMCEWK=(TH1D*)fMCEWK->Get(HistoName_st.Data());
-  hMCEWK->SetFillColor(kOrange+7);
-  hMCEWK->SetLineColor(kOrange+10);
-  hMCEWK->Rebin(rebinfactor);
-  
-  std::cout << "retrieving hMCTT   = " << HistoName_st.Data() << std::endl;
-  TH1D*hMCTT=(TH1D*)fMCTT->Get(HistoName_st.Data());
-  hMCTT->SetFillColor(kGreen);
-  hMCTT->SetLineColor(kGreen+2);
-  hMCTT->Rebin(rebinfactor);
-  
-  std::cout << "retrieving hMCQCD  = " << HistoName_st.Data() << std::endl;
-  TH1D*hMCQCD=(TH1D*)fMCQCD->Get(HistoName_st.Data());
-  if(!hMCQCD) hMCQCD = hMCdummy;
-  hMCQCD->SetFillColor(kViolet-5);
-  hMCQCD->SetLineColor(kViolet+2);
-  hMCQCD->Rebin(rebinfactor);
+  std::cout << "retrieving hMCEWKTT  = " << HistoName_st.Data() << std::endl;
+  TH1D*hMCEWKTT=(TH1D*)fMCEWKTT->Get(HistoName_st.Data());
+  hMCEWKTT->SetFillColor(kOrange+7);
+  hMCEWKTT->SetLineColor(kOrange+10);
+  hMCEWKTT->Rebin(rebinfactor);
   
   std::cout << "retrieving hDATA   = " << HistoName_st.Data() << std::endl;
   TH1D*hDATA=(TH1D*)fDATA->Get(HistoName_st.Data());
   hDATA->SetMarkerColor(1);
   hDATA->SetLineColor(1);
   hDATA->SetMarkerStyle(20);
-  hDATA->SetMarkerSize(0.7);
+  hDATA->SetMarkerSize(0.9);
   hDATA->Rebin(rebinfactor);
 
-  TH1D MCsum=(*hMCsig)+(*hMCEWK)+(*hMCTT)+(*hMCQCD);
+  TH1D MCsum=(*hMCsig)+(*hMCEWKTT);
   
   std::cout << "Total DATA/MC scaling factor = " << hDATA->Integral()/MCsum.Integral() << std::endl;
   if(scaleMCtoDATA){
     hMCsig2->Scale(hDATA->Integral()/MCsum.Integral());
     hMCsig->Scale(hDATA->Integral()/MCsum.Integral());
-    hMCEWK->Scale(hDATA->Integral()/MCsum.Integral());
-    hMCTT->Scale(hDATA->Integral()/MCsum.Integral());
-    hMCQCD->Scale(hDATA->Integral()/MCsum.Integral());
+    hMCEWKTT->Scale(hDATA->Integral()/MCsum.Integral());
     MCsum.Scale(hDATA->Integral()/MCsum.Integral());
   }
   
   // compute % fractions
   double fsig = hMCsig->Integral()/MCsum.Integral()*100;
-  double fewk = hMCEWK->Integral()/MCsum.Integral()*100;
-  double ftt = hMCTT->Integral()/MCsum.Integral()*100;
-  double fqcd = hMCQCD->Integral()/MCsum.Integral()*100;
+  double fewktt = hMCEWKTT->Integral()/MCsum.Integral()*100;
 
   THStack *hs= new THStack("hs","test stacked histograms");
-  hs->Add(hMCTT);
-  hs->Add(hMCQCD);
-  hs->Add(hMCEWK);
+  hs->Add(hMCEWKTT);
   hs->Add(hMCsig);
 
   std::cout << "Integrals: hDATA= " << hDATA->Integral()
             << " hMCsig= " << hMCsig->Integral()
-            << " hMCEWK= " << hMCEWK->Integral()
-            << " hMCTT= "  << hMCTT->Integral()
-            << " hMCQCD= " << hMCQCD->Integral()
+            << " hMCEWKTT= " << hMCEWKTT->Integral()
             << " MCsum= "  << MCsum.Integral() << std::endl;
-  // std::cout << "Entries hDATA= " << hDATA->GetEntries() << " hMCsig= " << hMCsig->GetEntries() << " hMCEWK= " << hMCEWK->GetEntries() << " hMCTT= " << hMCTT->GetEntries() << " MCsum= " << MCsum.GetEntries() << std::endl;
+  // std::cout << "Entries hDATA= " << hDATA->GetEntries() << " hMCsig= " << hMCsig->GetEntries() << " hMCEWKTT= " << hMCEWKTT->GetEntries() << " MCsum= " << MCsum.GetEntries() << std::endl;
   
   // Double_t TH1::Chi2TestX(const TH1* h2,  Double_t &chi2, Int_t &ndf, Int_t &igood, Option_t *option,  Double_t *res) const
-  Double_t chi2; Int_t ndf; Int_t igood;
-  std::cout << "DATA-MC chi2: " << hDATA->Chi2TestX((TH1D*)&MCsum,chi2,ndf,igood,"") << std::endl;
-  std::cout << "chi2= " << chi2 << " ndf= " << ndf << " norm chi2= " << (chi2/ndf) << " prob= " << TMath::Prob(chi2,ndf) << " igood= " << igood << std::endl << std::endl;
   
   TLatex *t = new TLatex();
   t->SetNDC();
@@ -111,6 +85,8 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   pad1->SetTickx(1);
   pad1->SetTicky(1);
   pad1->SetBottomMargin(0);
+  // pad1->SetLeftMargin(-1);
+  // pad1->SetRightMargin(0.2);
   pad1->SetTopMargin(0.075);
   pad1->Draw();
   
@@ -119,6 +95,8 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   pad2->SetTickx(1);
   pad2->SetTicky(1);
   pad2->SetTopMargin(0);
+  pad2->SetLeftMargin(-1);
+  // pad2->SetRightMargin(0.2);
   pad2->SetBottomMargin(0.35);
   pad2->Draw();
 
@@ -144,13 +122,12 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATA->Draw("pe");
   hs->Draw("hist same");
   hMCsig2->Draw("hist same");
-  hMCEWK->Draw("hist same");
-  hMCTT->Draw("hist same");
+  hMCEWKTT->Draw("hist same");
   hDATA->Draw("same pe");
   pad1->RedrawAxis();
   
   //  TLegend *leg = new TLegend(0.63,0.6,0.87,0.9,"4.75 fb^{-1} at #sqrt{7} TeV","brNDC");
-  TLegend *leg = new TLegend(0.68,0.55,0.88,0.9,"4.75 fb^{-1}","brNDC");
+  TLegend *leg = new TLegend(0.62,0.65,0.88,0.9,"","brNDC");
   leg->SetBorderSize(0);
   leg->SetTextFont(62);
   leg->SetLineColor(1);
@@ -160,25 +137,25 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   leg->SetFillStyle(1001);
   leg->AddEntry(hDATA,"DATA","pl");
   leg->AddEntry(hMCsig2,Form("%s (%.1f \%%)",LegendEvTypeTeX.Data(), fsig),"f");
-  leg->AddEntry(hMCEWK,Form("EWK (%.1f \%%)",fewk),"f");
-  leg->AddEntry(hMCQCD,Form("QCD (%.1f \%%)",fqcd),"f");
-  leg->AddEntry(hMCTT,Form("TT (%.1f \%%)",ftt),"f");
+  leg->AddEntry(hMCEWKTT,Form("Background (%.1f \%%)",fewktt),"f");
   leg->Draw();
 
-  t->DrawLatex(0.15,0.85,Form("stat chi2/ndf: %.2f, prob: %.3e",(chi2/ndf),TMath::Prob(chi2,ndf)));
+  // t->DrawLatex(0.15,0.85,Form("stat chi2/ndf: %.2f, prob: %.3e",(chi2/ndf),TMath::Prob(chi2,ndf)));
 
-  t->DrawLatex(0.55,0.94,"CMS Preliminary, #sqrt{s}=7 TeV");
+  t->DrawLatex(0.42,0.94,"CMS Preliminary, #sqrt{s}=7 TeV (4.7 fb^{-1})");
   
   // Draw pad2
   pad2->cd();
-  TH1D* hDATAratio = (TH1D*)hDATA->Clone("hDATAratio");
+  TH1D* hDATApull = (TH1D*)hDATA->Clone("hDATApull");
   TH1D* hMCsum = &MCsum;
-  TH1D* hMCsum_noerr = (TH1D*)hMCsum->Clone("hMCsum_noerr");
-  for(int i=1;i<hMCsum_noerr->GetNbinsX()+1; i++){
-    hMCsum_noerr->SetBinError(i, 0);
+  TH1D* hERRsum = (TH1D*)hMCsum->Clone("hERRsum");
+  for(int i=1;i<hERRsum->GetNbinsX()+1; i++){
+    hERRsum->SetBinError(i, 0);
   }
-  hDATAratio->Divide(hMCsum_noerr);
-  hMCsum->Divide(hMCsum_noerr);
+  hDATApull->Add(hERRsum,-1);
+  for(int i=1;i<hERRsum->GetNbinsX()+1; i++){
+    hERRsum->SetBinContent(i, TMath::Hypot(hERRsum->GetBinError(i),hDATApull->GetBinError(i)));
+  }
 
   int systtotnum = systfiles_MCsum.size();
   std::vector<TH1D*> herrors_stacked; // works only with single syst files !!!
@@ -186,49 +163,45 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   for (int systnum = 0; systnum < systtotnum; ++systnum) {
     herrors_stacked.push_back((TH1D*)systfiles_MCsum[systnum]->Get(HistoName_st.Data()));
     herrors_stacked[systnum]->Scale(hDATA->Integral()/herrors_stacked[systnum]->Integral());
-    herrors_stacked[systnum]->Divide(hMCsum_noerr);
+    herrors_stacked[systnum]->Add(hMCsum,-1);
     for(int bin=1; bin<herrors_stacked[systnum]->GetNbinsX()+1; bin++){
-      double error_curr = herrors_stacked[systnum]->GetBinContent(bin)-1;
-      double error_pred;
-      if (systnum > 0) error_pred = herrors_stacked[systnum-1]->GetBinError(bin);
-      else error_pred = hMCsum->GetBinError(bin);
-      herrors_stacked[systnum]->SetBinError(bin, sqrt(error_pred*error_pred + error_curr*error_curr));
+      double error_curr = herrors_stacked[systnum]->GetBinContent(bin);
+      // double error_pred;
+      // if (systnum > 0) error_pred = herrors_stacked[systnum-1]->GetBinError(bin);
+      // else error_pred = hERRsum->GetBinError(bin);
+      // herrors_stacked[systnum]->SetBinError(bin, sqrt(error_pred*error_pred + error_curr*error_curr));
+      hERRsum->SetBinContent(bin, TMath::Hypot(hERRsum->GetBinContent(bin),error_curr));
     }
   }
 
-  hDATAratio->GetXaxis()->SetLabelSize(0.05*0.75/0.25);
-  hDATAratio->GetXaxis()->SetTitleOffset(1);
-  hDATAratio->GetXaxis()->SetTitleSize(0.05*0.75/0.25);
-  hDATAratio->GetYaxis()->SetTitle("Ratio");
-  hDATAratio->GetYaxis()->SetLabelSize(0.05*0.75/0.25);
-  hDATAratio->GetYaxis()->SetTitleOffset(1.);
-  hDATAratio->GetYaxis()->SetTitleSize(0.05*0.75/0.25);
-  hDATAratio->GetYaxis()->SetNdivisions(4);
-  hDATAratio->GetYaxis()->SetRangeUser(0.9,1.1);
-  hDATAratio->Draw("p hist");
+  hDATApull->GetXaxis()->SetLabelSize(0.05*0.75/0.25);
+  hDATApull->GetXaxis()->SetTitleOffset(1);
+  hDATApull->GetXaxis()->SetTitleSize(0.05*0.75/0.25);
+  hDATApull->GetYaxis()->SetTitle("Pull");
+  hDATApull->GetYaxis()->SetLabelSize(0.05*0.75/0.25);
+  hDATApull->GetYaxis()->SetTitleOffset(1.);
+  hDATApull->GetYaxis()->SetTitleSize(0.05*0.75/0.25);
+  hDATApull->GetYaxis()->SetNdivisions(4);
+  hDATApull->GetYaxis()->SetRangeUser(-5,5);
   
-  int colorindex=0;
+  hDATApull->Divide(hERRsum);
   
-  for (int systnum = systtotnum-1; systnum >= 0; --systnum) {
-    herrors_stacked[systnum]->SetMarkerSize(0);
-    herrors_stacked[systnum]->SetFillColor(goodColors[colorindex++]);
-    herrors_stacked[systnum]->Draw("same E2");
+  double chi2_all = 0;
+  for(int i=1;i<hDATApull->GetNbinsX()+1; i++){
+    hDATApull->SetBinError(i,0);
+    chi2_all+= hDATApull->GetBinContent(i)*hDATApull->GetBinContent(i);
   }
-  hMCsum->SetFillColor(goodColors[colorindex++]);
-  hMCsum->SetMarkerSize(0);
-  hMCsum->Draw("same E2");
-  hDATAratio->Draw("PEX0 same");
+  
+  Double_t chi2; Int_t ndf; Int_t igood;
+  std::cout << "DATA-MC chi2: " << hDATA->Chi2TestX((TH1D*)&MCsum,chi2,ndf,igood,"") << std::endl;
+  std::cout << "chi2= " << chi2 << " ndf= " << ndf << " norm chi2= " << (chi2/ndf) << " prob= " << TMath::Prob(chi2,ndf) << " igood= " << igood << std::endl;
+  std::cout << "chi2 including systematics= " << (chi2_all/ndf) << std::endl << std::endl;
+  
+  hDATApull->Draw("P");
 
-  leg->AddEntry((TObject*)0, "", "");
-  leg->AddEntry(hDATAratio,                 "DATA / MC",        "pel");
-  leg->AddEntry(hMCsum,                     "MC stat uncert",   "f");
-  for (int systnum = 0; systnum < systtotnum; ++systnum) {
-    leg->AddEntry(herrors_stacked[systnum], systnames[systnum], "f");
-  }
-
-  TLine*l0=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 1, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 1); l0->SetLineColor(kBlack);
-  TLine*lp5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 1.05, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 1.05); lp5->SetLineColor(kGray+2);
-  TLine*lm5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 0.95, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 0.95); lm5->SetLineColor(kGray+2);
+  TLine*l0=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 0, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, 0); l0->SetLineColor(kBlack);
+  TLine*lp5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, 1, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax,1); lp5->SetLineColor(kGray);
+  TLine*lm5=new TLine(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin, -1, xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax, -1); lm5->SetLineColor(kGray);
   l0->Draw("histo same");
   lp5->Draw("histo same");
   lm5->Draw("histo same");
@@ -242,6 +215,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   if(xmin!=-1)extra_ouput_str+=Form("_xmin%.f",xmin);
   if(xmax!=-1)extra_ouput_str+=Form("_xmax%.f",xmax);
   c1->SaveAs(HistoName_st+extra_ouput_str+".png");
+  c1->SaveAs(HistoName_st+extra_ouput_str+".pdf");
   c1->SaveAs(HistoName_st+extra_ouput_str+".root");
 }
 
@@ -251,9 +225,7 @@ void PlotZpre_unblinding(){
   gStyle->SetOptStat(0);
   
   TString folderMCsig = "output_DYJetsPow/";
-  TString folderMCEWK = "output_EWK/";
-  TString folderMCTT  = "output_TT/";
-  TString folderMCQCD = "output_QCD/";
+  TString folderMCEWKTT = "output_EWKTT/";
   TString folderDATA  = "output_DATA/";
   TString folderMCsum = "output_MCDATALIKEPOW/";
   
@@ -262,7 +234,7 @@ void PlotZpre_unblinding(){
   TString posNeg_str = "Pos";
   const int mass = 91188;
 
-  TString prefix = "FEB29_mu" + posNeg_str;
+  TString prefix = "moriond_stable_mu" + posNeg_str;
 
   TString destinationfolder = "../JobOutputs/"+prefix+"_pre_unblinding_plots";
   
@@ -283,9 +255,7 @@ void PlotZpre_unblinding(){
   std::vector<TString> systnames(systnames_IHATECXX98, systnames_IHATECXX98 + systtotnum);
   
   TFile *fMCsig= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCsig.Data()));
-  TFile *fMCEWK= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCEWK.Data()));
-  TFile *fMCTT = new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCTT.Data() ));
-  TFile *fMCQCD= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCQCD.Data()));
+  TFile *fMCEWKTT= new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderMCEWKTT.Data()));
   TFile *fDATA = new TFile(Form("%s/%s/ZanalysisOnDATA.root", templatefolder.Data(), folderDATA.Data() ));
 
   std::vector<TFile*> systfiles_MCsum;
@@ -300,23 +270,23 @@ void PlotZpre_unblinding(){
   
   TString LegendEvTypeTeX=Form("Wlike%s#rightarrow#mu#nu",posNeg_str.Data());
   
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_Recoil_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_Zmass_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_Zrap_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#cos{#theta^{*}_{CS}};Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_phi_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#phi^{*}_{CS} [rad];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Recoil_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Zmass_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Zrap_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#cos{#theta^{*}_{CS}};Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_phi_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#phi^{*}_{CS} [rad];Counts"),-1,-1,1,systfiles_MCsum,systnames);
 
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_METNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; E_{T}^{miss} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_MtNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; M_{T} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_PtNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; P_{T}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_METNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; E_{T}^{miss} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_MtNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; M_{T} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_PtNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; P_{T}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
 
   /*
   bool logy=1;
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_U1Z_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#parallel}^{Z} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_U2Z_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#perp}^{Z} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_U1lep_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#parallel}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWK,fMCTT,fMCQCD,fDATA,Form("hWlike%s_U2lep_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#perp}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_U1Z_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#parallel}^{Z} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_U2Z_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#perp}^{Z} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_U1lep_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#parallel}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_U2lep_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,logy,0,1,Form(";U_{#perp}^{#mu} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
   */
 
 }
