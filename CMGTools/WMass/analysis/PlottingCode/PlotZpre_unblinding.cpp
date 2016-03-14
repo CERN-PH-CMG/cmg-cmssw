@@ -69,7 +69,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   TLatex *t = new TLatex();
   t->SetNDC();
   // t->SetTextAlign(22);
-  t->SetTextSize(0.04);
+  t->SetTextSize(0.05);
   //  t->SetTextFont(63);
   t->SetTextSizePixels(17);
 
@@ -78,24 +78,28 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   const double ydiv = 0.25;
 
   TCanvas *c1 = new TCanvas("c"+HistoName_st,"c"+HistoName_st,800,800);
-  TPad *pad1 = new TPad("pad1", "",0,ydiv,1,1);
+  //  c1->SetLeftMargin();
+  //  c1->SetRightMargin(0.2);
+  TPad *pad1 = new TPad("pad1", "",0.04,ydiv,1,1);
   pad1->SetLogx(logx);
   pad1->SetLogy(logy);
   pad1->SetLogz(logz);
   pad1->SetTickx(1);
   pad1->SetTicky(1);
   pad1->SetBottomMargin(0);
-  // pad1->SetLeftMargin(-1);
-  // pad1->SetRightMargin(0.2);
+  //  pad1->SetLeftMargin(0.1);
+  //  pad1->SetRightMargin(0.2);
   pad1->SetTopMargin(0.075);
   pad1->Draw();
   
-  TPad *pad2 = new TPad("pad2", "",0,0,1,ydiv);
+
+  // 0.03
+  TPad *pad2 = new TPad("pad2", "",0.04,0,1,ydiv);
   pad2->SetLogx(logx);
   pad2->SetTickx(1);
   pad2->SetTicky(1);
   pad2->SetTopMargin(0);
-  pad2->SetLeftMargin(-1);
+  //  pad2->SetLeftMargin(-1);
   // pad2->SetRightMargin(0.2);
   pad2->SetBottomMargin(0.35);
   pad2->Draw();
@@ -111,14 +115,21 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   hDATA->GetXaxis()->SetTitleOffset(1);
   hDATA->GetXaxis()->SetTitleSize(0.05);
   hDATA->GetYaxis()->SetLabelSize(0.05);
-  hDATA->GetYaxis()->SetTitleOffset(1.1);
+  hDATA->GetYaxis()->SetTitleOffset(1.5);
   hDATA->GetYaxis()->SetTitleSize(0.05);
+  hDATA->GetYaxis()->SetNoExponent(kFALSE);
   hDATA->GetYaxis()->SetNdivisions(410);
 
   hDATA->SetTitle(title.Data());
   hDATA->GetXaxis()->SetRangeUser(xmin==-1?hDATA->GetXaxis()->GetBinLowEdge(1):xmin,
-                                  xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax);
+				  xmax==-1?hDATA->GetXaxis()->GetBinCenter(hDATA->GetNbinsX()):xmax);
+  
   hDATA->GetYaxis()->SetTitle(Form("Counts / %.2f",hDATA->GetBinWidth(1)));
+
+  //  hDATA->SetMaximum(1.12*hDATA->GetMaximum());
+  //  hDATA->GetYaxis()->SetRangeUser(-300,1.12*hDATA->GetMaximum());
+  hDATA->GetYaxis()->SetRangeUser(-hDATA->GetMaximum()*0.06,1.12*hDATA->GetMaximum());
+
   hDATA->Draw("pe");
   hs->Draw("hist same");
   hMCsig2->Draw("hist same");
@@ -127,22 +138,28 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   pad1->RedrawAxis();
   
   //  TLegend *leg = new TLegend(0.63,0.6,0.87,0.9,"4.75 fb^{-1} at #sqrt{7} TeV","brNDC");
-  TLegend *leg = new TLegend(0.62,0.65,0.88,0.9,"","brNDC");
+  TLegend *leg = new TLegend(0.55,0.7,0.84,0.92,"","brNDC");
   leg->SetBorderSize(0);
   leg->SetTextFont(62);
+  leg->SetTextSize(0.038);
   leg->SetLineColor(1);
   leg->SetLineStyle(1);
   leg->SetLineWidth(1);
   leg->SetFillColor(0);
   leg->SetFillStyle(1001);
-  leg->AddEntry(hDATA,"DATA","pl");
-  leg->AddEntry(hMCsig2,Form("%s (%.1f \%%)",LegendEvTypeTeX.Data(), fsig),"f");
-  leg->AddEntry(hMCEWKTT,Form("Background (%.1f \%%)",fewktt),"f");
+  leg->AddEntry(hDATA,"DATA","ple");
+  leg->AddEntry(hMCsig2,Form("%s (%.1f\%%)",LegendEvTypeTeX.Data(), fsig),"f");
+  leg->AddEntry(hMCEWKTT,Form("Background (%.1f\%%)",fewktt),"f");
   leg->Draw();
 
   // t->DrawLatex(0.15,0.85,Form("stat chi2/ndf: %.2f, prob: %.3e",(chi2/ndf),TMath::Prob(chi2,ndf)));
 
-  t->DrawLatex(0.42,0.94,"CMS Preliminary, #sqrt{s}=7 TeV (4.7 fb^{-1})");
+  t->DrawLatex(0.22,0.94,"#bf{#it{Preliminary}}"); // need unbold
+  t->DrawLatex(0.6,0.94,"#sqrt{s}=7 TeV (4.7 fb^{-1})");
+
+  t->SetTextSize(0.07);
+  t->DrawLatex(0.1,0.94,"CMS");
+
   
   // Draw pad2
   pad2->cd();
@@ -214,8 +231,9 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   if(scaleMCtoDATA)extra_ouput_str+="_norm";
   if(xmin!=-1)extra_ouput_str+=Form("_xmin%.f",xmin);
   if(xmax!=-1)extra_ouput_str+=Form("_xmax%.f",xmax);
-  c1->SaveAs(HistoName_st+extra_ouput_str+".png");
+  c1->Update();
   c1->SaveAs(HistoName_st+extra_ouput_str+".pdf");
+  c1->SaveAs(HistoName_st+extra_ouput_str+".png");
   c1->SaveAs(HistoName_st+extra_ouput_str+".root");
 }
 
@@ -229,9 +247,9 @@ void PlotZpre_unblinding(){
   TString folderDATA  = "output_DATA/";
   TString folderMCsum = "output_MCDATALIKEPOW/";
   
-  TString basefolder = "../JobOutputs/"; // Supposed to be run from PlottingCode/
-  //  TString posNeg_str = "Neg";
-  TString posNeg_str = "Pos";
+  TString basefolder = "/afs/cern.ch/work/a/astacchi/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/WMass/analysis/JobOutputs/"; // Supposed to be run from PlottingCode/
+  TString posNeg_str = "Neg";
+  //  TString posNeg_str = "Pos";
   const int mass = 91188;
 
   TString prefix = "moriond_stable_mu" + posNeg_str;
@@ -268,13 +286,17 @@ void PlotZpre_unblinding(){
   gSystem->mkdir(destinationfolder);
   gSystem->cd(destinationfolder);
   
-  TString LegendEvTypeTeX=Form("Wlike%s#rightarrow#mu#nu",posNeg_str.Data());
+  TString LegendEvTypeTeX=Form("W_{like}%s#rightarrow#mu#nu",posNeg_str.Data());
+  //  if(posNeg_str.Contains("Neg")) LegendEvTypeTeX=Form("W_{like}^{-}#rightarrow#mu^{-}#nu");
+  //  if(posNeg_str.Contains("Pos")) LegendEvTypeTeX=Form("W_{like}^{+}#rightarrow#mu^{+}#nu");
+  if(posNeg_str.Contains("Neg")) LegendEvTypeTeX=Form("Z(W_{like}^{-})#rightarrow#mu^{-}#nu");
+  if(posNeg_str.Contains("Pos")) LegendEvTypeTeX=Form("Z(W_{like}^{+})#rightarrow#mu^{+}#nu");
   
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Recoil_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Recoil_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,16.99,1,systfiles_MCsum,systnames);
   plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Zmass_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,29.99,1,systfiles_MCsum,systnames);
   plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Zrap_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#cos{#theta^{*}_{CS}};Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";cos #theta^{*}_{CS};Counts"),-1,-1,1,systfiles_MCsum,systnames);
   plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_phi_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#phi^{*}_{CS} [rad];Counts"),-1,-1,1,systfiles_MCsum,systnames);
 
   plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_METNonScaled_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form("; E_{T}^{miss} [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
