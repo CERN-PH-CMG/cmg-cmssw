@@ -5216,7 +5216,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
       if(fr) {
 	//	lRGAdd->plotOn(lFrame1,ProjWData(lRXVar,lResidVals[i0]),RooFit::LineColor(kBlue));
-	lRGAdd->plotOn(lFrame1,FillColor(7),VisualizeError(*fr,1),RooFit::Components(*lRGAdd)); // 1 sigma band  
+	lRGAdd->plotOn(lFrame1,FillColor(7),VisualizeError(*fr,1),RooFit::Components(*lRGAdd)); // 1 sigma band
 	// draw 1 sigma vand
 	if(doAsymGaus) {
 	  if(lPar!=fU1 ) lRGAdd->plotOn(lFrame1,FillColor(kOrange-3),VisualizeError(*fr,1),RooFit::Components(*lRGaus1)); // 1 sigma band
@@ -5364,8 +5364,15 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 	//	lchi2[i0]=0;
 
 	TString chi2str = Form("chi2/ndof = %.2f",lFrame1->chiSquare("RAdd_Norm[XVar]",nameRooHist.Data()));
+
+	//	RooArgSet* obs1D(lRXVar);
+	//	RooArgSet* flparams1D = lRGAdd->getParameters(obs1D)->selectByAttrib("Constant",kFALSE);
+	int sizeParam=0;
+	if(lPar==fU1) sizeParam=21;
+	if(lPar!=fU1) sizeParam=15;
+
 	if(!fr->status()) {
-	  lchi2[i0-int(range_min)]=lFrame1->chiSquare("RAdd_Norm[XVar]",nameRooHist.Data());
+	  lchi2[i0-int(range_min)]=lFrame1->chiSquare("RAdd_Norm[XVar]",nameRooHist.Data(),sizeParam);
 	} else {
 	  lchi2[i0-int(range_min)]=0;
 	}
@@ -5799,6 +5806,13 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     }
     */
 
+    TString chi2strCorr="";
+
+    RooPlot *lFrame2D = lRXVar.frame() ;
+    if(lPar==fU1) lFrame2D->SetName(Form("2DFrame_U1_Y%d",fId));
+    if(lPar!=fU1) lFrame2D->SetName(Form("2DFrame_U2_Y%d",fId));
+    lFrame2D->SetTitle("");
+
     if(fData && doBKG) {
 
       constructPDFbkg2D(lPar);
@@ -5811,12 +5825,36 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       //      pFR = lGAdd->fitTo(lResidVals2D[0],Constrained(),PrintEvalErrors(-1),Save(kTRUE),ConditionalObservables(lRPt),NumCPU(4),Minimizer("Minuit2","migrad"),Strategy(2)/*,Minos()*/); 
       pFR = lGAdd->fitTo(lResidVals2D[0],Constrained(),PrintEvalErrors(-1),Save(kTRUE),ConditionalObservables(lRPt),NumCPU(4),Minimizer("Minuit2","minimize"),Strategy(2)/*,Minos()*/); 
       
-      RooPlot *lFrame2D = lRXVar.frame() ;
-      lFrame2D->SetName("2DFrame");
-      lFrame2D->SetTitle("");
+      lResidVals2D[0].plotOn(lFrame2D);
+      lGAdd->plotOn(lFrame2D,RooFit::FillColor(7),RooFit::VisualizeError(*pFR,1),RooFit::Components(*lGAdd)); // 1 sigma band
+      lGAdd->plotOn(lFrame2D);
+      cout << "MARIA PRINT THE DATASET 2D for CHI2" << endl;
+      lFrame2D->Print();
 
-      lGAdd->plotOn(lFrame2D,FillColor(kGreen),VisualizeError(*pFR,1),RooFit::Components(*lGAdd)); // 1 sigma band  
-      lGAdd->plotOn(lFrame2D,ProjWData(lRXVar,lResidVals2D[0]),RooFit::LineColor(kGreen+2));
+      TString nameRooHist=Form("h_%s",lResidVals2D[0].GetName());
+      TString nameRooCurve="";
+      //      RooCurve::AddU1Y1_Int[pt]_Norm[XVar,pt]
+      if(lPar==fU1) nameRooCurve=Form("AddU1Y%d_Int[pt]_Norm[XVar,pt]",fId);
+      if(lPar!=fU1) nameRooCurve=Form("AddU2Y%d_Int[pt]_Norm[XVar,pt]",fId);
+      //	TString chi2str = "0";
+      //	lchi2[i0]=0;
+
+      int sizeParam=0;
+      if(lPar==fU1) sizeParam=21;
+      if(lPar!=fU1) sizeParam=15;
+      //      RooArgSet obs(lRPt,lRXVar);
+      //      RooArgSet* flparams = lGAdd->getParameters(obs)->selectByAttrib("Constant",kFALSE);
+      //      cout << "nparam=" << flparams->getSize() << endl;
+
+      //(RooCurve::AddU2Y1_Norm[XVar])
+      TString chi2str = Form("chi2/nbins = %.2f",lFrame2D->chiSquare(nameRooCurve.Data(),nameRooHist.Data()));
+      cout << " chi2=" << chi2str.Data() << endl;
+
+      chi2strCorr = Form("chi2/(nbin-nparam) = %.2f",lFrame2D->chiSquare(nameRooCurve.Data(), nameRooHist.Data(), sizeParam));
+      cout << " chi2(corrected)" << chi2strCorr.Data() << endl;
+
+      //      lGAdd->plotOn(lFrame2D,FillColor(kGreen),VisualizeError(*pFR,1),RooFit::Components(*lGAdd)); // 1 sigma band
+      //      lGAdd->plotOn(lFrame2D,ProjWData(lRXVar,lResidVals2D[0]),RooFit::LineColor(kGreen+2));
 
       //      RooPlot *lFrame2Dpt = lRPt.frame() ;
       //      lFrame2Dpt->SetName("2DFramePt");
@@ -5836,6 +5874,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
 
     TFile f15(rootFileNameFrame.c_str(),"UPDATE");
 
+    if(lFrame2D) lFrame2D->Write();
     if(lGAdd) lGAdd->Write();
     if(pFR) pFR->Write();
     
@@ -5957,7 +5996,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
       lG1L->Draw("pe");
       lG1L_2d->Draw("pe");
     }
-    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d", pFR->status()));
+    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d, %s", pFR->status(), chi2strCorr.Data() ));
     if(pFR) latexLabel.DrawLatex(0.20, 0.9, Form("A1Sig = %f +/- %f", lA1Sig.getVal(),lA1Sig.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.85, Form("B1Sig = %f +/- %f", lB1Sig.getVal(),lB1Sig.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.8, Form("C1Sig = %f +/- %f", lC1Sig.getVal(),lC1Sig.getError()));
@@ -6013,7 +6052,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lG2->Draw("pe");
     lG2_2d->Draw("pe"); 
 
-    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d", pFR->status()));
+    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d, %s", pFR->status(), chi2strCorr.Data() ));
     if(pFR) latexLabel.DrawLatex(0.20, 0.9, Form("A2Sig = %f +/- %f", lA2Sig.getVal(),lA2Sig.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.85, Form("B2Sig = %f +/- %f", lB2Sig.getVal(),lB2Sig.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.8, Form("C2Sig = %f +/- %f", lC2Sig.getVal(),lC2Sig.getError()));
@@ -6064,7 +6103,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     lG3->Draw("pe");
     lG3_2d->Draw("pe"); 
 
-    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d", pFR->status()));
+    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d, %s", pFR->status(), chi2strCorr.Data() ));
     if(pFR) latexLabel.DrawLatex(0.20, 0.9, Form("A3Sig = %f +/- %f", lA3Sig.getVal(),lA3Sig.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.85, Form("B3Sig = %f +/- %f", lB3Sig.getVal(),lB3Sig.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.8, Form("C3Sig = %f +/- %f", lC3Sig.getVal(),lC3Sig.getError()));
@@ -6144,7 +6183,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     gFrac->Draw("pe");
     gFrac2D->Draw("pe");
 
-    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d", pFR->status()));
+    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d, %s", pFR->status(), chi2strCorr.Data() ));
     if(pFR) latexLabel.DrawLatex(0.20, 0.9, Form("AFrac = %f +/- %f", lAFrac.getVal(),lAFrac.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.85, Form("BFrac = %f +/- %f", lBFrac.getVal(),lBFrac.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.8, Form("CFrac = %f +/- %f", lCFrac.getVal(),lCFrac.getError()));
@@ -6219,7 +6258,7 @@ void fitGraph(TTree *iTree,TTree *iTree1, TCanvas *iC,
     gFrac2->Draw("pe");
     gFrac22D->Draw("pe");
 
-    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d", pFR->status()));
+    if(pFR) latexLabel.DrawLatex(0.20, 0.95, Form("status = %d, %s", pFR->status(), chi2strCorr.Data() ));
     if(pFR) latexLabel.DrawLatex(0.20, 0.9, Form("A1Frac = %f +/- %f", lA1Frac.getVal(),lA1Frac.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.85, Form("B1Frac = %f +/- %f", lB1Frac.getVal(),lB1Frac.getError()));
     if(pFR) latexLabel.DrawLatex(0.20, 0.8, Form("C1Frac = %f +/- %f", lC1Frac.getVal(),lC1Frac.getError()));
