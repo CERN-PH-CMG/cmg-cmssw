@@ -20,7 +20,7 @@ Do not expect meaningful results for this sample:'''
     print inputSample
 
 if multi_thread: 
-    inputSample.splitFactor = len(inputSamples.files)
+    inputSample.splitFactor = len(inputSample.files)
 
 selectedComponents  = [inputSample]
 
