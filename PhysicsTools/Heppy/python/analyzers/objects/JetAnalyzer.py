@@ -91,6 +91,7 @@ class JetAnalyzer( Analyzer ):
           # instantiate the jet re-calibrator
           self.jetReCalibrator = JetReCalibrator(GT, cfg_ana.recalibrationType, doResidual, cfg_ana.jecPath, **kwargs)
         self.doPuId = getattr(self.cfg_ana, 'doPuId', True)
+        self.matchJetsWithThreshold = getattr(self.cfg_ana, 'matchJetsWithThreshold', False)
         self.jetLepDR = getattr(self.cfg_ana, 'jetLepDR', 0.4)
         self.jetLepArbitration = getattr(self.cfg_ana, 'jetLepArbitration', lambda jet,lepton: lepton) 
         self.lepPtMin = getattr(self.cfg_ana, 'minLepPt', -1)
@@ -166,7 +167,10 @@ class JetAnalyzer( Analyzer ):
                 for igj, gj in enumerate(self.genJets):
                     gj.index = igj
 #                self.matchJets(event, allJets)
-                self.matchJets(event, [ j for j in allJets if j.pt()>self.cfg_ana.jetPt ]) # To match only jets above chosen threshold
+                    if self.matchJetsWithThreshold and not getattr(self.cfg_ana, 'smearJets', False):
+                        self.matchJets(event, [ j for j in allJets if j.pt()>self.cfg_ana.jetPt ]) # To match only jets above chosen threshold
+                    else:
+                        self.matchJets(event, allJets)
             if getattr(self.cfg_ana, 'smearJets', False):
                 self.smearJets(event, allJets)
 
@@ -508,6 +512,7 @@ setattr(JetAnalyzer,"defaultConfig", cfg.Analyzer(
     cleanJetsFromIsoTracks = False,
     alwaysCleanPhotons = False,
     do_mc_match=True,
+    matchJetsWithThreshold=False,
     cleanGenJetsFromPhoton = False,
     jetGammaDR=0.4,
     cleanFromLepAndGammaSimultaneously = False,
