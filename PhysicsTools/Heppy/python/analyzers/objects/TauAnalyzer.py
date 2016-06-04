@@ -70,6 +70,9 @@ class TauAnalyzer( Analyzer ):
             def id3(tau,X):
                 """Create an integer equal to 1-2-3 for (loose,medium,tight)"""
                 return tau.tauID(X%"Loose") + tau.tauID(X%"Medium") + tau.tauID(X%"Tight")
+            def id4(tau,X):
+                """Create an integer equal to 1-2-3-4 for (loose, medium, tight, very tight)"""
+                return id3(tau, X) + tau.tauID(X%"VTight")
             def id5(tau,X):
                 """Create an integer equal to 1-2-3-4-5 for (very loose, 
                     loose, medium, tight, very tight)"""
@@ -82,8 +85,8 @@ class TauAnalyzer( Analyzer ):
             tau.idMVA = id6(tau, "by%sIsolationMVArun2v1DBoldDMwLT")
             tau.idMVANewDM = id6(tau, "by%sIsolationMVArun2v1DBnewDMwLT")
             tau.idCI3hit = id3(tau, "by%sCombinedIsolationDeltaBetaCorr3Hits")
-            tau.idMVAOldDMRun2 = id3(tau, "by%sIsolationMVArun2v1DBoldDMwLT")
-            tau.idMVAOldDMRun2dR03 = id3(tau, "by%sIsolationMVArun2v1DBdR03oldDMwLT")
+            tau.idMVAOldDMRun2 = id5(tau, "by%sIsolationMVArun2v1DBoldDMwLT")
+            tau.idMVAOldDMRun2dR03 = id4(tau, "by%sIsolationMVArun2v1DBdR03oldDMwLT")
             tau.idAntiMu = tau.tauID("againstMuonLoose3") + tau.tauID("againstMuonTight3")
             tau.idAntiE = id5(tau, "againstElectron%sMVA6")
             #print "Tau pt %5.1f: idMVA2 %d, idCI3hit %d, %s, %s" % (tau.pt(), tau.idMVA2, tau.idCI3hit, tau.tauID(self.cfg_ana.tauID), tau.tauID(self.cfg_ana.tauLooseID))
