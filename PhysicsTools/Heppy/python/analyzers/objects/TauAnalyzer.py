@@ -67,21 +67,26 @@ class TauAnalyzer( Analyzer ):
             if abs(tau.eta()) > self.cfg_ana.inclusive_etaMax: continue
             if abs(tau.dxy()) > self.cfg_ana.inclusive_dxyMax or abs(tau.dz()) > self.cfg_ana.inclusive_dzMax: continue
 
-            def id3(tau,X):
+            def id3(tau,X,mayFail=False):
                 """Create an integer equal to 1-2-3 for (loose,medium,tight)"""
+                if mayFail and not tau.isTauIDAvailable(X%"Loose"): return -1
                 return tau.tauID(X%"Loose") + tau.tauID(X%"Medium") + tau.tauID(X%"Tight")
-            def id5(tau,X):
+            def id5(tau,X,mayFail=False):
                 """Create an integer equal to 1-2-3-4-5 for (very loose, 
                     loose, medium, tight, very tight)"""
+                if mayFail and not tau.isTauIDAvailable(X%"Loose"): return -1
                 return id3(tau, X) + tau.tauID(X%"VLoose") + tau.tauID(X%"VTight")
-            def id6(tau,X):
+            def id6(tau,X,mayFail=False):
                 """Create an integer equal to 1-2-3-4-5-6 for (very loose, 
                     loose, medium, tight, very tight, very very tight)"""
+                if mayFail and not tau.isTauIDAvailable(X%"Loose"): return -1
                 return id5(tau, X) + tau.tauID(X%"VVTight")
 
             tau.idMVA = id6(tau, "by%sIsolationMVA3oldDMwLT")
             tau.idMVANewDM = id6(tau, "by%sIsolationMVA3newDMwLT")
             tau.idCI3hit = id3(tau, "by%sCombinedIsolationDeltaBetaCorr3Hits")
+            tau.idMVAOldDMRun2 = id3(tau, "by%sIsolationMVArun2v1DBoldDMwLT", mayFail=True)
+            tau.idMVAOldDMRun2dR03 = id3(tau, "by%sIsolationMVArun2v1DBdR03oldDMwLT", mayFail=True)
             tau.idAntiMu = tau.tauID("againstMuonLoose3") + tau.tauID("againstMuonTight3")
             tau.idAntiE = id5(tau, "againstElectron%sMVA5")
             #print "Tau pt %5.1f: idMVA2 %d, idCI3hit %d, %s, %s" % (tau.pt(), tau.idMVA2, tau.idCI3hit, tau.tauID(self.cfg_ana.tauID), tau.tauID(self.cfg_ana.tauLooseID))
