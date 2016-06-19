@@ -79,6 +79,8 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
 
 ### EXTENDED VERSION WITH INDIVIUAL DISCRIMINATING VARIABLES
 leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType ], variables = [
+    # Loose id 
+    NTupleVariable("looseIdOnly",   lambda x : x.looseIdOnly, int, help="Loose ID as per LeptonAnalyzer (only what configured in the id part, not also dxy/dz/iso cuts of the lepton analyzer)"),
     # Extra isolation variables
     NTupleVariable("chargedHadRelIso03",  lambda x : x.chargedHadronIsoR(0.3)/x.pt(), help="PF Rel Iso, R=0.3, charged hadrons only"),
     NTupleVariable("chargedHadRelIso04",  lambda x : x.chargedHadronIsoR(0.4)/x.pt(), help="PF Rel Iso, R=0.4, charged hadrons only"),
@@ -159,7 +161,8 @@ isoTrackType = NTupleObjectType("isoTrack",  baseObjectTypes = [ particleType ],
 ##------------------------------------------  
 
 photonType = NTupleObjectType("gamma", baseObjectTypes = [ particleType ], variables = [
-    NTupleVariable("idCutBased", lambda x : x.idCutBased, int, help="1,2,3 if the gamma passes the loose, medium, tight WP of PhotonCutBasedID"),
+    NTupleVariable("etaSc", lambda x : x.superCluster().eta(), help="Photon supercluster pseudorapidity"),
+    NTupleVariable("idCutBased", lambda x : x.idWPs, int, help="1,2,3 if the gamma passes the loose, medium, tight WP of PhotonCutBasedID"),
     NTupleVariable("hOverE",  lambda x : x.hOVERe(), float, help="hoverE for photons"),
     NTupleVariable("r9",  lambda x : x.full5x5_r9(), float, help="r9 for photons"),
     NTupleVariable("sigmaIetaIeta",  lambda x : x.full5x5_sigmaIetaIeta(), float, help="sigmaIetaIeta for photons"),
