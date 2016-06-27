@@ -408,6 +408,10 @@ class LeptonAnalyzer( Analyzer ):
         for ele in allelectrons:
             ele.associatedVertex = goodVertices[0] if len(goodVertices)>0 else event.vertices[0]
 
+        # Attach the event (for MVA Id)
+        for ele in allelectrons:
+            ele.event = event.input.object()
+
         # Compute relIso with R=0.3 and R=0.4 cones
         for ele in allelectrons:
             if self.cfg_ana.ele_isoCorr=="rhoArea" :
