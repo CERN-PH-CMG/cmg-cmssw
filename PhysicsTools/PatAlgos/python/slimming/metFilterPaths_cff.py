@@ -7,6 +7,8 @@ from RecoMET.METFilters.metFilters_cff import EcalDeadCellTriggerPrimitiveFilter
 from RecoMET.METFilters.metFilters_cff import primaryVertexFilter, CSCTightHaloFilter, CSCTightHaloTrkMuUnvetoFilter, CSCTightHalo2015Filter, globalTightHalo2016Filter, globalSuperTightHalo2016Filter, HcalStripHaloFilter
 from RecoMET.METFilters.metFilters_cff import goodVertices, trackingFailureFilter, trkPOGFilters, manystripclus53X, toomanystripclus53X, logErrorTooManyClusters
 from RecoMET.METFilters.metFilters_cff import chargedHadronTrackResolutionFilter, muonBadTrackFilter
+from RecoMET.METFilters.metFilters_cff import BadPFMuonFilter
+from RecoMET.METFilters.metFilters_cff import BadChargedCandidateFilter
 from RecoMET.METFilters.metFilters_cff import metFilters
 
 # individual filters
@@ -28,6 +30,8 @@ Flag_ecalLaserCorrFilter = cms.Path(ecalLaserCorrFilter)
 Flag_trkPOGFilters = cms.Path(trkPOGFilters)
 Flag_chargedHadronTrackResolutionFilter = cms.Path(chargedHadronTrackResolutionFilter)
 Flag_muonBadTrackFilter = cms.Path(muonBadTrackFilter)
+Flag_BadPFMuonFilter = cms.Path(BadPFMuonFilter)
+Flag_BadChargedCandidateFilter = cms.Path(BadChargedCandidateFilter)
 # and the sub-filters
 Flag_trkPOG_manystripclus53X = cms.Path(~manystripclus53X)
 Flag_trkPOG_toomanystripclus53X = cms.Path(~toomanystripclus53X)
@@ -39,13 +43,13 @@ Flag_METFilters = cms.Path(metFilters)
 
 #add your new path here!!
 allMetFilterPaths=['HBHENoiseFilter','HBHENoiseIsoFilter','CSCTightHaloFilter','CSCTightHaloTrkMuUnvetoFilter','CSCTightHalo2015Filter','globalTightHalo2016Filter','globalSuperTightHalo2016Filter','HcalStripHaloFilter','hcalLaserEventFilter','EcalDeadCellTriggerPrimitiveFilter','EcalDeadCellBoundaryEnergyFilter','goodVertices','eeBadScFilter',
-                   'ecalLaserCorrFilter','trkPOGFilters','chargedHadronTrackResolutionFilter','muonBadTrackFilter','trkPOG_manystripclus53X','trkPOG_toomanystripclus53X','trkPOG_logErrorTooManyClusters','METFilters']
+                   'ecalLaserCorrFilter','trkPOGFilters','chargedHadronTrackResolutionFilter','muonBadTrackFilter','BadPFMuonFilter','BadChargedCandidateFilter','trkPOG_manystripclus53X','trkPOG_toomanystripclus53X','trkPOG_logErrorTooManyClusters','METFilters']
 
-       
+
 def miniAOD_customizeMETFiltersFastSim(process):
     """Replace some MET filters that don't work in FastSim with trivial bools"""
     for X in 'CSCTightHaloFilter', 'CSCTightHaloTrkMuUnvetoFilter','CSCTightHalo2015Filter','globalTightHalo2016Filter','globalSuperTightHalo2016Filter','HcalStripHaloFilter':
-        process.globalReplace(X, cms.EDFilter("HLTBool", result=cms.bool(True)))    
+        process.globalReplace(X, cms.EDFilter("HLTBool", result=cms.bool(True)))
     for X in 'manystripclus53X', 'toomanystripclus53X', 'logErrorTooManyClusters':
         process.globalReplace(X, cms.EDFilter("HLTBool", result=cms.bool(False)))
     return process
