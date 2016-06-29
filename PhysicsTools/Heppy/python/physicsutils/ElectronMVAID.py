@@ -21,6 +21,23 @@ class ElectronMVAID:
             self._init = True
         return self.estimator.mvaValue(ele,vtx,rho,full5x5,debug)
 
+class ElectronMVAID_Spring16:
+    def __init__(self,name,tag,*xmls):
+        self.name = name
+        self.tag = tag
+        self.sxmls = ROOT.vector(ROOT.string)()
+        for x in xmls: self.sxmls.push_back(x)  
+        self._init = False
+    def __call__(self,ele,event,vtx,rho,debug=False):
+        if not self._init:
+            ROOT.gSystem.Load("libRecoEgammaElectronIdentification")
+            self.estimator = ROOT.ElectronMVAEstimatorRun2Spring16(self.tag) 
+            self.estimator.init(self.sxmls)
+            self._init = True
+        return self.estimator.mvaValue(ele,event)
+
+
+
 ElectronMVAID_Trig = ElectronMVAID("BDT", "Trig", 
         "EgammaAnalysis/ElectronTools/data/Electrons_BDTG_TrigV0_Cat1.weights.xml.gz",
         "EgammaAnalysis/ElectronTools/data/Electrons_BDTG_TrigV0_Cat2.weights.xml.gz",
@@ -76,6 +93,14 @@ ElectronMVAID_NonTrigPhys14 = ElectronMVAID("BDT", "NonTrigPhys14",
         "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_10_oldscenario2phys14_BDT.weights.xml.gz",
         "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_10_oldscenario2phys14_BDT.weights.xml.gz",
 )
+ElectronMVAID_Spring16 = ElectronMVAID_Spring16("ElectronMVAEstimatorRun2Spring16V1","V1",
+    "RecoEgamma/ElectronIdentification/data/Spring16/EIDmva_EB1_5_oldNT_PROPER_Spring16_DY_v1_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Spring16/EIDmva_EB2_5_oldNT_PROPER_Spring16_DY_v1_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Spring16/EIDmva_EE_5_oldNT_PROPER_Spring16_DY_v1_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Spring16/EIDmva_EB1_10_oldNT_PROPER_Spring16_DY_v1_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Spring16/EIDmva_EB2_10_oldNT_PROPER_Spring16_DY_v1_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Spring16/EIDmva_EE_10_oldNT_PROPER_Spring16_DY_v1_BDT.weights.xml"
+)
 
 ElectronMVAID_ByName = {
     'Trig':ElectronMVAID_Trig,
@@ -86,4 +111,5 @@ ElectronMVAID_ByName = {
     'NonTrigCSA14bx25':ElectronMVAID_NonTrigCSA14bx25,
     'NonTrigCSA14bx50':ElectronMVAID_NonTrigCSA14bx50,
     'NonTrigPhys14':ElectronMVAID_NonTrigPhys14,
+    'Spring16':ElectronMVAID_Spring16,
 }
