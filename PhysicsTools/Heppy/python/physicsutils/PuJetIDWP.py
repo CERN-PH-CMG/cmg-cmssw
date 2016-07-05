@@ -54,4 +54,4 @@ class PuJetIDWP:
         if biny == wph.GetNbinsY(): return True        
 
         cut = wph.GetBinContent(binx,biny)
-        return jet.puMva > cut
+        return jet.puMva() > cut
