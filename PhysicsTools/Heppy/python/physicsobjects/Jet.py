@@ -141,10 +141,33 @@ class Jet(PhysicsObject):
             return self.userFloat(label)
         return -99
 
-    def puJetId(self, label="pileupJetId:fullDiscriminant", tuning="76X", wp="loose"):
+    def puJetId(self, label="pileupJetId:fullDiscriminant", tuning="80X", wp="loose"):
         '''Full mva PU jet id'''
-        
-        if tuning=="76X":
+        if tuning == '80X':
+            # https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetID#Information_for_13_TeV_data_anal
+            # Note: The following only works for miniAOD v2 - return true
+            #       otherwise
+
+            # Training only performed up to 50 GeV, return pass above per
+            # recommendation from JME algo subgroup
+            if self.pt() > 50.:
+                return True
+
+            # Return true if miniAOD v1 to avoid throwing in JetAnalyzer
+            if not self.hasUserInt('pileupJetId:fullId'):
+                return True
+
+            pu_id_int = self.userInt('pileupJetId:fullId')
+            if wp == 'loose':
+                return bool(pu_id_int & (1 << 2))
+            elif wp == 'medium':
+                return bool(pu_id_int & (1 << 1))
+            elif wp == 'tight':
+                return bool(pu_id_int & (1 << 0))
+            else:
+                raise RuntimeError('Pileup jet ID: Working point {wp} not supported'.format(wp=wp))
+
+        elif tuning=="76X":
             puId76X = PuJetIDWP()
             return puId76X.passWP(self,wp)
         else:
@@ -156,6 +179,7 @@ class Jet(PhysicsObject):
                 if not(eta>=etamin and eta<etamax):
                     continue
                 return puMva>cut
+        
             return -99
                     
     def rawFactor(self):
