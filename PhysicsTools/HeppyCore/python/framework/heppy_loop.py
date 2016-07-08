@@ -16,6 +16,7 @@ if "-i" not in sys.argv:
     oldv = sys.argv[:]
     sys.argv = [ "-b-"]
     import ROOT
+    ROOT.PyConfig.IgnoreCommandLineOptions = True
     ROOT.gROOT.SetBatch(True)
     sys.argv = oldv
 
