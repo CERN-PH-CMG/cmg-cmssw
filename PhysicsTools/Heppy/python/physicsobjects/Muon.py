@@ -35,6 +35,13 @@ class Muon( Lepton ):
             if name == "POG_ID_Tight":  return self.physObj.isTightMuon(vertex)
             if name == "POG_ID_HighPt": return self.physObj.isHighPtMuon(vertex)
             if name == "POG_ID_Soft":   return self.physObj.isSoftMuon(vertex)
+            if name == "POG_ID_Soft_ICHEP":
+                if not self.physObj.muonID("TMOneStationTight"): return False
+                if not self.physObj.innerTrack().hitPattern().trackerLayersWithMeasurement() > 5: return False
+                if not self.physObj.innerTrack().hitPattern().pixelLayersWithMeasurement() > 0: return False
+                if not abs(self.physObj.innerTrack().dxy(vertex.position())) < 0.3 : return False
+                if not abs(self.physObj.innerTrack().dz(vertex.position())) < 20 : return False
+                return True
             if name == "POG_ID_TightNoVtx":  return self.looseId() and \
                                                  self.isGlobalMuon() and \
                                                  self.globalTrack().normalizedChi2() < 10 and \
