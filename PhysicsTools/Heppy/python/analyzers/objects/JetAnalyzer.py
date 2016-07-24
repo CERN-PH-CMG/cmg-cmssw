@@ -340,7 +340,6 @@ class JetAnalyzer( Analyzer ):
             if self.cfg_ana.do_mc_match:
                 self.jetFlavour(event)
             self.makeNIsr(event)
-            print event.nIsr
 
         if hasattr(event,"jets"+self.cfg_ana.collectionPostFix): raise RuntimeError("Event already contains a jet collection with the following postfix: "+self.cfg_ana.collectionPostFix)
         setattr(event,"rho"                    +self.cfg_ana.collectionPostFix, self.rho                    ) 
@@ -443,9 +442,9 @@ class JetAnalyzer( Analyzer ):
                 if not (momid==6 or momid==23 or momid==24 or momid==25 or momid>1e6): continue
                     #check against daughter in case of hard initial splitting
                     #for (size_t idau(0); idau < mc.numberOfDaughters(); idau++) {
-                for dau in mc.daughter():
+                for idau in range(mc.numberOfDaughters()):
                     #float dR = deltaR(clean_jets[ijet], mc.daughter(idau)->p4());
-                    dR = math.sqrt(deltaR2(jet.eta(),jet.phi(), dau.p4().eta(),dau.p4().phi()))
+                    dR = math.sqrt(deltaR2(jet.eta(),jet.phi(), mc.daughter(idau).p4().eta(),mc.daughter(idau).p4().phi()))
                     if dR<0.3:
                     #     if (verbose) cout<<"Jet: ("<<clean_jets[ijet].pt()<<", "<<clean_jets[ijet].eta()<<", "<<clean_jets[ijet].phi()
                     # <<"), MC: ("<<mc.daughter(idau)->pt()<<", "<<mc.daughter(idau)->eta()<<", "<<mc.daughter(idau)->phi()<<"), ID "<<mc.daughter(idau)->pdgId()<<". dR "<<dR <<endl;
