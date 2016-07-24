@@ -445,7 +445,7 @@ class JetAnalyzer( Analyzer ):
                     #for (size_t idau(0); idau < mc.numberOfDaughters(); idau++) {
                 for dau in mc.daughter():
                     #float dR = deltaR(clean_jets[ijet], mc.daughter(idau)->p4());
-                    dR = deltaR(jet, dau.p4())
+                    dR = math.sqrt(deltaR2(jet.eta(),jet.phi(), dau.p4().eta(),dau.p4().phi()))
                     if dR<0.3:
                     #     if (verbose) cout<<"Jet: ("<<clean_jets[ijet].pt()<<", "<<clean_jets[ijet].eta()<<", "<<clean_jets[ijet].phi()
                     # <<"), MC: ("<<mc.daughter(idau)->pt()<<", "<<mc.daughter(idau)->eta()<<", "<<mc.daughter(idau)->phi()<<"), ID "<<mc.daughter(idau)->pdgId()<<". dR "<<dR <<endl;
