@@ -434,6 +434,8 @@ class JetAnalyzer( Analyzer ):
 
         for jet in self.cleanJetsAll:
 
+            if jet.pt()<30.0: continue
+            #if abs(jet.eta())>3.0: continue
             matched = False
             for mc in event.genParticles:
                 if matched: break
