@@ -429,7 +429,6 @@ class JetAnalyzer( Analyzer ):
 
     def makeNIsr(self,event):
 
-        verbose = False
         event.nIsr = 0
 
         for jet in self.cleanJetsAll:
