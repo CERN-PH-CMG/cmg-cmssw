@@ -129,7 +129,6 @@ class Jet(PhysicsObject):
         if name == "VBFHBB_PFID_Tight":  return (npr>1 and phf<0.99 and nhf<0.99) and ((eta<=2.4 and nhf<0.9 and phf<0.9 and elf<0.70 and muf<0.70 and chf>0 and chm>0) or eta>2.4);
         if name == "PAG_monoID_Loose":    return (eta<3.0 and chf>0.05 and nhf<0.7 and phf<0.8);
         if name == "PAG_monoID_Tight":    return (eta<3.0 and chf>0.2 and nhf<0.7 and phf<0.7);
-
         raise RuntimeError, "jetID '%s' not supported" % name
 
     def looseJetId(self):
@@ -143,7 +142,9 @@ class Jet(PhysicsObject):
 
     def puJetId(self, label="pileupJetId:fullDiscriminant", tuning="76X", wp="loose"):
         '''Full mva PU jet id'''
-        
+        if hasattr(self,"puIdExt") :
+           return self.puIdExt
+       
         if tuning=="76X":
             puId76X = PuJetIDWP()
             return puId76X.passWP(self,wp)
