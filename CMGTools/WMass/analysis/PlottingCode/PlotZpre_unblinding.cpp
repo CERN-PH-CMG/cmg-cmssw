@@ -81,6 +81,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   //  c1->SetLeftMargin();
   //  c1->SetRightMargin(0.2);
   TPad *pad1 = new TPad("pad1", "",0.04,ydiv,1,1);
+  pad1->SetFillStyle(4000); //will be transparent
   pad1->SetLogx(logx);
   pad1->SetLogy(logy);
   pad1->SetLogz(logz);
@@ -95,6 +96,7 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
 
   // 0.03
   TPad *pad2 = new TPad("pad2", "",0.04,0,1,ydiv);
+  pad2->SetFillStyle(4000); //will be transparent
   pad2->SetLogx(logx);
   pad2->SetTickx(1);
   pad2->SetTicky(1);
@@ -231,6 +233,8 @@ void plotAndSaveHisto1D_bands(TString LegendEvTypeTeX, TFile*fMCsig, TFile*fMCEW
   if(scaleMCtoDATA)extra_ouput_str+="_norm";
   if(xmin!=-1)extra_ouput_str+=Form("_xmin%.f",xmin);
   if(xmax!=-1)extra_ouput_str+=Form("_xmax%.f",xmax);
+  pad1->Update();
+  pad2->Update();
   c1->Update();
   c1->SaveAs(HistoName_st+extra_ouput_str+".pdf");
   c1->SaveAs(HistoName_st+extra_ouput_str+".png");
@@ -248,8 +252,8 @@ void PlotZpre_unblinding(){
   TString folderMCsum = "output_MCDATALIKEPOW/";
   
   TString basefolder = "/afs/cern.ch/work/a/astacchi/CMSSW_5_3_22_patch1_Wmass/src/CMGTools/WMass/analysis/JobOutputs/"; // Supposed to be run from PlottingCode/
-  TString posNeg_str = "Neg";
-  //  TString posNeg_str = "Pos";
+  // TString posNeg_str = "Neg";
+   TString posNeg_str = "Pos";
   const int mass = 91188;
 
   TString prefix = "moriond_stable_mu" + posNeg_str;
@@ -295,7 +299,7 @@ void PlotZpre_unblinding(){
   plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Recoil_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Recoil [GeV];Counts"),-1,16.99,1,systfiles_MCsum,systnames);
   plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Zmass_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon mass [GeV];Counts"),-1,-1,1,systfiles_MCsum,systnames);
   plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_ZpT_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Z pT [GeV];Counts"),-1,29.99,1,systfiles_MCsum,systnames);
-  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Zrap_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1,-1,1,systfiles_MCsum,systnames);
+  plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_Zrap_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";Dimuon rapidity;Counts"),-1.6,1.6,1,systfiles_MCsum,systnames);
   plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_costh_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";cos #theta^{*}_{CS};Counts"),-1,-1,1,systfiles_MCsum,systnames);
   plotAndSaveHisto1D_bands(LegendEvTypeTeX,fMCsig,fMCEWKTT,fDATA,Form("hWlike%s_phi_CS_8_JetCut_pdf229800-0_eta0p9_%d",posNeg_str.Data(),mass),0,0,0,1,Form(";#phi^{*}_{CS} [rad];Counts"),-1,-1,1,systfiles_MCsum,systnames);
 
