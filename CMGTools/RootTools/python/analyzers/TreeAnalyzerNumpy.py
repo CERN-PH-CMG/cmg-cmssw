@@ -1,6 +1,6 @@
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.statistics.TreeNumpy import TreeNumpy as Tree
-from ROOT import TFile
+from ROOT import TFile, TH1F
 
 class TreeAnalyzerNumpy( Analyzer ):
     """Base TreeAnalyzerNumpy, to create flat TTrees.
@@ -15,6 +15,7 @@ class TreeAnalyzerNumpy( Analyzer ):
                              self.name+'_tree.root'])
         self.file = TFile( fileName, 'recreate' )
         self.tree = Tree(self.name,self.name)
+        self.countHisto = TH1F('Count', 'Count', 1, 0, 2)
         self.declareVariables()
         
     def declareVariables(self):

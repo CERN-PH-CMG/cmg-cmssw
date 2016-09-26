@@ -124,6 +124,7 @@ class Looper(object):
                         self.start_time = time.time()
                     elif iEv > 100:
                         print 'event %d (%.1f ev/s)' % (iEv, (iEv-100)/float(time.time() - self.start_time))
+                if hasattr(analyzer,'countHisto'): analyzer.countHisto.Fill(1.)
                 self.process( iEv )
                 if iEv<self.nPrint:
                     print self.event
