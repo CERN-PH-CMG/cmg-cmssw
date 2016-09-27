@@ -4,6 +4,9 @@
 #include <TSystem.h>
 #include <math.h>
 #include <vector>
+#include <iostream>
+
+using namespace std;
 
 /*****************************************************************/
 EpCombinationTool::EpCombinationTool():
@@ -29,7 +32,7 @@ bool EpCombinationTool::init(const std::string& regressionFileName, const std::s
     TFile* regressionFile = TFile::Open(regressionFileName.c_str());
     if(!regressionFile)
     {
-      std::cout<<"ERROR: Cannot open regression file "<<regressionFileName<<"\n";
+      cout<<"ERROR: Cannot open regression file "<<regressionFileName<<"\n";
         return false;
     }
     if(m_ownForest) delete m_forest;
@@ -38,7 +41,7 @@ bool EpCombinationTool::init(const std::string& regressionFileName, const std::s
     //regressionFile->GetObject(bdtName.c_str(), m_forest); 
     if(!m_forest)
     {
-      std::cout<<"ERROR: Cannot find forest "<<bdtName<<" in "<<regressionFileName<<"\n";
+      cout<<"ERROR: Cannot find forest "<<bdtName<<" in "<<regressionFileName<<"\n";
         regressionFile->Close();
         return false;
     }
@@ -61,7 +64,7 @@ void EpCombinationTool::combine(SimpleElectron & mySimpleElectron) const
 {
     if(!m_forest)
     {
-      std::cout<<"ERROR: The combination tool is not initialized\n";
+      cout<<"ERROR: The combination tool is not initialized\n";
         return;
     }
 
@@ -104,8 +107,8 @@ void EpCombinationTool::combine(SimpleElectron & mySimpleElectron) const
     float weight = 0.;
     if(eOverP>0.025 
        &&fabs(momentum-energy)<15.*sqrt(momentumError*momentumError + energyError*energyError)
-       &&((momentumError < 10.*momentum) || (energy < 200.))
-           ) // protection against crazy track measurement
+       && ( (momentumError < 10.*momentum) || (energy < 200.) )
+       ) // protection against crazy track measurement
    {
         weight = m_forest->GetResponse(regressionInputs);
         if(weight>1.) weight = 1.;

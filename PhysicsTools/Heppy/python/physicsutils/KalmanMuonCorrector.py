@@ -13,15 +13,15 @@ class KalmanMuonCorrector:
         if self.isMC: # new we do the smearing
             if self.isSync:
                 newPt = self.kamuca.smearForSync(newPt, mu.eta())
-                newPtErr = newPt * self.kamuca.getCorrectedErrorAfterSmearing(newPt, mu.eta(), newPtErr/newPt)
+                newPtErr = newPt * self.kamuca.getCorrectedError(newPt, mu.eta(), newPtErr/newPt)
             elif self.smearMode == "none" or self.smearMode == None:
                 pass
             elif self.smearMode == "basic":
                 newPt = self.kamuca.smear(newPt, mu.eta())
-                newPtErr = newPt * self.kamuca.getCorrectedErrorAfterSmearing(newPt, mu.eta(), newPtErr/newPt)
+                newPtErr = newPt * self.kamuca.getCorrectedError(newPt, mu.eta(), newPtErr/newPt)
             else:
                 newPt = self.kamuca.smearUsingEbE(newPt, mu.eta(), newPtErr/newPt)
-                newPtErr = newPt * self.kamuca.getCorrectedErrorAfterSmearing(newPt, mu.eta(), newPtErr/newPt)
+                newPtErr = newPt * self.kamuca.getCorrectedError(newPt, mu.eta(), newPtErr/newPt)
         newP4 = ROOT.math.PtEtaPhiMLorentzVector(newPt, mu.eta(), mu.phi(), mu.mass())
         mu.setP4(newP4)
         mu._ptErr = newPtErr
