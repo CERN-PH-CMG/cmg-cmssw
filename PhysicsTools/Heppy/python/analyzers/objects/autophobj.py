@@ -75,6 +75,7 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
     NTupleVariable("mcMatchTau", lambda x : getattr(x, 'mcMatchTau', -99), int, mcOnly=True, help="True if the leptons comes from a tau"),
     NTupleVariable("mcPt",   lambda x : x.mcLep.pt() if getattr(x,"mcLep",None) else 0., mcOnly=True, help="p_{T} of associated gen lepton"),
     NTupleVariable("mediumMuonId",   lambda x : x.muonID("POG_ID_Medium") if abs(x.pdgId())==13 else 1, int, help="Muon POG Medium id"),
+    NTupleVariable("ICHEPsoftMuonId",   lambda x : x.muonID("POG_ID_Soft_ICHEP") if abs(x.pdgId())==13 else 1, int, help="Muon POG Soft id with fix for ICHEP 2016"),
     NTupleVariable("ICHEPmediumMuonId",   lambda x : x.muonID("POG_ID_Medium_ICHEP") if abs(x.pdgId())==13 else 1, int, help="Muon POG Medium id with fix for ICHEP 2016"),
 
 ])
