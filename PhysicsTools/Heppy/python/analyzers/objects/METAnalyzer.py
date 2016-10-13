@@ -208,7 +208,7 @@ class METAnalyzer( Analyzer ):
                setattr(event, "met{0}_shifted_{1}".format(self.cfg_ana.collectionPostFix, i),m)
                setattr(event, "met{0}_shifted_{1}".format(self.cfg_ana.collectionPostFix, name),m)
 
-        self.met_sig = self.met.significance()
+        self.met_sig = self.met.metSignificance()
         self.met_sumet = self.met.sumEt()
 
         if self.old74XMiniAODs and self.recalibrateMET != "type1":
