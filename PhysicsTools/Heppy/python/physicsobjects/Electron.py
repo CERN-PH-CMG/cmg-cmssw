@@ -2,6 +2,7 @@ from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
 from PhysicsTools.Heppy.physicsutils.ElectronMVAID import *
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 import ROOT
+import sys
 
 class Electron( Lepton ):
 
@@ -16,6 +17,7 @@ class Electron( Lepton ):
         self.tightIdResult = None
         self.associatedVertex = None
         self.rho              = None
+        self.rhoHLT           = None
         self._mvaNonTrigV0  = {True:None, False:None}
         self._mvaTrigV0     = {True:None, False:None}
         self._mvaTrigNoIPV0 = {True:None, False:None}
@@ -25,6 +27,7 @@ class Electron( Lepton ):
         if id is None or id == "": return True
         if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
         if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
+        if hasattr(self,'rhoHLT') and self.rhoHLT != None: rhoHLT = self.rhoHLT
         if   id == "POG_MVA_ID_NonTrig":  return self.mvaIDLoose()
         elif id == "POG_MVA_ID_Trig":     return self.mvaIDTight()
         elif id == "POG_MVA_ID_NonTrig_full5x5":  return self.mvaIDLoose(full5x5=True)
@@ -51,10 +54,10 @@ class Electron( Lepton ):
             showerShapes = "full5x5"
             wp = wp.replace("_full5x5","")
         elif showerShapes == "auto":
-            if "POG_CSA14_25ns_v1" in wp or "POG_CSA14_50ns_v1" in wp or "POG_PHYS14_25ns_v1" in wp or "POG_PHYS14_25ns_v1_ConvVeto" in wp or "POG_PHYS14_25ns_v1_ConvVetoDxyDz" in wp or "POG_PHYS14_25ns_v2" in wp or "POG_PHYS14_25ns_v2_ConvVeto" in wp or "POG_PHYS14_25ns_v2_ConvVetoDxyDz" in wp or "POG_SPRING15_25ns_v1" in wp or "POG_SPRING15_25ns_v1_ConvVeto" in wp or "POG_SPRING15_25ns_v1_ConvVetoDxyDz" in wp or "POG_SPRING15_50ns_v2" in wp or "POG_SPRING15_50ns_v2_ConvVeto" in wp or "POG_SPRING15_50ns_v2_ConvVetoDxyDz" in wp:
+            if "POG_CSA14_25ns_v1" in wp or "POG_CSA14_50ns_v1" in wp or "POG_PHYS14_25ns_v1" in wp or "POG_PHYS14_25ns_v1_ConvVeto" in wp or "POG_PHYS14_25ns_v1_ConvVetoDxyDz" in wp or "POG_PHYS14_25ns_v2" in wp or "POG_PHYS14_25ns_v2_ConvVeto" in wp or "POG_PHYS14_25ns_v2_ConvVetoDxyDz" in wp or "POG_SPRING15_25ns_v1" in wp or "POG_SPRING15_50ns_v2" in wp or "POG_SPRING16_25ns_v1" in wp:
                 showerShapes = "full5x5"
         vars = {
-            'dEtaIn' : abs(self.physObj.deltaEtaSuperClusterTrackAtVtx()),
+            'dEtaIn' : abs(self.dEtaInSeed()) if "POG_SPRING16_25ns_v1" in wp else abs(self.physObj.deltaEtaSuperClusterTrackAtVtx()),
             'dPhiIn' : abs(self.physObj.deltaPhiSuperClusterTrackAtVtx()),
             'sigmaIEtaIEta' : self.physObj.full5x5_sigmaIetaIeta() if showerShapes == "full5x5" else self.physObj.sigmaIetaIeta(),
             'H/E' : self.physObj.hadronicOverEm(),
@@ -64,6 +67,10 @@ class Electron( Lepton ):
             'missingHits' : self.physObj.gsfTrack().hitPattern().numberOfHits(ROOT.reco.HitPattern.MISSING_INNER_HITS), # http://cmslxr.fnal.gov/source/DataFormats/TrackReco/interface/HitPattern.h?v=CMSSW_7_2_3#0153
             'dxy' : abs(self.dxy()),
             'dz' : abs(self.dz()),
+            'chi2' : self.normalizedGsfChi2(),
+            'ECALPFIsoEA' : self.hltPFIso('ECALPFIsoEA')/self.pt(),
+            'HCALPFIsoEA' : self.hltPFIso('HCALPFIsoEA')/self.pt(),
+            'trkIso' : self.dr03TkSumPt()/self.pt(),
         }
         WP = {
             ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification?rev=31
@@ -101,7 +108,12 @@ class Electron( Lepton ):
             'POG_SPRING15_25ns_v1_Loose'  :  [('dEtaIn', [0.01050, 0.00814]), ('dPhiIn', [0.1150, 0.1820]), ('sigmaIEtaIEta', [0.0103, 0.0301]), ('H/E', [0.1040, 0.0897]), ('1/E-1/p', [0.1020, 0.12600])],
             'POG_SPRING15_25ns_v1_Medium' :  [('dEtaIn', [0.01030, 0.00733]), ('dPhiIn', [0.0336, 0.1140]), ('sigmaIEtaIEta', [0.0101, 0.0283]), ('H/E', [0.0876, 0.0678]), ('1/E-1/p', [0.0174, 0.08980])],
             'POG_SPRING15_25ns_v1_Tight'  :  [('dEtaIn', [0.00926, 0.00724]), ('dPhiIn', [0.0336, 0.0918]), ('sigmaIEtaIEta', [0.0101, 0.0279]), ('H/E', [0.0597, 0.0615]), ('1/E-1/p', [0.0120, 0.00999])],
-
+            ## ------- https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
+            'POG_SPRING16_25ns_v1_Veto'   :  [('dEtaIn', [0.00749, 0.00895]), ('dPhiIn', [0.2280, 0.2130]), ('sigmaIEtaIEta', [0.01150, 0.0370]), ('H/E', [0.3560, 0.2110]), ('1/E-1/p', [0.2990, 0.15])],
+            'POG_SPRING16_25ns_v1_Loose'  :  [('dEtaIn', [0.00477, 0.00868]), ('dPhiIn', [0.2220, 0.2130]), ('sigmaIEtaIEta', [0.01100, 0.0314]), ('H/E', [0.2980, 0.1010]), ('1/E-1/p', [0.2410, 0.14])],
+            'POG_SPRING16_25ns_v1_Medium' :  [('dEtaIn', [0.00311, 0.00609]), ('dPhiIn', [0.1030, 0.0450]), ('sigmaIEtaIEta', [0.00998, 0.0298]), ('H/E', [0.2530, 0.0878]), ('1/E-1/p', [0.1340, 0.13])],
+            'POG_SPRING16_25ns_v1_Tight'  :  [('dEtaIn', [0.00308, 0.00605]), ('dPhiIn', [0.0816, 0.0394]), ('sigmaIEtaIEta', [0.00998, 0.0292]), ('H/E', [0.0414, 0.0641]), ('1/E-1/p', [0.0129, 0.0129])],
+            'POG_SPRING16_25ns_v1_HLT'    :  [('dEtaIn', [0.004, 999]), ('dPhiIn', [0.020, 999]), ('sigmaIEtaIEta', [0.011, 0.031]), ('H/E', [0.060, 0.065]), ('1/E-1/p', [0.013, 0.013]), ('chi2', [sys.float_info.max, 3.0]), ('ECALPFIsoEA', [0.160, 0.120]), ('HCALPFIsoEA', [0.120, 0.120]), ('trkIso', [0.08, 0.08])],
         }
         WP_conversion_veto = {
             # missing Hits incremented by 1 because we return False if >=, note the '='
@@ -133,6 +145,11 @@ class Electron( Lepton ):
             'POG_SPRING15_25ns_v1_ConvVeto_Loose'  :  WP['POG_SPRING15_25ns_v1_Loose' ]+[('conversionVeto', [True, True]), ('missingHits', [3, 2])],
             'POG_SPRING15_25ns_v1_ConvVeto_Medium' :  WP['POG_SPRING15_25ns_v1_Medium']+[('conversionVeto', [True, True]), ('missingHits', [3, 2])],
             'POG_SPRING15_25ns_v1_ConvVeto_Tight'  :  WP['POG_SPRING15_25ns_v1_Tight' ]+[('conversionVeto', [True, True]), ('missingHits', [3, 2])],
+            ## ------- https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
+            'POG_SPRING16_25ns_v1_ConvVeto_Veto'   :  WP['POG_SPRING16_25ns_v1_Veto'  ]+[('conversionVeto', [True, True]), ('missingHits', [3, 4])],
+            'POG_SPRING16_25ns_v1_ConvVeto_Loose'  :  WP['POG_SPRING16_25ns_v1_Loose' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
+            'POG_SPRING16_25ns_v1_ConvVeto_Medium' :  WP['POG_SPRING16_25ns_v1_Medium']+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
+            'POG_SPRING16_25ns_v1_ConvVeto_Tight'  :  WP['POG_SPRING16_25ns_v1_Tight' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
         }
 
         WP.update(WP_conversion_veto)
@@ -158,6 +175,9 @@ class Electron( Lepton ):
             'POG_SPRING15_25ns_v1_ConvVetoDxyDz_Medium' :  WP['POG_SPRING15_25ns_v1_ConvVeto_Medium']+[('dxy',[0.0118, 0.0739]), ('dz',[0.373, 0.602])],
             'POG_SPRING15_25ns_v1_ConvVetoDxyDz_Tight'  :  WP['POG_SPRING15_25ns_v1_ConvVeto_Tight' ]+[('dxy',[0.0111, 0.0351]), ('dz',[0.0466,0.417])],
         }
+        ## ------- in Spring16, not optimised simultaneously to the rest of ID. Cuts independent on WP
+        for wps in ['Veto','Loose','Medium','Tight']:
+            WP_conversion_veto_DxyDz['POG_SPRING16_25ns_v1_ConvVetoDxyDz_%s' % wps] =  WP['POG_SPRING16_25ns_v1_ConvVeto_%s' % wps ]+[('dxy',[0.05, 0.10]), ('dz',[0.10,0.20])]
 
         WP.update(WP_conversion_veto_DxyDz)
 
@@ -177,6 +197,9 @@ class Electron( Lepton ):
 
     def tightId( self ):
         return self.tightIdResult
+
+    def hltId( self ):
+        return self.hltSafeIdResult
 
     def mvaNonTrigV0( self, full5x5=False, debug = False ):
         if self._mvaNonTrigV0[full5x5] == None:
@@ -330,7 +353,23 @@ class Electron( Lepton ):
                 else: raise RuntimeError, "Ele MVA ID Working point not found"
             else: raise RuntimeError, "Ele MVA ID type not found"
 
+    def dEtaInSeed(self):
+        if self.physObj.superCluster().isNonnull() and self.physObj.superCluster().seed().isNonnull(): return self.physObj.deltaEtaSuperClusterTrackAtVtx() - self.physObj.superCluster().eta() + self.physObj.superCluster().seed().eta()
+        else: return sys.float_info.max
 
+    def normalizedGsfChi2(self):
+        if self.physObj.gsfTrack().isNonnull(): return self.physObj.gsfTrack().normalizedChi2()
+        else: return sys.float_info.max
+
+    def hltPFIso(self,isoType):
+        SCEta = abs(self.superCluster().eta())
+        hltEA = 0.0
+        if isoType == 'ECALPFIsoEA': hltEA = 0.165 if SCEta < 1.4790 else 0.132
+        elif isoType == 'HCALPFIsoEA': hltEA = 0.060 if SCEta < 1.4790 else 0.131
+        if 'ECALPFIso' in isoType: isoValue = self.ecalPFClusterIso()
+        elif 'HCALPFIso' in isoType: isoValue = self.hcalPFClusterIso()
+        else: isoValue = -999
+        return max(0, isoValue - self.rhoHLT*hltEA)
 
     def chargedHadronIsoR(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedHadronPt
