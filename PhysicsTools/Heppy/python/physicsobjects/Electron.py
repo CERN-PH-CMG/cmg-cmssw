@@ -50,12 +50,11 @@ class Electron( Lepton ):
         raise RuntimeError("Electron id '%s' not yet implemented in Electron.py" % id)
 
     def cutBasedId(self, wp, showerShapes="auto"):
-        if "_full5x5" in wp:
-            showerShapes = "full5x5"
-            wp = wp.replace("_full5x5","")
+        if "_zs" in wp:
+            showerShapes = "zs"
+            wp = wp.replace("_zs","")
         elif showerShapes == "auto":
-            if "POG_CSA14_25ns_v1" in wp or "POG_CSA14_50ns_v1" in wp or "POG_PHYS14_25ns_v1" in wp or "POG_PHYS14_25ns_v1_ConvVeto" in wp or "POG_PHYS14_25ns_v1_ConvVetoDxyDz" in wp or "POG_PHYS14_25ns_v2" in wp or "POG_PHYS14_25ns_v2_ConvVeto" in wp or "POG_PHYS14_25ns_v2_ConvVetoDxyDz" in wp or "POG_SPRING15_25ns_v1" in wp or "POG_SPRING15_50ns_v2" in wp or "POG_SPRING16_25ns_v1" in wp:
-                showerShapes = "full5x5"
+            showerShapes = "full5x5"
         vars = {
             'dEtaIn' : abs(self.dEtaInSeed()) if "POG_SPRING16_25ns_v1" in wp else abs(self.physObj.deltaEtaSuperClusterTrackAtVtx()),
             'dPhiIn' : abs(self.physObj.deltaPhiSuperClusterTrackAtVtx()),
