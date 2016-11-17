@@ -11,7 +11,7 @@ class NTupleVariable:
        - name, type, help, default: obvious 
        - function: a function that taken an object computes the value to fill (e.g. lambda event : len(event.goodVertices))
     """
-    def __init__(self, name, function, type=float, help="", default=-99, mcOnly=False, filler=None):
+    def __init__(self, name, function, type=float, help="", default=-99, mcOnly=False, filler=None, nillable=False):
         self.name = name
         self.function = function
         self.type = type
@@ -19,6 +19,7 @@ class NTupleVariable:
         self.default = default
         self.mcOnly  = mcOnly
         self.filler  = filler
+        self.nillable = nillable
     def __call__(self,object):
         ret = self.function(object)
         return ret
@@ -57,7 +58,7 @@ class NTupleObjectType:
                     for subvar in so.objectType.allVars(isMC):
                         subvars.append(NTupleVariable(so.name+"_"+subvar.name,
                                   #DebugComposer(so,subvar),#lambda object : subvar(so(object)),
-                                  lambda object, subvar=subvar, so=so : subvar(so(object)), 
+                                  lambda object, subvar=subvar, so=so, default=subvar.default, nillable=so.nillable : self.getSubObject(object, subvar, so, default, nillable),
                                   # ^-- lambda object : subvar(so(object)) doesn't work due to scoping, see
                                   #     http://stackoverflow.com/questions/2295290/what-do-lambda-function-closures-capture-in-python/2295372#2295372
                                   type = subvar.type, help = subvar.help, default = subvar.default, mcOnly = subvar.mcOnly,
@@ -116,17 +117,23 @@ class NTupleObjectType:
         self.variables = [ v for v in self.variables if v.name != name]
     def __repr__(self):
         return "<NTupleObjectType[%s]>" % self.name
-
-
+    def getSubObject(self, object, subvar, so, default, nillable):
+        if so(object) != None:
+            return subvar(so(object))
+        elif nillable:
+            return subvar.default
+        else:
+            raise RuntimeError("Object %s_%s does not exist, maybe make it nillable?" % (so.name, subvar.name))
 
 
 class NTupleSubObject:
     """Type to add a sub-object within an NTupleObjectType, given a name (used as prefix), a function to extract the sub-object and NTupleObjectType to define tye type"""
-    def __init__(self,name,function,objectType,mcOnly=False):
+    def __init__(self,name,function,objectType,mcOnly=False, nillable=False):
         self.name = name
         self.function = function
         self.objectType = objectType
         self.mcOnly = mcOnly
+        self.nillable = nillable
     def __call__(self,object):
         return self.function(object)
 
