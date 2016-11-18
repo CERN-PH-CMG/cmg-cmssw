@@ -83,7 +83,10 @@ def fillMuon( tree, pName, particle ):
     fill(tree, '{pName}_charge'.format(pName=pName), particle.charge() )
     fill(tree, '{pName}RelIso'.format(pName=pName), particle.relIso(0.5) )
     fill(tree, '{pName}TkIso'.format(pName=pName), particle.sourcePtr().userIsolation( 7 ) )
-    fill(tree, '{pName}TkValidHits'.format(pName=pName), particle.sourcePtr().innerTrack().numberOfValidHits() )
+    try:
+        fill(tree, '{pName}TkValidHits'.format(pName=pName), particle.sourcePtr().innerTrack().numberOfValidHits() )
+    except RuntimeError:
+        fill(tree, '{pName}TkValidHits'.format(pName=pName), -999 )
     # fill(tree, '{pName}TkAlgo'.format(pName=pName), particle.sourcePtr().innerTrack.TrackAlgorithm() )
     # fill(tree, '{pName}_ptError'.format(pName=pName), particle.sourceCandidatePtr(0).innerTrack().ptError() )
 

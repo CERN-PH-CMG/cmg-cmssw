@@ -219,11 +219,13 @@ void merge_results(int generated_PDF_set=1, int generated_PDF_member=0, TString 
                     this_fit_failed = true;
                   }
                   if (this_fit_failed) {
+                      TString jobname = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass);
+                      TString outfilename_str = "submit_datacard_Wmass_"+jobname+".sh";
                     if (useBatch) {
-                      TString jobname = Form("Mu%s%s_pdf%d-%d%s%s%s_eta%s_%d_%s",Wlike.Data(),WCharge_str[c].Data(),WMass::PDF_sets<0?generated_PDF_set:WMass::PDF_sets,h,effToy_str.Data(),RecoilCorrVarDiagoParU1orU2fromDATAorMC>0?Form("_RecoilCorrVar%d",m):"",WMass::KalmanNvariations>1?Form("_KalmanVar%d",n):"",eta_str.Data(),jWmass,WMass::FitVar_str[k].Data());
-                      TString outfilename_str = "submit_datacard_Wmass_"+jobname+"NonScaled.sh";
                       gROOT->ProcessLine(".! bsub -C 0 -u pippo123 -q 1nh -J fit"+jobname+" "+outfilename_str);
                       gROOT->ProcessLine(".! rm -rf LSF* ");
+                    }else{
+                      gROOT->ProcessLine(".! sh "+outfilename_str);
                     }
                     some_fit_failed = true;
                     continue;

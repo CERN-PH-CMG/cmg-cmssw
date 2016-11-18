@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, TString currentdir_str="", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0){
+void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF_member=0, TString WorZ="W", int useBatch=0, TString currentdir_str="", int RecoilCorrVarDiagoParU1orU2fromDATAorMC=0, bool only_recreate_sh_scripts=false){
   
   const int m_start = WMass::RecoilCorrIniVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
   const int m_end = WMass::RecoilCorrNVarDiagoParU1orU2fromDATAorMC_[RecoilCorrVarDiagoParU1orU2fromDATAorMC];
@@ -100,22 +100,25 @@ void ClosureTest_fits_likelihoodratio(int generated_PDF_set=1, int generated_PDF
   else {
     int nbatch = 100;
     int chunks = (int)job_counter/nbatch;
-    if(useBatch==1){
-      cout << "job_counter= " << job_counter << " chunks= " << chunks << endl;
-      for(int i=0;i<=chunks;i++){
-        int i_init =       1 + i*nbatch;
-        int i_final = nbatch + i*nbatch;
-        cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
-        gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
-        if (i<chunks) gROOT->ProcessLine(Form(".! sleep 10"));
+    
+    if(!only_recreate_sh_scripts){
+      if(useBatch==1){
+        cout << "job_counter= " << job_counter << " chunks= " << chunks << endl;
+        for(int i=0;i<=chunks;i++){
+          int i_init =       1 + i*nbatch;
+          int i_final = nbatch + i*nbatch;
+          cout << Form("bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final) << endl;
+          gROOT->ProcessLine(Form(".! bsub -C 0 -u pippo123 -q 1nh -J %s[%d-%d] submit_datacard_Wmass_\\${LSB_JOBINDEX}.sh",job_sub.Data(),i_init,i==chunks?job_counter:i_final));
+          if (i<chunks) gROOT->ProcessLine(Form(".! sleep 10"));
+        }
+      }else{
+        cout << "job_counter= " << job_counter << endl;
+        for(int i=1;i<=job_counter;i++){
+          cout << Form("running datacard %d/%d",i,job_counter) << endl;
+          gROOT->ProcessLine(Form(".! sh submit_datacard_Wmass_%d.sh",i));
+        }
       }
-    }else{
-      cout << "job_counter= " << job_counter << endl;
-      for(int i=1;i<=job_counter;i++){
-        cout << Form("running datacard %d/%d",i,job_counter) << endl;
-        gROOT->ProcessLine(Form(".! sh submit_datacard_Wmass_%d.sh",i));
-      }
-    }
+    } 
   }
   // gROOT->ProcessLine(".! rm -rf LSF* ");
 }
