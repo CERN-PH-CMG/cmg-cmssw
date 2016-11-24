@@ -194,7 +194,8 @@ class BatchManager:
     def SubmitJob( self, jobDir ):
         '''Hook for job submission.'''
         print 'submitting (to be customized): ', jobDir
-        os.system( self.options_.batch )
+        if not os.system( self.options_.batch ):
+            os.system("touch submission_failed")
 
 
     def SubmitJobArray( self, numbOfJobs = 1 ):
