@@ -125,6 +125,7 @@ class LeptonAnalyzer( Analyzer ):
         self.handles['rhoMu'] = AutoHandle( self.cfg_ana.rhoMuon, 'double')
         #rho for electrons
         self.handles['rhoEle'] = AutoHandle( self.cfg_ana.rhoElectron, 'double')
+        self.handles['rhoEleHLT'] = AutoHandle( 'fixedGridRhoFastjetCentralCalo', 'double')
 
         if self.doMiniIsolation or self.doIsolationScan:
             self.handles['packedCandidates'] = AutoHandle( self.cfg_ana.packedCandidates, 'std::vector<pat::PackedCandidate>')
@@ -345,6 +346,7 @@ class LeptonAnalyzer( Analyzer ):
         # fill EA for rho-corrected isolation
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
+          ele.rhoHLT = float(self.handles['rhoEleHLT'].product()[0])
           if self.eleEffectiveArea == "Data2012":
               # https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection?rev=14
               SCEta = abs(ele.superCluster().eta())
@@ -396,6 +398,18 @@ class LeptonAnalyzer( Analyzer ):
               else:              ele.EffectiveArea03 = 0.2687
               # warning: EAs not computed for cone DR=0.4 yet. Do not correct
               ele.EffectiveArea04 = 0.0
+          elif self.eleEffectiveArea == "Spring16_25ns_v1":
+              SCEta = abs(ele.superCluster().eta())
+              ## ----- https://github.com/ikrav/cmssw/blob/egm_id_747_v2/RecoEgamma/ElectronIdentification/data/Spring15/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_25ns.txt
+              if   SCEta < 1.000: ele.EffectiveArea03 = 0.1703
+              elif SCEta < 1.479: ele.EffectiveArea03 = 0.1715
+              elif SCEta < 2.000: ele.EffectiveArea03 = 0.1213
+              elif SCEta < 2.200: ele.EffectiveArea03 = 0.1230
+              elif SCEta < 2.300: ele.EffectiveArea03 = 0.1635
+              elif SCEta < 2.400: ele.EffectiveArea03 = 0.1937
+              else:              ele.EffectiveArea03 = 0.2393
+              # warning: EAs not computed for cone DR=0.4 yet. Do not correct
+              ele.EffectiveArea04 = 0.0
           else: raise RuntimeError,  "Unsupported value for ele_effectiveAreas: can only use Data2012 (rho: ?), Phys14_v1 and Spring15_v1 (rho: fixedGridRhoFastjetAll)"
 
         # Electron scale calibrations
@@ -430,18 +444,20 @@ class LeptonAnalyzer( Analyzer ):
             if self.cfg_ana.ele_tightId=="MVA" :
                  ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
             elif self.cfg_ana.ele_tightId=="Cuts_2012" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Tight_full5x5")
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto") + 1*ele.electronID("POG_Cuts_ID_2012_Loose") + 1*ele.electronID("POG_Cuts_ID_2012_Medium") + 1*ele.electronID("POG_Cuts_ID_2012_Tight")
             elif self.cfg_ana.ele_tightId=="Cuts_PHYS14_25ns_v1_ConvVetoDxyDz" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Tight_full5x5")
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Tight")
             elif self.cfg_ana.ele_tightId=="Cuts_SPRING15_25ns_v1_ConvVetoDxyDz" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight_full5x5")
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight")
+            elif self.cfg_ana.ele_tightId=="Cuts_SPRING16_25ns_v1_ConvVetoDxyDz" :
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Tight")
 
             else :
                  try:
                      ele.tightIdResult = ele.electronID(self.cfg_ana.ele_tightId)
                  except RuntimeError:
                      raise RuntimeError("Unsupported ele_tightId name '" + str(self.cfg_ana.ele_tightId) +  "'! For now only 'MVA' and 'Cuts_2012' are supported, in addition to what provided in Electron.py.")
-
+            ele.hltSafeIdResult = ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_HLT")
         
         return allelectrons 
 
