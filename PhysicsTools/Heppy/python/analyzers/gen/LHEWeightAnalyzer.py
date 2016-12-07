@@ -44,9 +44,9 @@ class LHEWeightAnalyzer( Analyzer ):
             for lumi in lumis:
                 if lumi.getByLabel('generator',self.genLumiHandle):
                     weightNames = self.genLumiHandle.product().weightNames()
-                    for wn in weightNames:
+                    for wn in weightNames:  #direct cast is not working properly, copy of elements is needed
                         self.LHEWeightsNames.append(wn)
-                    break #so stupid to do it that way, crash otherwise
+                    break
 
     def process(self, event):
         self.readCollections( event.input )

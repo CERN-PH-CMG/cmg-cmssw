@@ -1,4 +1,5 @@
 import math, os
+from bisect import bisect
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Jet
@@ -106,17 +107,17 @@ class JetAnalyzer( Analyzer ):
           elif doResidual == "Data": doResidual = not self.cfg_comp.isMC
           elif doResidual not in [True,False]: raise RuntimeError, "If specified, applyL2L3Residual must be any of { True, False, 'MC', 'Data'(default)}"
           GTs = getattr(cfg_comp, 'jecGT', mcGT if self.cfg_comp.isMC else dataGT)
+          if type(GTs) == str: GTs = [ (-1, GTs) ]
           # Now take care of the optional arguments
           kwargs = { 'calculateSeparateCorrections':calculateSeparateCorrections,
                      'calculateType1METCorrection' :calculateType1METCorrection, }
           if kwargs['calculateType1METCorrection']: kwargs['type1METParams'] = cfg_ana.type1METParams
           # instantiate the jet re-calibrator
-          self.jetReCalibrators={}
+          self.jetReCalibrators=[]
           self.runsGT=[]
-          for iGT in range(0,len(GTs)):
-              self.jetReCalibrators[iGT] = JetReCalibrator(GTs[iGT][1], cfg_ana.recalibrationType, doResidual, cfg_ana.jecPath, **kwargs)
-              self.runsGT.append(GTs[iGT][0])
-          self.runsGT.append(1000000000)
+          for (run,GT) in GTs:
+              self.jetReCalibrators.append(JetReCalibrator(GT, cfg_ana.recalibrationType, doResidual, cfg_ana.jecPath, **kwargs) )
+              self.runsGT.append(run)
 
         self.doPuId = getattr(self.cfg_ana, 'doPuId', True)
         self.jetLepDR = getattr(self.cfg_ana, 'jetLepDR', 0.4)
@@ -155,7 +156,9 @@ class JetAnalyzer( Analyzer ):
         self.rho = rho
 
         run=event.input.eventAuxiliary().id().run()
-        runBin=findBin(run, self.runsGT)
+        runBin=bisect(self.runsGT, run)-1
+        if runBin==-1:
+            raise RuntimeError, "ERROR: run range not covered by the Jet recalibrator (jetAnalyzer), check the JECs"
         
         ## Read jets, if necessary recalibrate and shift MET
         if self.cfg_ana.copyJetsByValue: 
