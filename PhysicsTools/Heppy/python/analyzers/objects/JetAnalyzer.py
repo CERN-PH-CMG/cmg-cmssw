@@ -9,28 +9,6 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 
 from PhysicsTools.Heppy.physicsutils.QGLikelihoodCalculator import QGLikelihoodCalculator
 
-def findBin(v, vals):
-    find=False;
-    bm=0;
-    bM=len(vals)-1;
-    if v<vals[bm]: return -1
-    if v>=vals[bM]: return len(vals)
-    n=0;
-    while not find :
-      if v<vals[bm+(bM-bm)/2]:
-          bM=bm+(bM-bm)/2
-      else:
-          bm=bm+(bM-bm)/2
-      if abs(bM-bm)==1:
-	return bm
-         
-      if n>len(vals):
-          return -1
-      n+=1
-    
-    return -1;
-
-
 import copy
 def cleanNearestJetOnly(jets,leptons,deltaR):
     dr2 = deltaR**2
