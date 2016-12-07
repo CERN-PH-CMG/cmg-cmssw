@@ -42,6 +42,9 @@ class Electron( Lepton ):
         elif id == "MVA_ID_NonTrig_Phys14Fix_HZZ":     return self.mvaIDRun2("NonTrigPhys14Fix","HZZ")
         elif id == "MVA_ID_NonTrig_Spring15_HZZ":     return self.mvaIDRun2("NonTrigSpring15MiniAOD","HZZ")
         elif id == "MVA_ID_NonTrig_Spring16_HZZ":     return self.mvaIDRun2("Spring16","HZZ")
+        elif id == "MVA_ID_NonTrig_Spring16_VLoose":   return self.mvaIDRun2("Spring16","VLoose")
+        elif id == "MVA_ID_NonTrig_Spring16_VLooseIdEmu":   return self.mvaIDRun2("Spring16","VLooseIdEmu")
+        elif id == "MVA_ID_NonTrig_Spring16_Tight":    return self.mvaIDRun2("Spring16","Tight")
         elif id.startswith("POG_Cuts_ID_"):
                 return self.cutBasedId(id.replace("POG_Cuts_ID_","POG_"))
         for ID in self.electronIDs():
@@ -227,7 +230,7 @@ class Electron( Lepton ):
                 self._mvaRun2[name] =  self.physObj.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values")
                 return self._mvaRun2[name]
             if name not in ElectronMVAID_ByName: raise RuntimeError, "Unknown electron run2 mva id %s (known ones are: %s)\n" % (name, ElectronMVAID_ByName.keys())
-            if name in ("Spring16",):
+            if name in ("Spring16HZZ","Spring16GP"):
                 if self.event == None: raise RuntimeError, "You need to set electron.event before calling any new MVA"
                 self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.event, self.associatedVertex, self.rho, debug)
             else:
@@ -340,16 +343,41 @@ class Electron( Lepton ):
                         else: return self.mvaRun2(name) > -0.67099
                 else: raise RuntimeError, "Ele MVA ID Working point not found"
             elif name == "Spring16":
+                smooth_cut = False
                 if wp == "HZZ":
                     if self.pt() <= 10:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.211;
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.396;
-                        else            : return self.mvaRun2(name) > -0.215;
+                        if   eta < 0.8  : return self.mvaRun2(name+'HZZ') > -0.211;
+                        elif eta < 1.479: return self.mvaRun2(name+'HZZ') > -0.396;
+                        else            : return self.mvaRun2(name+'HZZ') > -0.215;
                     else:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.870;
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.838;
-                        else            : return self.mvaRun2(name) > -0.763;
-                else: raise RuntimeError, "Ele MVA ID Working point not found"
+                        if   eta < 0.8  : return self.mvaRun2(name+'HZZ') > -0.870;
+                        elif eta < 1.479: return self.mvaRun2(name+'HZZ') > -0.838;
+                        else            : return self.mvaRun2(name+'HZZ') > -0.763;
+                elif wp=="VLoose":
+                    smooth_cut = True
+                    _vlow = [0.46,-0.03,0.06]
+                    _low = [-0.48,-0.67,-0.49]
+                    _high = [-0.85,-0.91,-0.83]
+                elif wp=="VLooseIdEmu":
+                    smooth_cut = True
+                    _vlow = [-0.30,-0.46,-0.63]
+                    _low = [-0.86,-0.85,-0.81]
+                    _high = [-0.96,-0.96,-0.95]
+                elif wp=="Tight":
+                    smooth_cut = True
+                    _low = [0.77,0.56,0.48]
+                    _vlow = _low
+                    _high = [0.52,0.11,-0.01]
+                if not smooth_cut: raise RuntimeError, "Ele MVA ID Working point not found"
+                val = self.mvaRun2(name+'GP') if self.pt()>10 else self.mvaRun2(name+'HZZ')
+                if self.pt()<=10:
+                    return (val > _vlow[(eta>=0.8)+(eta>=1.479)])
+                else: # _low below 15 GeV, _high above 25 GeV, interpolation in between
+                    a = _low[(eta>=0.8)+(eta>=1.479)]
+                    b = _high[(eta>=0.8)+(eta>=1.479)]
+                    c = (a-b)/10
+                    cut = min(a,max(b,a-c*(self.pt()-15))) # warning: the _high WP must be looser than the _low one
+                    return (val>cut)
             else: raise RuntimeError, "Ele MVA ID type not found"
 
     def dEtaInSeed(self):
