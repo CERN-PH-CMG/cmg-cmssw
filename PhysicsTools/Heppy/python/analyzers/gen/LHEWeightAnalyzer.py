@@ -20,8 +20,6 @@ class LHEWeightAnalyzer( Analyzer ):
         super(LHEWeightAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
 
         self.LHEWeightsNames=[]
-        self.lumiCounter=-1
-        self.currentLumi=0
 
     def declareHandles(self):
         super(LHEWeightAnalyzer, self).declareHandles()
@@ -83,11 +81,7 @@ class LHEWeightAnalyzer( Analyzer ):
                     event.LHE_weights.append(newweight)
 
 
-        if self.cfg_ana.useLumiInfo and self.mchandles['GenInfos'].isValid() :
-            if event.input.eventAuxiliary().id().luminosityBlock()!=self.currentLumi:
-                self.currentLumi=event.input.eventAuxiliary().id().luminosityBlock()
-                self.lumiCounter+=1
-            
+        if self.cfg_ana.useLumiInfo and self.mchandles['GenInfos'].isValid() :          
             for cnt,w in enumerate(self.mchandles['GenInfos'].product().weights()[1:10]):
                 weight= WeightsInfo()
                 weight.wgt=w
