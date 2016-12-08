@@ -21,32 +21,20 @@ class ElectronMVAID:
             self._init = True
         return self.estimator.mvaValue(ele,vtx,rho,full5x5,debug)
 
-class ElectronMVAID_HZZ:
-    def __init__(self,name,tag,*xmls):
+class ElectronMVAID_Spring16:
+    def __init__(self,name,tag,flavor,*xmls):
         self.name = name
         self.tag = tag
+        self.flavor = flavor
         self.sxmls = ROOT.vector(ROOT.string)()
         for x in xmls: self.sxmls.push_back(x)  
         self._init = False
     def __call__(self,ele,event,vtx,rho,debug=False):
         if not self._init:
             ROOT.gSystem.Load("libRecoEgammaElectronIdentification")
-            self.estimator = ROOT.ElectronMVAEstimatorRun2Spring16HZZ(self.tag) 
-            self.estimator.init(self.sxmls)
-            self._init = True
-        return self.estimator.mvaValue(ele,event)
-
-class ElectronMVAID_GP:
-    def __init__(self,name,tag,*xmls):
-        self.name = name
-        self.tag = tag
-        self.sxmls = ROOT.vector(ROOT.string)()
-        for x in xmls: self.sxmls.push_back(x)  
-        self._init = False
-    def __call__(self,ele,event,vtx,rho,debug=False):
-        if not self._init:
-            ROOT.gSystem.Load("libRecoEgammaElectronIdentification")
-            self.estimator = ROOT.ElectronMVAEstimatorRun2Spring16GeneralPurpose(self.tag) 
+            if self.flavor=='HZZ': self.estimator = ROOT.ElectronMVAEstimatorRun2Spring16HZZ(self.tag) 
+            elif self.flavor=='GeneralPurpose': self.estimator = ROOT.ElectronMVAEstimatorRun2Spring16GeneralPurpose(self.tag)
+            else: raise RuntimeError, 'Undefined flavor of ElectronMVAID_Spring16'
             self.estimator.init(self.sxmls)
             self._init = True
         return self.estimator.mvaValue(ele,event)
@@ -108,7 +96,7 @@ ElectronMVAID_NonTrigPhys14 = ElectronMVAID("BDT", "NonTrigPhys14",
         "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_10_oldscenario2phys14_BDT.weights.xml.gz",
         "EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_10_oldscenario2phys14_BDT.weights.xml.gz",
 )
-ElectronMVAID_Spring16HZZ = ElectronMVAID_HZZ("ElectronMVAEstimatorRun2Spring16HZZV1","V1",
+ElectronMVAID_Spring16HZZ = ElectronMVAID_Spring16("ElectronMVAEstimatorRun2Spring16HZZV1","V1","HZZ",
     "RecoEgamma/ElectronIdentification/data/Spring16_HZZ_V1/electronID_mva_Spring16_HZZ_V1_EB1_5.weights.xml",
     "RecoEgamma/ElectronIdentification/data/Spring16_HZZ_V1/electronID_mva_Spring16_HZZ_V1_EB2_5.weights.xml",
     "RecoEgamma/ElectronIdentification/data/Spring16_HZZ_V1/electronID_mva_Spring16_HZZ_V1_EE_5.weights.xml",
@@ -116,7 +104,7 @@ ElectronMVAID_Spring16HZZ = ElectronMVAID_HZZ("ElectronMVAEstimatorRun2Spring16H
     "RecoEgamma/ElectronIdentification/data/Spring16_HZZ_V1/electronID_mva_Spring16_HZZ_V1_EB2_10.weights.xml",
     "RecoEgamma/ElectronIdentification/data/Spring16_HZZ_V1/electronID_mva_Spring16_HZZ_V1_EE_10.weights.xml",
 )
-ElectronMVAID_Spring16GP = ElectronMVAID_GP("ElectronMVAEstimatorRun2Spring16GeneralPurposeV1","V1",
+ElectronMVAID_Spring16GP = ElectronMVAID_Spring16("ElectronMVAEstimatorRun2Spring16GeneralPurposeV1","V1","GeneralPurpose",
     "RecoEgamma/ElectronIdentification/data/Spring16_GeneralPurpose_V1/electronID_mva_Spring16_GeneralPurpose_V1_EB1_10.weights.xml",
     "RecoEgamma/ElectronIdentification/data/Spring16_GeneralPurpose_V1/electronID_mva_Spring16_GeneralPurpose_V1_EB2_10.weights.xml",
     "RecoEgamma/ElectronIdentification/data/Spring16_GeneralPurpose_V1/electronID_mva_Spring16_GeneralPurpose_V1_EE_10.weights.xml",
