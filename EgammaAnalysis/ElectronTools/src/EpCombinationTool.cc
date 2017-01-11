@@ -33,7 +33,7 @@ bool EpCombinationTool::init(const std::string& regressionFileName, const std::s
     if(!regressionFile)
     {
       cout<<"ERROR: Cannot open regression file "<<regressionFileName<<"\n";
-        return false;
+      return false;
     }
     if(m_ownForest) delete m_forest;
     m_forest = (GBRForest*) regressionFile->Get(bdtName.c_str());
@@ -42,8 +42,8 @@ bool EpCombinationTool::init(const std::string& regressionFileName, const std::s
     if(!m_forest)
     {
       cout<<"ERROR: Cannot find forest "<<bdtName<<" in "<<regressionFileName<<"\n";
-        regressionFile->Close();
-        return false;
+      regressionFile->Close();
+      return false;
     }
     regressionFile->Close();
     return true;
@@ -65,7 +65,7 @@ void EpCombinationTool::combine(SimpleElectron & mySimpleElectron) const
     if(!m_forest)
     {
       cout<<"ERROR: The combination tool is not initialized\n";
-        return;
+      return;
     }
 
     float energy = mySimpleElectron.getNewEnergy();
