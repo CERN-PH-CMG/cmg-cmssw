@@ -37,6 +37,12 @@ class JSONAnalyzer( Analyzer ):
         else:
             self.lumiList = None
         
+        if hasattr(self.cfg_comp, 'additionaljson'):
+            self.additionalLumiList = LumiList(os.path.expandvars(self.cfg_comp.additionaljson))
+            self.twojson = True
+        else: 
+            self.twojson = False
+        
         self.useLumiBlocks = self.cfg_ana.useLumiBlocks if (hasattr(self.cfg_ana,'useLumiBlocks')) else False
 
         self.rltInfo = RLTInfo()
@@ -47,6 +53,8 @@ class JSONAnalyzer( Analyzer ):
         self.count = self.counters.counter('JSON')
         self.count.register('All Events')
         self.count.register('Passed Events')
+        if self.twojson:
+            self.count.register('Additional JSON Passed Events')
 
         if self.useLumiBlocks and not self.cfg_comp.isMC and not self.lumiList is None:
             lumis = Lumis(self.cfg_comp.files)
@@ -79,6 +87,12 @@ class JSONAnalyzer( Analyzer ):
             self.count.inc('Passed Events')
             if not self.useLumiBlocks:
                 self.rltInfo.add('dummy', run, lumi)
+            if self.twojson:
+                if self.additionalLumiList.contains(run,lumi):
+                    event.passSecondJSON = True
+                    self.count.inc('Additional JSON Passed Events')
+                else:
+                    event.passSecondJSON = False
             return True
         else:
             return False
