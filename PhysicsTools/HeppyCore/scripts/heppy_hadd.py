@@ -36,17 +36,8 @@ def haddPck(file, odir, idirs):
     txtFile.write( str(sum) )
     txtFile.write( '\n' )
     txtFile.close()
-    
 
-def hadd(file, odir, idirs, appx=''):
-    if file.endswith('.pck'):
-        try:
-            haddPck( file, odir, idirs)
-        except ImportError:
-            pass
-        return
-    elif not file.endswith('.root'):
-        return
+def haddLocal(file, odir, idirs, appx):
     haddCmd = ['hadd']
     haddCmd.append( file.replace( idirs[0], odir ).replace('.root', appx+'.root') )
     for dir in idirs:
@@ -56,8 +47,8 @@ def hadd(file, odir, idirs, appx=''):
     print cmd
     if len(cmd) > MAX_ARG_STRLEN:
         print 'Command longer than maximum unix string length; dividing into 2'
-        hadd(file, odir, idirs[:len(idirs)/2], '1')
-        hadd(file.replace(idirs[0], idirs[len(idirs)/2]), odir, idirs[len(idirs)/2:], '2')
+        haddLocal(file, odir, idirs[:len(idirs)/2], '1')
+        haddLocal(file.replace(idirs[0], idirs[len(idirs)/2]), odir, idirs[len(idirs)/2:], '2')
         haddCmd = ['hadd']
         haddCmd.append( file.replace( idirs[0], odir ).replace('.root', appx+'.root') )
         haddCmd.append( file.replace( idirs[0], odir ).replace('.root', '1.root') )
@@ -67,6 +58,49 @@ def hadd(file, odir, idirs, appx=''):
         os.system(cmd)
     else:
         os.system(cmd)
+    
+def haddEos(file, odir, idirs, appx=''):
+    file = file.replace('.url', '')
+    haddCmd = ['hadd']
+    haddCmd.append( file.replace( idirs[0], odir ).replace('.root', appx+'.root') )
+    for dir in idirs:
+        with open(file.replace( idirs[0], dir ) + '.url') as ff: 
+            ifile = ff.readlines()[0].rstrip()
+        haddCmd.append(ifile)
+    cmd = ' '.join(haddCmd)
+    print '\n', cmd
+    if len(cmd) > MAX_ARG_STRLEN:
+        #import pdb ; pdb.set_trace()
+        print 'Command longer than maximum unix string length; dividing into 2'
+        haddEos(file.replace('.url', ''), odir, idirs[:len(idirs)/2], '1')
+        print 'first'#; import pdb ; pdb.set_trace()
+        haddEos(file.replace(idirs[0], idirs[len(idirs)/2]).replace('.url', ''), odir, idirs[len(idirs)/2:], '2')
+        print 'second'#; import pdb ; pdb.set_trace()
+        haddCmd = ['hadd']
+        haddCmd.append( file.replace( idirs[0], odir ).replace('.root', appx+'.root') )
+        haddCmd.append( file.replace( idirs[0], odir ).replace('.root', '1.root') )
+        haddCmd.append( file.replace( idirs[0], odir ).replace('.root', '2.root') )
+        cmd = ' '.join(haddCmd)
+        print 'Running merge cmd:', cmd
+        os.system(cmd)
+    os.system(cmd)
+  
+
+def hadd(file, odir, idirs, appx=''):
+    if file.endswith('.pck'):
+        try:
+            haddPck( file, odir, idirs)
+        except ImportError:
+            pass
+        return
+    elif file.endswith('.root.url'):
+        haddEos(file, odir, idirs, appx)
+    elif file.endswith('.root'):
+        haddLocal(file, odir, idirs, appx)
+    else:
+        return
+
+
 
 
 def haddRec(odir, idirs):
