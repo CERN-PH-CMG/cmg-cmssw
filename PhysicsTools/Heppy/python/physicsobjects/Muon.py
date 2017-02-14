@@ -75,6 +75,16 @@ class Muon( Lepton ):
                 return self.physObj.pt() > 200 and self.muonID("HZZ_ID_TkHighPt")
         return self.physObj.muonID(name)
             
+    def muonIDMoriond17(self):
+        '''Allow the run-dependent treatment from the muonPOG recommendation
+        https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Short_Term_Instructions_for_Mori
+        muon should have the muon.event attribute to determine the run'''
+        run = self.event.eventAuxiliary().id().run()
+        if run > 273016 and run < 278820:
+            return self.muonID("POG_ID_Medium_ICHEP")
+        else:
+            return self.muonID("POG_ID_Medium")
+
     def mvaId(self):
         '''For a transparent treatment of electrons and muons. Returns -99'''
         return -99
