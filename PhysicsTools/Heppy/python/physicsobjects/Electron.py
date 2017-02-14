@@ -353,6 +353,18 @@ class Electron( Lepton ):
                         if   eta < 0.8  : return self.mvaRun2(name+'HZZ') > -0.870;
                         elif eta < 1.479: return self.mvaRun2(name+'HZZ') > -0.838;
                         else            : return self.mvaRun2(name+'HZZ') > -0.763;
+                elif wp == "POG80": 
+                    # for pt < 10 the performance is suboptimal, 
+                    #see https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2 for updates on this category
+                    if   eta < 0.8  : return self.mvaRun2(name+'GP') > 0.941;
+                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.899;
+                    else            : return self.mvaRun2(name+'GP') > 0.758;
+                elif wp == "POG90":
+                    # for pt < 10 the performance is suboptimal, 
+                    #see https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2 for updates on this category
+                    if eta < 0.8: return self.mvaRun2(name+'GP') > 0.837
+                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.715
+                    else: return self.mvaRun2(name+'GP') > 0.357
                 elif wp=="VLoose":
                     smooth_cut = True
                     _vlow = [0.46,-0.03,0.06]
