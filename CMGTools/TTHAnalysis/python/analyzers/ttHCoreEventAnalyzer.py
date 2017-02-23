@@ -29,7 +29,11 @@ class ttHCoreEventAnalyzer( Analyzer ):
     def declareHandles(self):
         super(ttHCoreEventAnalyzer, self).declareHandles()
         self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
+        self.handles['metraw'] = AutoHandle( 'cmgPFMETRaw', 'std::vector<cmg::BaseMET>' )
         self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
+        self.handles['pucmet'] = AutoHandle('pcMet','std::vector<reco::PFMET>')
+        self.handles['pumet'] = AutoHandle('puMet','std::vector<reco::PFMET>')
+        self.handles['tkmet'] = AutoHandle('tkMet','std::vector<reco::PFMET>')
         self.handles['metSignificance'] = AutoHandle( 'pfMetSignificance', 'cmg::METSignificance' )
         self.handles['rho']    = AutoHandle( ('kt6PFJets','rho',''), 'double' )
 
@@ -136,7 +140,11 @@ class ttHCoreEventAnalyzer( Analyzer ):
     
     def makeMETs(self, event):
         event.met = self.handles['met'].product()[0]
+        event.metraw = self.handles['metraw'].product()[0]
         event.metNoPU = self.handles['nopumet'].product()[0]
+        event.pucmet = self.handles['pucmet'].product()[0]
+        event.pumet = self.handles['pumet'].product()[0]
+        event.tkmet = self.handles['tkmet'].product()[0]
         if hasattr(event, 'deltaMetFromJetSmearing'):
             import ROOT
             px,py = event.met.px()+event.deltaMetFromJetSmearing[0], event.met.py()+event.deltaMetFromJetSmearing[1]

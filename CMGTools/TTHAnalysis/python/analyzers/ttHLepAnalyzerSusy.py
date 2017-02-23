@@ -10,6 +10,7 @@ from CMGTools.RootTools.physicsobjects.RochesterCorrections import rochcor
 from CMGTools.RootTools.physicsobjects.MuScleFitCorrector   import MuScleFitCorr
 from CMGTools.RootTools.physicsobjects.ElectronCalibrator import EmbeddedElectronCalibrator
 from CMGTools.TTHAnalysis.electronCalibrator import ElectronCalibrator
+from CMGTools.WMass.analyzers.common_functions import trigMatched
 
 from ROOT import CMGMuonCleanerBySegmentsAlgo
 cmgMuonCleanerBySegments = CMGMuonCleanerBySegmentsAlgo()
@@ -179,7 +180,14 @@ class ttHLepAnalyzerSusy( Analyzer ):
             mu.absIso04 = (mu.sourcePtr().pfIsolationR04().sumChargedHadronPt + max( mu.sourcePtr().pfIsolationR04().sumNeutralHadronEt +  mu.sourcePtr().pfIsolationR04().sumPhotonEt -  mu.sourcePtr().pfIsolationR04().sumPUPt/2,0.0))
             mu.relIso03 = mu.absIso03/mu.pt()
             mu.relIso04 = mu.absIso04/mu.pt()
- 
+
+        # Attach the trigger matching
+        for mu in allmuons:
+            if len(self.cfg_ana.triggerBitsMuons)>0:
+                for T, TL in self.cfg_ana.triggerBitsMuons.iteritems():
+                    mu.TriggerMatched = trigMatched(self, event, mu, TL)
+            else: mu.TriggerMatched = False
+
         return allmuons
 
     def makeAllElectrons(self, event):
@@ -230,6 +238,13 @@ class ttHLepAnalyzerSusy( Analyzer ):
         # Set tight MVA id
         for ele in allelectrons:
             ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig")
+
+        # Attach the trigger matching
+        for ele in allelectrons:
+            if len(self.cfg_ana.triggerBitsElectrons)>0:
+                for T, TL in self.cfg_ana.triggerBitsElectrons.iteritems():
+                    ele.TriggerMatched = trigMatched(self, event, ele, TL)
+            else: ele.TriggerMatched = False
         
         return allelectrons 
 
