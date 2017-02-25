@@ -46,20 +46,25 @@ treeProducer = cfg.Analyzer(
 
 #-------- SAMPLES AND TRIGGERS -----------
 from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import * 
+mcSamplesW_1 = [WJets,DYJetsM50]
+mcSamplesW_2 = [TTJets,TtW,TbartW,WZJets,WWJets, Tsch,Tbarsch,Ttch,Tbartch]
+mcSamplesW_3 = [QCDMuPt15]
+mcSamplesW = mcSamplesW_1 + mcSamplesW_2
+dataSamplesW = dataSamples2L+dataSamples1Mu+dataSamples1E
 
-for mc in mcSamples+mcSamplesAll:
+for mc in mcSamplesW:
     mc.triggers = triggersMC_mue
 for data in dataSamplesMu:
     data.triggers = triggers_mumu
 for data in dataSamplesE:
     data.triggers = triggers_ee
-    data.vetoTriggers = triggers_mumu
-for data in dataSamplesMuE:
-    data.triggers = triggers_mue
-    data.vetoTriggers=triggers_ee+triggers_mumu
+for data in dataSamples1Mu:
+    data.triggers = triggers_1mu
+for data in dataSamples1E:
+    data.triggers = triggers_1e
 
 
-selectedComponents = mcSamplesAll + dataSamplesAll
+selectedComponents = mcSamplesW + dataSamplesW
 
 #-------- MODULES CUSTOMISATION
 ttHLepAna.doElectronScaleCorrections = True
