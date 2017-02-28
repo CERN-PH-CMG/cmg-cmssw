@@ -362,6 +362,7 @@ class JetAnalyzer( Analyzer ):
             
             if self.cfg_ana.do_mc_match:
                 self.jetFlavour(event)
+            self.makeNIsr(event)
 
         if hasattr(event,"jets"+self.cfg_ana.collectionPostFix): raise RuntimeError("Event already contains a jet collection with the following postfix: "+self.cfg_ana.collectionPostFix)
         setattr(event,"rho"                    +self.cfg_ana.collectionPostFix, self.rho                    ) 
@@ -447,6 +448,31 @@ class JetAnalyzer( Analyzer ):
                    jet.mcFlavour = 0
 
         self.heaviestQCDFlavour = 5 if len(self.bqObjects) else (4 if len(self.cqObjects) else 1);
+
+
+    def makeNIsr(self,event):
+
+        event.nIsr = 0
+
+        for jet in self.cleanJetsAll:
+
+            if jet.pt()<30.0: continue
+            if abs(jet.eta())>2.4: continue
+            matched = False
+            for mc in event.genParticles:
+                if matched: break
+                if (mc.status()!=23 or abs(mc.pdgId())>5): continue
+                momid = abs(mc.mother().pdgId())
+                if not (momid==6 or momid==23 or momid==24 or momid==25 or momid>1e6): continue
+                    #check against daughter in case of hard initial splitting
+                for idau in range(mc.numberOfDaughters()):
+                    dR = math.sqrt(deltaR2(jet.eta(),jet.phi(), mc.daughter(idau).p4().eta(),mc.daughter(idau).p4().phi()))
+                    if dR<0.3:
+                        matched = True
+                        break
+            if not matched:
+                event.nIsr+=1
+        pass
  
     def matchJets(self, event, jets):
         match = matchObjectCollection2(jets,
