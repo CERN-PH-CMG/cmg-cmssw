@@ -1,0 +1,5 @@
+nvtx  : nVert       : 40,0.5,40.5 ; XTitle="N_{vtx}", Legend='TR'
+mZ1   : mZ1         : 80,70,110  ; XTitle="m(e^{+}e^{-})  [GeV]", Legend='TL'
+pt1   : LepGood1_pt : 150,25,100 ; XTitle="p_{T}^{1} [GeV]", Legend='TR'
+pt2   : LepGood2_pt : 160,20,100 ; XTitle="p_{T}^{1} [GeV]", Legend='TR'
+ptZ   : pt_2(LepGood1_pt,LepGood1_phi,LepGood2_pt,LepGood2_phi) : 100,0,100 ; XTitle="p_{T}^{Z} [GeV]", Legend='TR'

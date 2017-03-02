@@ -1,0 +1,9 @@
+# !/bin/bash
+
+#python mcAnalysis.py -P /data1/emanuele/wmass/TREES_1LEP_53X_V1/ --s2v -j 6 -l 19.7 -G wmass_e/mca-53X-zee.txt wmass_e/zee.txt -W 'puWeight*LepEff_2lep'
+#python mcPlots.py -P /data1/emanuele/wmass/TREES_1LEP_53X_V1/ --s2v -j 6 -l 19.7 -G wmass_e/mca-53X-zee.txt wmass_e/zee.txt wmass_e/zee_plots.txt -W 'puWeight*LepEff_2lep' --pdir plots/inclusive -f --poisson --showRatio --maxRatioRange 0.5 1.5 --fixRatioRange 
+
+#python mcPlots.py -P /data1/emanuele/wmass/TREES_1LEP_53X_V1/ --s2v -j 6 -l 19.7 -G wmass_e/mca-53X-zee.txt wmass_e/zee.txt wmass_e/zee_plots.txt -W 'puWeight*LepEff_2lep' --pdir plots/bb_gg -f --poisson --showRatio --maxRatioRange 0.5 1.5 --fixRatioRange -A 'isolation' 'bb_gg' 'max(abs(LepGood1_eta),abs(LepGood2_eta))<1.44 && min(LepGood1_r9,LepGood2_r9)>0.94' --scaleSigToData
+#python mcPlots.py -P /data1/emanuele/wmass/TREES_1LEP_53X_V1/ --s2v -j 6 -l 19.7 -G wmass_e/mca-53X-zee.txt wmass_e/zee.txt wmass_e/zee_plots.txt -W 'puWeight*LepEff_2lep' --pdir plots/bb_s -f --poisson --showRatio --maxRatioRange 0.5 1.5 --fixRatioRange -A 'isolation' 'bb_s' 'max(abs(LepGood1_eta),abs(LepGood2_eta))<1.44 && min(LepGood1_r9,LepGood2_r9)<0.94' --scaleSigToData
+#python mcPlots.py -P /data1/emanuele/wmass/TREES_1LEP_53X_V1/ --s2v -j 6 -l 19.7 -G wmass_e/mca-53X-zee.txt wmass_e/zee.txt wmass_e/zee_plots.txt -W 'puWeight*LepEff_2lep' --pdir plots/e_gg -f --poisson --showRatio --maxRatioRange 0.5 1.5 --fixRatioRange -A 'isolation' 'e_gg' 'max(abs(LepGood1_eta),abs(LepGood2_eta))>1.57 && min(LepGood1_r9,LepGood2_r9)>0.94' --scaleSigToData
+python mcPlots.py -P /data1/emanuele/wmass/TREES_1LEP_53X_V1/ --s2v -j 6 -l 19.7 -G wmass_e/mca-53X-zee.txt wmass_e/zee.txt wmass_e/zee_plots.txt -W 'puWeight*LepEff_2lep' --pdir plots/e_s -f --poisson --showRatio --maxRatioRange 0.5 1.5 --fixRatioRange -A 'isolation' 'e_s' 'max(abs(LepGood1_eta),abs(LepGood2_eta))>1.57 && min(LepGood1_r9,LepGood2_r9)<0.94' --scaleSigToData
