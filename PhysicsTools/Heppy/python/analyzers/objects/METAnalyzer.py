@@ -28,6 +28,10 @@ class METAnalyzer( Analyzer ):
     def declareHandles(self):
         super(METAnalyzer, self).declareHandles()
         self.handles['met'] = AutoHandle( self.cfg_ana.metCollection, 'std::vector<pat::MET>' )
+
+        if self.cfg_ana.storePuppiExtra:
+            self.handles['corX'] = AutoHandle( 'puppiMETEGCor:corX', 'float' )
+            self.handles['corY'] = AutoHandle( 'puppiMETEGCor:corY', 'float' )
         if self.cfg_ana.doMetNoPU: 
             self.handles['nopumet'] = AutoHandle( self.cfg_ana.noPUMetCollection, 'std::vector<pat::MET>' )
         if self.cfg_ana.doTkMet:
@@ -191,7 +195,6 @@ class METAnalyzer( Analyzer ):
           deltaMetSmear = getattr(event, 'deltaMetFromJetSmearing'+self.jetAnalyzerPostFix)
           self.applyDeltaMet(self.met, deltaMetSmear)
 
-
         if (not self.cfg_ana.copyMETsByValue) and getattr(self.cfg_ana, 'makeShiftedMETs', True):
           shifts = [] 
           for obj in 'JetEn', 'JetRes', 'MuonEn', 'ElectronEn', 'PhotonEn', 'TauEn', 'UnclusteredEn':
@@ -210,6 +213,13 @@ class METAnalyzer( Analyzer ):
 
         self.met_sig = self.met.metSignificance()
         self.met_sumet = self.met.sumEt()
+
+        if self.cfg_ana.storePuppiExtra:
+            self.met.EGCorX = self.handles['corX'].product()[0]
+            self.met.EGCorY = self.handles['corY'].product()[0]
+            setattr(event,"met_EGCorX"+self.cfg_ana.collectionPostFix, self.met.EGCorX)
+            setattr(event,"met_EGCorY"+self.cfg_ana.collectionPostFix, self.met.EGCorY)
+
 
         if self.old74XMiniAODs and self.recalibrateMET != "type1":
            oldraw = self.met.shiftedP2_74x(12,0);
@@ -289,6 +299,7 @@ setattr(METAnalyzer,"defaultConfig", cfg.Analyzer(
     doMetNoMu = False,  
     doMetNoEle = False,  
     doMetNoPhoton = False,  
+    storePuppiExtra = False,
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
