@@ -4,7 +4,7 @@ from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.analyzers.core.AutoFillTreeProducer  import NTupleVariable
 import PhysicsTools.HeppyCore.framework.config as cfg
-        
+
 class TriggerBitAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(TriggerBitAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
@@ -60,13 +60,13 @@ class TriggerBitAnalyzer( Analyzer ):
                             if self.saveIsUnprescaled or self.force1prescale: setup.globalVariables.append( NTupleVariable(outname+'_Prescale', eval("lambda ev: ev.%s_Prescale" % outname), int, help="get prescale %s "%TP) )
                             self.triggerBitCheckersSingleBits.append( (TP, ROOT.heppy.TriggerBitChecker(trigVecBit)) )
 
-                outname="%s_%s"%(self.outprefix,T)  
+                outname="%s_%s"%(self.outprefix,T)
                 if not hasattr(setup ,"globalVariables") :
                         setup.globalVariables = []
                 setup.globalVariables.append( NTupleVariable(outname, eval("lambda ev: ev.%s" % outname), int, help="OR of %s"%TL) )
                 if self.saveIsUnprescaled or self.force1prescale: setup.globalVariables.append( NTupleVariable(outname+'_isUnprescaled', eval("lambda ev: ev.%s_isUnprescaled" % outname), int, help="OR of %s is Unprescaled flag"%TL) )
                 self.triggerBitCheckers.append( (T, ROOT.heppy.TriggerBitChecker(trigVec)) )
-                
+
 
     def process(self, event):
         self.readCollections( event.input )
@@ -84,7 +84,7 @@ class TriggerBitAnalyzer( Analyzer ):
                 if self.checkL1prescale:
                     unpr = unpr and TC.check_unprescaled(event.input.object(), triggerResults, triggerPrescales_min)
                     unpr = unpr and TC.check_unprescaled(event.input.object(), triggerResults, triggerPrescales_max)
-                setattr(event,outname+'_isUnprescaled', unpr) 
+                setattr(event,outname+'_isUnprescaled', unpr)
             if self.force1prescale: setattr(event,outname+'_isUnprescaled', True)
         if self.unrollbits :
             for TP,TC in self.triggerBitCheckersSingleBits:
@@ -102,11 +102,11 @@ class TriggerBitAnalyzer( Analyzer ):
                        getprl1max = TC.getprescale(event.input.object(), triggerResults, triggerPrescales_max)
                        if (getprl1min != getprl1max):
                            getpr = -999
-                       else: 
+                       else:
                            getpr = getprl1min*getpr
                    setattr(event,outname+'_isUnprescaled', unpr)
                    setattr(event,outname+'_Prescale', getpr)
-               if self.force1prescale: 
+               if self.force1prescale:
                    setattr(event,outname+'_isUnprescaled', True)
                    setattr(event,outname+'_Prescale', 1)
 
@@ -122,7 +122,7 @@ setattr(TriggerBitAnalyzer,"defaultConfig",cfg.Analyzer(
     saveIsUnprescaled = False,
     checkL1prescale = False,
     triggerBits = {
-        # "<name>" : [ 'HLT_<Something>_v*', 'HLT_<SomethingElse>_v*' ] 
+        # "<name>" : [ 'HLT_<Something>_v*', 'HLT_<SomethingElse>_v*' ]
 }
 )
 )
@@ -137,7 +137,7 @@ setattr(TriggerBitAnalyzer,"defaultEventFlagsConfig",cfg.Analyzer(
         "HBHENoiseFilter" : [ "Flag_HBHENoiseFilter" ],
         "HBHENoiseIsoFilter" : [ "Flag_HBHENoiseIsoFilter" ],
         "CSCTightHaloFilter" : [ "Flag_CSCTightHaloFilter" ],
-        "CSCTightHalo2015Filter" : [ "Flag_CSCTightHalo2015Filter" ],
+        "globalTightHalo2016Filter" : [ "Flag_globalTightHalo2016Filter" ],
         "hcalLaserEventFilter" : [ "Flag_hcalLaserEventFilter" ],
         "EcalDeadCellTriggerPrimitiveFilter" : [ "Flag_EcalDeadCellTriggerPrimitiveFilter" ],
         "goodVertices" : [ "Flag_goodVertices" ],
@@ -148,6 +148,8 @@ setattr(TriggerBitAnalyzer,"defaultEventFlagsConfig",cfg.Analyzer(
         "trkPOG_manystripclus53X" : [ "Flag_trkPOG_manystripclus53X" ],
         "trkPOG_toomanystripclus53X" : [ "Flag_trkPOG_toomanystripclus53X" ],
         "trkPOG_logErrorTooManyClusters" : [ "Flag_trkPOG_logErrorTooManyClusters" ],
+        "BadPFMuonFilter" : [ "Flag_BadPFMuonFilter" ],
+        "BadChargedCandidateFilter" : [ "Flag_BadChargedCandidateFilter" ],
         "METFilters" : [ "Flag_METFilters" ],
     }
 )
