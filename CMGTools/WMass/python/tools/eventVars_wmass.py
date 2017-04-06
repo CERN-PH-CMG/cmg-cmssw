@@ -1,10 +1,21 @@
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
+from CMGTools.WMass.tools.standaloneElectronCalibrator import ElectronCalibrator
 from CMGTools.WMass.tools.PileUpReWeighter import PileUpReWeighter
 import types
 
 class EventVarsWmass:
     def __init__(self):
+        ROOT.gSystem.Load("libFWCoreFWLite.so")
+        ROOT.gSystem.Load("libDataFormatsFWLite.so")
+        ROOT.AutoLibraryLoader.enable()
+        ROOT.gSystem.Load("libCMGToolsTTHAnalysis.so")
         self.branches = [ "nMu15T", "nEle25T", "nBTag20", "events_ntot" ]
+        self.electronEnergyCalibrator = ElectronCalibrator(False, # isMC = false => never applying the smearings, only scale
+                                                           False, 
+                                                           1, # use the final momentum estimate after combination 
+                                                           0) # don't do any E-p combinations
+
+
     def initSample(self,region,sample_nevt):
         self.region = region
         self.sample_nevt = sample_nevt        
@@ -96,6 +107,38 @@ class EventVarsWmass:
                 lowptjets.append(j)
                 if j.btagCSV > 0.800:
                     ret["nBTag20"] += 1
+
+        # Electron momentum scale corrections
+        electrons = [l for l in leps if abs(l.pdgId)==11]
+        for el in electrons:
+            p4El = ROOT.TLorentzVector()
+            p4El.SetPtEtaPhiM(el.pt,el.eta,el.phi,0.51e-3)
+            p = p4El.E()
+            momentum = max(15., p); #(combinedMomentum<15. ? 15. : combinedMomentum);
+            if abs(el.eta)<1.479 :
+                parEB = ( 5.24e-02, 2.01e-01, 1.00e-02 );
+                combinedMomentumError = momentum * sqrt( pow(parEB[0]/sqrt(momentum),2) + pow(parEB[1]/momentum,2) + pow(parEB[2],2) );
+            else:
+                parEE = ( 1.46e-01, 9.21e-01, 1.94e-03 ) ;
+                combinedMomentumError = momentum * sqrt( pow(parEE[0]/sqrt(momentum),2) + pow(parEE[1]/momentum,2) + pow(parEE[2],2) );
+            mySimpleElectron = ROOT.SimpleElectron(event.run, 
+                                                   l.classification,
+                                                   l.r9,
+                                                   l.ecalEnergy,
+                                                   l.correctedEcalEnergyError,
+                                                   l.superCluster_energy / l.eSuperClusterOverP, # trackMomentumAtVtx,
+                                                   l.correctedEcalEnergyError, # dummy, should be trk momentum error, no combination done here
+                                                   p,
+                                                   l.regressionEnergyError,
+                                                   p,
+                                                   combinedMomentumError,
+                                                   el.scEta,
+                                                   abs(el.eta)<1.479,
+                                                   1 if event.run==1 else 0,
+                                                   1, # dummy, ecalDrivenSeed
+                                                   0) # dummy trackerDrivenSeed
+            corrP4 = self.electronEnergyCalibrator.getCorrectedP4(mySimpleElectron,p4El,event.run)
+            #corrP4.Print()
 
         ### return
         fullret = {}

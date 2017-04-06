@@ -266,6 +266,8 @@ def makeCut(cut):
         return "abs(LepGood_pdgId[0]) == 11"
     elif cut == "Zee-dm132":
         return "abs(LepGood_pdgId[0]) == 11 && 1.3 < 0.5*mZ1*TMath::Hypot(LepGood_ptErr[0]/LepGood_pt[0], LepGood_ptErr[1]/LepGood_pt[1]) && 0.5*mZ1*TMath::Hypot(LepGood_ptErr[0]/LepGood_pt[0], LepGood_ptErr[1]/LepGood_pt[1]) < 2.00"
+    elif cut == "Zee-wmass":
+        return "abs(LepGood_pdgId[0]) == 11 && min(LepGood_eleMVAId[0],LepGood_eleMVAId[1]) > 1 && max(LepGood_relIso04[0],LepGood_relIso04[1]) < 0.4 && min(LepGood_convVetoFull[0],LepGood_convVetoFull[1])==1"
     elif cut == "Zmm-BB":
         return "abs(LepGood_pdgId[0]) == 13 && max(abs(LepGood_eta[0]),abs(LepGood_eta[1])) < 1.2"
     elif cut == "Zmm-NonBB":
@@ -551,7 +553,7 @@ if __name__ == "__main__":
             printCanvas(c1, options.name+"_summary_eff", [], options)
     elif options.mode == "1D_PtEtaSlices":
         ptbins = [10,20,35,45,60,90]; 
-        etabins = [0, 1.5, 2.5] if "Zee" in options.cut else [0, 1.2, 2.4]
+        etabins = [0, 1.0, 1.5, 2.5] if "Zee" in options.cut else [0, 1.2, 2.4]
         #ptbins = [5,35,120]; etabins = [0, 1.5, 2.5]
         frame2D, hists = makeHistsMPtEta(tree, ptbins, etabins, options)
         if options.refmc:
