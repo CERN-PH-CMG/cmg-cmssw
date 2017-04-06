@@ -4,6 +4,24 @@
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
+ElectronEnergyCalibratorRun2::ElectronEnergyCalibratorRun2(bool isMC, 
+							   bool synchronization, 
+							   std::string correctionFile
+							   ) :
+  isMC_(isMC), synchronization_(synchronization),
+  rng_(0),
+  doEpCombination_(false),
+  _correctionRetriever(correctionFile) // here is opening the files and reading the corrections
+{
+  if(isMC_) {
+    _correctionRetriever.doScale = false; 
+    _correctionRetriever.doSmearings = true;
+  } else {
+    _correctionRetriever.doScale = true; 
+    _correctionRetriever.doSmearings = false;
+  }
+}
+
 ElectronEnergyCalibratorRun2::ElectronEnergyCalibratorRun2(EpCombinationTool &combinator, 
 							   bool isMC, 
 							   bool synchronization, 
@@ -12,6 +30,7 @@ ElectronEnergyCalibratorRun2::ElectronEnergyCalibratorRun2(EpCombinationTool &co
   epCombinationTool_(&combinator),
   isMC_(isMC), synchronization_(synchronization),
   rng_(0),
+  doEpCombination_(true),
   _correctionRetriever(correctionFile) // here is opening the files and reading the corrections
 {
   if(isMC_) {
@@ -52,7 +71,7 @@ void ElectronEnergyCalibratorRun2::calibrate(SimpleElectron &electron) const
   }
   electron.setNewEnergy(newEcalEnergy); 
   electron.setNewEnergyError(newEcalEnergyError);
-  epCombinationTool_->combine(electron);
+  if(doEpCombination_) epCombinationTool_->combine(electron);
 }
 
 double ElectronEnergyCalibratorRun2::gauss() const 

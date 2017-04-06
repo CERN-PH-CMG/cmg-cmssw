@@ -6,24 +6,21 @@ import types
 class EventVarsWmass:
     def __init__(self):
         ROOT.gSystem.Load("libFWCoreFWLite.so")
-        ROOT.gSystem.Load("libDataFormatsFWLite.so")
         ROOT.AutoLibraryLoader.enable()
-        ROOT.gSystem.Load("libCMGToolsTTHAnalysis.so")
+        ROOT.gSystem.Load("libCMGToolsWMass.so")
         self.branches = [ "nMu15T", "nEle25T", "nBTag20", "events_ntot" ]
-        self.electronEnergyCalibrator = ElectronCalibrator(False, # isMC = false => never applying the smearings, only scale
-                                                           False, 
-                                                           1, # use the final momentum estimate after combination 
-                                                           0) # don't do any E-p combinations
-
-
+        self.electronEnergyCalibrator = ElectronCalibrator(False, # isMC = false => never applying the smearings, only scale 
+                                                           "EgammaAnalysis/ElectronTools/data//WMass_Winter17_ResidualCorrections_ele")
     def initSample(self,region,sample_nevt):
         self.region = region
         self.sample_nevt = sample_nevt        
     def listBranches(self):
-        biglist = [ ("nJetClean", "I"), ("nJetCleanCentral", "I"), ("nLepSel", "I"),
-                    ("iL","I",10,"nLepSel"), ("iJ","I",10,"nJetClean") ] 
+        biglist = [ ("nJetClean", "I"), ("nLepCorr", "I"),
+                    ("iL","I",10,"nLepCorr"), ("iJ","I",10,"nJetClean") ] 
         for jfloat in "pt eta phi mass btagCSV rawPt leadClean".split():
             biglist.append( ("JetClean"+"_"+jfloat,"F",10,"nJetClean") )
+        for lfloat in "pt pterr".split():
+            biglist.append( ("LepCorr"+"_"+lfloat,"F",10,"nLepCorr") ) 
         self.branches = self.branches + biglist
         print "self.branches = ",self.branches[:]
         return self.branches[:]
@@ -41,7 +38,7 @@ class EventVarsWmass:
         return ROOT.TVector3(pt*cos(phi),pt*sin(phi),pt*sinh(eta))
     def __call__(self,event):
         # prepare output
-        ret = {}; jetret = {};
+        ret = {}; jetret = {}; lepret = {};
         ret['events_ntot'] = self.sample_nevt
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
         ret['nMu15T'] = sum([(abs(l.pdgId)==13 and int(self.lepIdTight(l))) for l in leps ])
@@ -57,7 +54,7 @@ class EventVarsWmass:
         for il,lep in enumerate(leps):
             #if self.lepIdVeto(lep):
                 ret["iL"].append(il)
-        ret["nLepSel"] = len(ret["iL"])
+        ret["nLepCorr"] = len(ret["iL"])
         # Define cleaned jets 
         ret["iJ"] = []; 
         # 0. mark each identified jet as clean
@@ -96,49 +93,24 @@ class EventVarsWmass:
             jetret["leadClean"].append( self.leadJetCleaning(jet) )
         ret["nJetClean"] = nJetCleanCentral+nJetCleanFwd
         # 5. compute the sums 
-        ret["nJetCleanCentral"] = 0
         ret["nBTag20"] = 0
         lowptjets = []
         for j in jets: # these are all central
             if not j._clean: continue
-            if j.pt > 30:
-                ret["nJetCleanCentral"] += 1
             if j.pt > 20 and abs(j.eta)<2.4:
                 lowptjets.append(j)
                 if j.btagCSV > 0.800:
                     ret["nBTag20"] += 1
 
-        # Electron momentum scale corrections
-        electrons = [l for l in leps if abs(l.pdgId)==11]
-        for el in electrons:
-            p4El = ROOT.TLorentzVector()
-            p4El.SetPtEtaPhiM(el.pt,el.eta,el.phi,0.51e-3)
-            p = p4El.E()
-            momentum = max(15., p); #(combinedMomentum<15. ? 15. : combinedMomentum);
-            if abs(el.eta)<1.479 :
-                parEB = ( 5.24e-02, 2.01e-01, 1.00e-02 );
-                combinedMomentumError = momentum * sqrt( pow(parEB[0]/sqrt(momentum),2) + pow(parEB[1]/momentum,2) + pow(parEB[2],2) );
-            else:
-                parEE = ( 1.46e-01, 9.21e-01, 1.94e-03 ) ;
-                combinedMomentumError = momentum * sqrt( pow(parEE[0]/sqrt(momentum),2) + pow(parEE[1]/momentum,2) + pow(parEE[2],2) );
-            mySimpleElectron = ROOT.SimpleElectron(event.run, 
-                                                   l.classification,
-                                                   l.r9,
-                                                   l.ecalEnergy,
-                                                   l.correctedEcalEnergyError,
-                                                   l.superCluster_energy / l.eSuperClusterOverP, # trackMomentumAtVtx,
-                                                   l.correctedEcalEnergyError, # dummy, should be trk momentum error, no combination done here
-                                                   p,
-                                                   l.regressionEnergyError,
-                                                   p,
-                                                   combinedMomentumError,
-                                                   el.scEta,
-                                                   abs(el.eta)<1.479,
-                                                   1 if event.run==1 else 0,
-                                                   1, # dummy, ecalDrivenSeed
-                                                   0) # dummy trackerDrivenSeed
-            corrP4 = self.electronEnergyCalibrator.getCorrectedP4(mySimpleElectron,p4El,event.run)
-            #corrP4.Print()
+        # Lepton residual momentum scale corrections
+        for lfloat in "pt pterr".split():
+            lepret[lfloat] = []
+        for il in ret["iL"]:
+            l=leps[il]
+            if abs(l.pdgId)==11:
+                self.electronEnergyCalibrator.correct(l,event.run)
+            lepret["pt"].append(l.pt)
+            lepret["pterr"].append(getattr(l,"pterr") if hasattr(l,"pterr") else 0.0)
 
         ### return
         fullret = {}
@@ -146,6 +118,8 @@ class EventVarsWmass:
             fullret[k] = v
         for k,v in jetret.iteritems():
             fullret["JetClean_%s" % k] = v
+        for k,v in lepret.iteritems():
+            fullret["LepCorr_%s" % k] = v
         return fullret
 
 if __name__ == '__main__':

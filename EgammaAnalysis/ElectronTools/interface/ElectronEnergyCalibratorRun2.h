@@ -14,7 +14,9 @@ class ElectronEnergyCalibratorRun2 {
   // dummy constructor for persistence
   ElectronEnergyCalibratorRun2() {}
   
-  // further configuration will be added when we will learn how it will work
+  // constructor w/o combinator: do not combine E-p: intented for residual corrections
+  ElectronEnergyCalibratorRun2(bool isMC, bool synchronization, std::string); 
+  // constructor with combinator: do E-p combination after E corrections
   ElectronEnergyCalibratorRun2(EpCombinationTool &combinator, bool isMC, bool synchronization, std::string); 
   ~ElectronEnergyCalibratorRun2() ;
   
@@ -35,6 +37,7 @@ class ElectronEnergyCalibratorRun2 {
   /// or from the CMSSW RandomNumberGenerator service
   /// If synchronization is set to true, it returns a fixed number (1.0)
   double gauss() const ;
+  bool doEpCombination_;
   EnergyScaleCorrection_class _correctionRetriever;
 };
 
