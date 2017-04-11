@@ -3,57 +3,81 @@ from CMGTools.WMass.tools.standaloneElectronCalibrator import ElectronCalibrator
 from CMGTools.WMass.tools.PileUpReWeighter import PileUpReWeighter
 import types
 
+class SimpleVBoson:
+    def __init__(self,legs):
+        self.legs = legs
+        if len(legs)<2:
+            print "ERROR: making a VBoson w/ < 2 legs!"
+        self.pt1 = legs[0].Pt()
+        self.pt2 = legs[1].Pt()
+        self.dphi = self.legs[0].Phi()-self.legs[1].Phi()
+        self.deta = self.legs[0].Eta()-self.legs[1].Eta()
+    def pt(self):
+        return sqrt(hypot(self.pt1 + self.pt2 * cos(self.dphi), self.pt2*sin(self.dphi)))
+    def mt(self):
+        return sqrt(2*self.pt1*self.pt2*(1-cos(self.dphi)))
+    def mll(self):
+        return sqrt(2*self.pt1*self.pt2*(cosh(self.deta)-cos(self.dphi)))
+
 class EventVarsWmass:
     def __init__(self):
         ROOT.gSystem.Load("libFWCoreFWLite.so")
         ROOT.AutoLibraryLoader.enable()
         ROOT.gSystem.Load("libCMGToolsWMass.so")
-        self.branches = [ "nMu15T", "nEle25T", "nBTag20", "events_ntot" ]
-        self.electronEnergyCalibrator = ElectronCalibrator(False, # isMC = false => never applying the smearings, only scale 
-                                                           "EgammaAnalysis/ElectronTools/data//WMass_Winter17_ResidualCorrections_ele")
-    def initSample(self,region,sample_nevt):
-        self.region = region
+        self.branches = [ "nBTag20", "events_ntot" ]
+    def initSample(self,sample_nevt,dataset):
         self.sample_nevt = sample_nevt        
+        self.isMC = not any(x in dataset for x in "DoubleMu DoubleEl DoubleEG MuEG MuonEG SingleMu SingleEl".split())
+        self.electronEnergyCalibrator = ElectronCalibrator(self.isMC,
+                                                           "EgammaAnalysis/ElectronTools/data//WMass_Winter17_ResidualCorrections_ele")
     def listBranches(self):
-        biglist = [ ("nJetClean", "I"), ("nLepCorr", "I"),
-                    ("iL","I",10,"nLepCorr"), ("iJ","I",10,"nJetClean") ] 
+        self.wmass_nsteps = 40
+        biglist = [ ("nLepCorr", "I"), ("iL","I",10,"nLepCorr"),
+                    ("nJetClean", "I"), ("iJ","I",10,"nJetClean"),
+                    ("w_pt","F"), ("w_mt","F"), ("z_pt","F"), ("z_mll","F") ]
         for jfloat in "pt eta phi mass btagCSV rawPt leadClean".split():
             biglist.append( ("JetClean"+"_"+jfloat,"F",10,"nJetClean") )
-        for lfloat in "pt pterr".split():
+        for lfloat in "eta pt pterr".split():
             biglist.append( ("LepCorr"+"_"+lfloat,"F",10,"nLepCorr") ) 
+        mclist = [("nWMassSteps", "I"), ("mwWeight","F",self.wmass_nsteps+1,"nWMassSteps")]
+        if self.isMC: biglist = biglist + mclist
         self.branches = self.branches + biglist
         print "self.branches = ",self.branches[:]
         return self.branches[:]
     def lepIdTight(self,lep):
         if not lep.trgMatch: return False
         if abs(lep.pdgId) == 13:
-            if lep.pt <= 15 or abs(lep.pt)>2.1: return False
+            if lep.pt <= 25 or abs(lep.eta)>2.1: return False
             return lep.tightId >=1 and lep.relIso04 < 0.15
         elif abs(lep.pdgId) == 11:
-            if lep.relIso03 > (0.10 if abs(lep.scEta)<1.479 else 0.10): return False
-            return lep.pt > 25 and abs(lep.scEta) < 2.5 and lep.tightId >=3
+            if lep.pt <= 25 or abs(lep.eta)>2.5: return False
+            return lep.eleMVAId >=2 and lep.relIso03 < 0.15 and lep.convVetoFull==1
     def leadJetCleaning(self,jet):
         return jet.CHEF > 0.1 and jet.NHEF < 0.8
     def PtEtaPhi3V(self,pt,eta,phi):
         return ROOT.TVector3(pt*cos(phi),pt*sin(phi),pt*sinh(eta))
+    def BW_weight(self,boson_pdgId,genMass,imass):
+        (m0,gamma) = (91.188,2.141) if abs(boson_pdgId)==23 else (80.398,2.085)
+        s_hat = pow(genMass,2)
+        return (pow(s_hat - m0*m0,2) + pow(gamma*m0,2)) / (pow(s_hat - imass*imass,2) + pow(gamma*imass,2))
     def __call__(self,event):
         # prepare output
         ret = {}; jetret = {}; lepret = {};
         ret['events_ntot'] = self.sample_nevt
+        genp = [p for p in Collection(event,"GenP6StatusThree","nGenP6StatusThree")] if self.isMC else []
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
-        ret['nMu15T'] = sum([(abs(l.pdgId)==13 and int(self.lepIdTight(l))) for l in leps ])
-        ret['nEle25T'] = sum([(abs(l.pdgId)==11 and int(self.lepIdTight(l))) for l in leps ])
         jets = [j for j in Collection(event,"Jet","nJet")]
         jetsFwd = [j for j in Collection(event,"JetFwd","nJetFwd")]
         alljets = jets + jetsFwd
         njet = len(jets)
 
+        tightleps = [l for l in leps if self.lepIdTight(l)]
+
         ### lepton-jet cleaning
         # Define the loose leptons to be cleaned
         ret["iL"] = []
-        for il,lep in enumerate(leps):
-            #if self.lepIdVeto(lep):
-                ret["iL"].append(il)
+        for il,lep in enumerate(tightleps):
+            ret["iL"].append(il)
         ret["nLepCorr"] = len(ret["iL"])
         # Define cleaned jets 
         ret["iJ"] = []; 
@@ -64,7 +88,7 @@ class EventVarsWmass:
             j._central = True if (abs(j.eta) < 2.5) else False
         # 1. associate to each loose lepton its nearest jet 
         for il in ret["iL"]:
-            lep = leps[il]
+            lep = tightleps[il]
             best = None; bestdr = 0.4
             for j in alljets:
                 dr = deltaR(lep,j)
@@ -103,14 +127,45 @@ class EventVarsWmass:
                     ret["nBTag20"] += 1
 
         # Lepton residual momentum scale corrections
-        for lfloat in "pt pterr".split():
+        for lfloat in "eta pt pterr".split():
             lepret[lfloat] = []
         for il in ret["iL"]:
-            l=leps[il]
+            l=tightleps[il]
             if abs(l.pdgId)==11:
                 self.electronEnergyCalibrator.correct(l,event.run)
-            lepret["pt"].append(l.pt)
-            lepret["pterr"].append(getattr(l,"pterr") if hasattr(l,"pterr") else 0.0)
+            for lfloat in "eta pt pterr".split():
+                lepret[lfloat].append(getattr(l,lfloat) if hasattr(l,lfloat) else 0.0)
+
+        # event variables with corrected quantities (METs to be corrected)
+        pfmet = self.PtEtaPhi3V(event.met_pt,0.,event.met_phi)
+        tkmet = self.PtEtaPhi3V(event.tkmet_pt,0.,event.tkmet_phi)
+        tightleps_3v=[ self.PtEtaPhi3V(l.pt,l.eta,l.phi) for l in tightleps ]
+
+        # W,Z candidates
+        if len(tightleps)>0:
+            W = SimpleVBoson([tightleps_3v[0],tkmet])
+            ret["w_pt"] = W.pt()
+            ret["w_mt"] = W.mt()
+        else: ret["w_pt"] = ret["w_mt"] = -99
+        if len(tightleps)>1:
+            Z = SimpleVBoson(tightleps_3v[:2])
+            ret["z_pt"] = Z.pt()
+            ret["z_mll"] = Z.mll()
+        else: ret["z_pt"] = ret["z_mll"] = -99
+
+        # W-mass BW weights
+        if self.isMC:
+            bw_w = []
+            genw = [p for p in genp if abs(p.pdgId)==24]
+            if len(genw)>0:
+                genmass = genw[0].mass
+                step = 0.002
+                imass = 80.398 - self.wmass_nsteps/2*step # 40 MeV interval
+                while (imass<80.398 + self.wmass_nsteps/2*step):
+                    bw_w.append(self.BW_weight(24,genmass,imass))
+                    imass=imass+step
+            ret["nWMassSteps"] = len(bw_w)
+            ret["mwWeight"] = bw_w
 
         ### return
         fullret = {}

@@ -6,7 +6,7 @@ from math import *
 class ElectronCalibrator:
     def __init__(self,isMC,correctionsFile):
         self.electronEnergyCalibrator = ROOT.ElectronEnergyCalibratorRun2(1 if isMC else 0, # isMC
-                                                                          False, #sync
+                                                                          True, #sync: trick to apply only scale corrections to data
                                                                           correctionsFile)
         self.isMC = isMC
     def correct(self,electron,run):
