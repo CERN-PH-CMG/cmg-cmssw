@@ -15,8 +15,8 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 # --- LEPTON SKIMMING ---
 ttHLepSkim.minLeptons = 1
 ttHLepSkim.maxLeptons = 999
-ttHLepSkim.idCut  = '(lepton.muonID("POG_ID_Loose") and lepton.relIso04 < 0.5) if abs(lepton.pdgId())==13 else (lepton.electronID("POG_MVA_ID_NonTrig"))'
-ttHLepSkim.ptCuts = [15]
+ttHLepSkim.idCut  = '(lepton.muonID("POG_ID_Loose") and lepton.relIso04 < 1.0) if abs(lepton.pdgId())==13 else (lepton.electronID("POG_MVA_ID_Trig"))'
+ttHLepSkim.ptCuts = [20]
 
 
 # Event Analyzer for w mass (at the moment, it's the TTH one)
@@ -68,8 +68,10 @@ selectedComponents = mcSamplesW + dataSamplesW
 
 #-------- MODULES CUSTOMISATION
 ttHLepAna.doElectronScaleCorrections = True
+ttHLepAna.loose_muon_relIso = 1.0
 ttHLepAna.loose_electron_eta = 2.5
 ttHLepAna.loose_electron_relIso = 999
+ttHLepAna.loose_electron_id = "POG_MVA_ID_Trig"
 ttHLepAna.triggerBitsMuons = { 'SingleMu' : triggers_1mu,
                                'DoubleMu' : triggers_mumu }
 ttHLepAna.triggerBitsElectrons = { 'SingleEl' : triggers_1e,

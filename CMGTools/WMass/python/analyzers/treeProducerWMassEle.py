@@ -35,6 +35,7 @@ class treeProducerWMassEle( ttHLepTreeProducerNew ):
 
         leptonTypeSusy.addVariables([ 
                 NTupleVariable("trgMatch", lambda lepton : lepton.TriggerMatched, help="Match a trigger object by path"),
+                NTupleVariable("eleMVAPreselId", lambda lepton : lepton.tightIdPreselResult if abs(lepton.pdgId()) == 11 else 1, help="EGamma POG MVA Preselection ID for triggering electrons; 1 for muons"),
                 NTupleVariable("scEta", lambda lepton : lepton.sourcePtr().superCluster().eta() if abs(lepton.pdgId()) == 11 else -99, help="SuperCluster eta, only for electrons; -99 for muons"),
                 NTupleVariable("r9", lambda lepton : lepton.sourcePtr().r9() if abs(lepton.pdgId()) == 11 else -99, help="SuperCluster 5x5 r9 variable, only for electrons; -99 for muons"),
                 NTupleVariable("classification",      lambda lepton : lepton.sourcePtr().classification() if abs(lepton.pdgId()) == 11 else -99, help="electron classification; -99 for muons"),
@@ -43,7 +44,6 @@ class treeProducerWMassEle( ttHLepTreeProducerNew ):
                 NTupleVariable("sigmaIetaIeta", lambda x: x.sourcePtr().sigmaIetaIeta() if (abs(x.pdgId())==11) else -999, help="Electron sigmaIetaIeta"),
                 NTupleVariable("sigmaIphiIphi", lambda x: x.sourcePtr().sigmaIphiIphi() if (abs(x.pdgId())==11) else -999, help="Electron sigmaIphiIphi"),
                 NTupleVariable("hcalOverEcal", lambda x: x.sourcePtr().hadronicOverEm() if (abs(x.pdgId())==11) else -999, help="Electron hcalOverEcal"),
-                #NTupleVariable("correctedEcalEnergy", lambda x: x.sourcePtr().correctedEcalEnergy() if (abs(x.pdgId())==11) else -999, help="Electron correctedEcalEnergy"), # this is the same as ecalEnergy
                 NTupleVariable("correctedEcalEnergyError", lambda x: x.sourcePtr().correctedEcalEnergyError() if (abs(x.pdgId())==11) else -999, help="Electron correctedEcalEnergyError"),
                 NTupleVariable("regressionEnergyError", lambda x: x.sourcePtr().p4Error(x.sourcePtr().candidateP4Kind()) if (abs(x.pdgId())==11) else -999, help="Electron EcalEnergyError from regression"),
                 NTupleVariable("ecalEnergy", lambda x: x.sourcePtr().ecalEnergy() if (abs(x.pdgId())==11) else -999, help="Electron ecalEnergy"),
@@ -51,8 +51,6 @@ class treeProducerWMassEle( ttHLepTreeProducerNew ):
                 NTupleVariable("superCluster_preshowerEnergy", lambda x: x.sourcePtr().superCluster().preshowerEnergy() if (abs(x.pdgId())==11) else -999, help="Electron superCluster.preshowerEnergy"),
                 NTupleVariable("superCluster_energy", lambda x: x.sourcePtr().superCluster().energy() if (abs(x.pdgId())==11) else -999, help="Electron superCluster.energy"),
                 NTupleVariable("eSuperClusterOverP", lambda x: x.sourcePtr().eSuperClusterOverP() if (abs(x.pdgId())==11) else -999, help="Electron eSuperClusterOverP"),                
-        #         #NTupleVariable("superCluster_clustersSize", lambda x: x.superCluster().clustersSize() if (abs(x.pdgId())==11) else -999, help="Electron superCluster.clustersSize"),
-        #         #NTupleVariable("superCluster_seed.energy", lambda x: x.superCluster().seed().energy() if (abs(x.pdgId())==11) else -999, help="Electron superCluster.seed.energy"),
                 ])
 
         self.collections = {

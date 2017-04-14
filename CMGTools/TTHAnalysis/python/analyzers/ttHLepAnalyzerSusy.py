@@ -235,9 +235,12 @@ class ttHLepAnalyzerSusy( Analyzer ):
             ele.relIso03 = ele.absIso03/ele.pt()
             ele.relIso04 = ele.absIso04/ele.pt()
 
-        # Set tight MVA id
+        # Set tight MVA id and cut-based HLT preselection for MVA
         for ele in allelectrons:
             ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig")
+            ele.tightIdPreselResult = ele.sourcePtr().dr03TkSumPt()/ele.pt()<0.2 and ele.sourcePtr().dr03EcalRecHitSumEt()/ele.pt()<0.2 and ele.sourcePtr().dr03HcalTowerSumEt()/ele.pt()<0.2 and ele.sourcePtr().gsfTrack().trackerExpectedHitsInner().numberOfLostHits()==0
+            if (abs(SCEta) < 1.479): ele.tightIdPreselResult = ele.tightIdPreselResult and ele.sourcePtr().sigmaIetaIeta()<0.014 and ele.sourcePtr().hadronicOverEm()<0.15
+            else: ele.tightIdPreselResult = ele.tightIdPreselResult and ele.sourcePtr().sigmaIetaIeta()<0.035 and ele.sourcePtr().hadronicOverEm()<0.10
 
         # Attach the trigger matching
         for ele in allelectrons:
