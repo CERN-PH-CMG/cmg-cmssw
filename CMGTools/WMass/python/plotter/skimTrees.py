@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #from mcPlots import *
 # python skimTrees.py monojet/mca-74X-Ve.txt monojet/skim-74X-Ve.txt skims -P /data1/emanuele/monox/TREES_25ns_1LEPSKIM_76X --s2v -j 8 -F mjvars/t "/data1/emanuele/monox/TREES_25ns_1LEPSKIM_76X/friends/evVarFriend_{cname}.root"
-from CMGTools.MonoXAnalysis.plotter.mcAnalysis import *
+from CMGTools.WMass.plotter.mcAnalysis import *
 
 import array
 import ROOT
