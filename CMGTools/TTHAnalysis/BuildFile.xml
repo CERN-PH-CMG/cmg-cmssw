@@ -9,8 +9,8 @@
 <use name="roottmva"/>
 <use name="rootminuit2"/>
 <use name="lhapdf"/>
-<!-- <flags LDFLAGS="/afs/cern.ch/cms/slc5_amd64_gcc462/cms/cmssw/CMSSW_5_3_14/lib/slc5_amd64_gcc462/pluginMagneticFieldParametrizedEnginePlugins.so" /> -->
-<flags LDFLAGS="/afs/cern.ch/cms/slc6_amd64_gcc472/cms/cmssw/CMSSW_5_3_14/lib/slc6_amd64_gcc472/pluginMagneticFieldParametrizedEnginePlugins.so" />
+<!-- <flags LDFLAGS="/cvmfs/cms.cern.ch/slc6_amd64_gcc472/cms/cmssw/CMSSW_5_3_22/lib/slc6_amd64_gcc472/pluginMagneticFieldParametrizedEnginePlugins.so" /> -->
+<flags LDFLAGS="/cvmfs/cms.cern.ch/slc6_amd64_gcc472/cms/cmssw/CMSSW_5_3_22/lib/slc6_amd64_gcc472/pluginMagneticFieldParametrizedEnginePlugins.so" />
 <export>
   <lib   name="1"/>
 </export>

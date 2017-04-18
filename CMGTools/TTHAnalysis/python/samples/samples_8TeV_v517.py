@@ -558,5 +558,9 @@ for comp in dataSamples1Mu:
     comp.isMC = False
     comp.isData = True
 
+for comp in dataSamples1E:
+    comp.splitFactor = 800
+    comp.isMC = False
+    comp.isData = True
 
 
