@@ -1,0 +1,5 @@
+# luminosity
+lumi_8TeV              : W|Z|Top|DiBosons|QCD: .* : 1.027
+
+# dummy shape uncertainty
+

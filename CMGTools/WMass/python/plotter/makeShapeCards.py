@@ -1,12 +1,6 @@
 #!/usr/bin/env python
-from CMGTools.MonoXAnalysis.plotter.mcAnalysis import *
-import ROOT
-import re, sys, os, os.path, copy
-import numpy as np
-
-if "/functions_cc.so" not in ROOT.gSystem.GetLibraries(): 
-    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/MonoXAnalysis/python/plotter/functions.cc+" % os.environ['CMSSW_BASE']);
-
+from CMGTools.WMass.plotter.mcAnalysis import *
+import re, sys, os, os.path
 systs = {}
 
 from optparse import OptionParser
@@ -15,111 +9,92 @@ addMCAnalysisOptions(parser)
 parser.add_option("-o",   "--out",    dest="outname", type="string", default=None, help="output name") 
 parser.add_option("--od", "--outdir", dest="outdir", type="string", default=None, help="output name") 
 parser.add_option("-v", "--verbose",  dest="verbose",  default=0,  type="int",    help="Verbosity level (0 = quiet, 1 = verbose, 2+ = more)")
+parser.add_option("--masses", dest="masses", default=None, type="string", help="produce results for all these masses")
+parser.add_option("--mass-int-algo", dest="massIntAlgo", type="string", default="sigmaBR", help="Interpolation algorithm for nearby masses") 
 parser.add_option("--asimov", dest="asimov", action="store_true", help="Asimov")
-parser.add_option("--unbinned", dest="unbinned", action="store_true", help="Unbinned fit")
 parser.add_option("--2d-binning-function",dest="binfunction", type="string", default=None, help="Function used to bin the 2D histogram: nbins:func, where func(x,y) = bin in [1,nbins]")
 parser.add_option("--infile",dest="infile", type="string", default=None, help="File to read histos from")
 parser.add_option("--savefile",dest="savefile", type="string", default=None, help="File to save histos to")
-parser.add_option("--region",dest="region", type="string", default="SR", help="Phase space defined by the selection (SR,ZM,ZE,WE,WM,GJ)")
-parser.add_option("--processesFromCR",dest="processesFromCR",action="append", default=[],help="For these processes, include a global normalization from control region for each bin of the shape")
-parser.add_option("--correlateProcessCR",dest="correlateProcessCR",action="append", default=[],help="For each process to correlate to the signal region, add [process,signalregion,alphahist,filewherealphahist]")
-parser.add_option("--appendWorkspace",dest="appendWorkspace", type="string", default=None,help="Do not create a new workspace, but import new objects into an existing one in this file")
 
 (options, args) = parser.parse_args()
 options.weight = True
 options.final  = True
 options.allProcesses  = True
 
+if "/functions_cc.so" not in ROOT.gSystem.GetLibraries(): 
+    ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/functions.cc+" % os.environ['CMSSW_BASE']);
+
 mca  = MCAnalysis(args[0],options)
 cuts = CutsFile(args[1],options)
 
-binname = os.path.basename(args[1]).replace(".txt","") if options.outname == None else options.outname
+truebinname = os.path.basename(args[1]).replace(".txt","") if options.outname == None else options.outname
+binname = truebinname if truebinname[0] not in "234" else "ttH_"+truebinname
+print binname
 outdir  = options.outdir+"/" if options.outdir else ""
 
-class SafeWorkspaceImporter():
-    """Class that provides the RooWorkspace::import method, but makes sure we call the proper
-       overload of it, since in ROOT 6 sometimes PyROOT calls the wrong one"""
-    def __init__(self,wsp):
-        self.wsp = wsp
-        self.imp = getattr(wsp,"import")
-    def __call__(self,*args):
-        if len(args) != 1:
-            self.imp(*args)
-        elif args[0].Class().InheritsFrom("RooAbsReal") or args[0].Class().InheritsFrom("RooArgSet") or args[0].Class().InheritsFrom("RooAbsData") or args[0].Class().InheritsFrom("RooCategory"):
-            self.imp(args[0], ROOT.RooCmdArg()) # force the proper overload to be called
+masses = [ 20 ]
+if options.masses:
+    masses = [ float(x) for x in open(options.masses) ]
+
+def file2map(x):
+    ret = {}; headers = []
+    for x in open(x,"r"):
+        cols = x.split()
+        if len(cols) < 2: continue
+        if "BR2" in x: # skip the errors
+            cols = [cols[0]] + [c for (i,c) in enumerate(cols) if i % 3 == 1]
+        if "mH" in x:
+            headers = [i.strip() for i in cols[1:]]
         else:
-            self.imp(*args)
-
-def addCorrelatedShape(process,var,region,workspace,hist):
-    bins = []
-    for b in range(1,hist.GetNbinsX()+1):
-        bin_rrv = ROOT.RooRealVar(process+'_'+region+'_bin'+str(b),"",hist.GetBinContent(b), 0., hist.GetBinContent(b)*5.0)
-        bins.append(bin_rrv)
-
-    # for some ROOT memory handling, adding the RooRealVars to the RooArgList after creation doesn't work
-    binlist = ROOT.RooArgList()
-    for b in range(1,hist.GetNbinsX()+1): binlist.add(bins[b-1])
-
-    procnorm = process+'_'+region+'_norm'
-    phist = ROOT.RooParametricHist(process+'_'+region,"",var,binlist,hist)
-    norm = ROOT.RooAddition(procnorm,"",binlist)
-    _import = SafeWorkspaceImporter(workspace)
-    _import(phist,ROOT.RooFit.RecycleConflictNodes())
-    _import(norm,ROOT.RooFit.RecycleConflictNodes())
-
-def addCorrelatedShapeFromSR(process,var,thisregion,correlatedRegion,workspace,hist,alphahist_fullerr,filealpha):
-    tfile = ROOT.TFile.Open(filealpha)
-    h_alphahist_fullerr = tfile.Get(alphahist_fullerr)
-    h_alphahist_fullerr.SetDirectory(None)
-
-    crbins = []; rbins = []; rerrbins = [];
-    for b in range(1,hist.GetNbinsX()+1):
-        crbin_rrv = ROOT.RooRealVar(process+'_'+correlatedRegion+'_bin'+str(b),"",hist.GetBinContent(b), 0., hist.GetBinContent(b)*5.0)
-        crbins.append(crbin_rrv)
-        # central value of the transfer factor
-        rbin_rrv = ROOT.RooRealVar('r_'+process+'_'+thisregion+'_bin'+str(b),"",h_alphahist_fullerr.GetBinContent(b))
-        rbins.append(rbin_rrv)
-        # nuisance parameter in the fit limited to +/-5 sigma
-        extreme = min(5.,h_alphahist_fullerr.GetBinContent(b)/h_alphahist_fullerr.GetBinError(b))
-        rerrbin_rrv = ROOT.RooRealVar(process+'_'+thisregion+'_bin'+str(b)+'_Runc',"",0,-extreme,extreme)
-        rerrbins.append(rerrbin_rrv)
-
-    bins = []
-    formula_comp = ROOT.RooArgList()
-    for b in range(1,hist.GetNbinsX()+1):
-        formula_comp.removeAll()
-        formula_comp.add(crbins[b-1])
-        formula_comp.add(rbins[b-1])
-        formula_comp.add(rerrbins[b-1])
-        # make the formula of the transfer from SR including the total error on alpha
-        formula_toterr = "@0/(@1*abs(1+"+str(h_alphahist_fullerr.GetBinError(b)/h_alphahist_fullerr.GetBinContent(b))+"*@2))"
-
-        bin_rfv = ROOT.RooFormulaVar(process+'_'+thisregion+'_bin'+str(b),"",formula_toterr, formula_comp)
-        bins.append(bin_rfv)
-
-    # for some ROOT memory handling, adding the RooRealVars to the RooArgList after creation doesn't work
-    binlist = ROOT.RooArgList()
-    for b in range(1,hist.GetNbinsX()+1):        
-        binlist.add(bins[b-1])
-
-    procnorm = process+'_'+thisregion+'_norm'
-    phist = ROOT.RooParametricHist(process+'_'+thisregion,"",var,binlist,hist)
-    norm = ROOT.RooAddition(procnorm,"",binlist)
-    _import = SafeWorkspaceImporter(workspace)
-    _import(phist,ROOT.RooFit.RecycleConflictNodes())
-    _import(norm,ROOT.RooFit.RecycleConflictNodes())
-
-def addTemplate(process,varlist,region,workspace,hist):
-    data_hist = ROOT.RooDataHist(process+'_'+region,"",varlist,hist)
-    _import = SafeWorkspaceImporter(workspace)
-    _import(data_hist)
-
-def getBinnedVar(varname,hist):
-    binBoundaries = [hist.GetBinLowEdge(b) for b in range(1,hist.GetNbinsX()+2)]
-    binning = ROOT.RooBinning(len(binBoundaries)-1,np.array(binBoundaries),varname+'_binning')
-    rrv = ROOT.RooRealVar(varname,varname,hist.GetXaxis().GetXmin(),hist.GetXaxis().GetXmax())
-    rrv.setBinning(binning)
-    return rrv
+            fields = [ float(i) for i in cols ]
+            ret[fields[0]] = dict(zip(headers,fields[1:]))
+    return ret
+YRpath = os.environ['CMSSW_RELEASE_BASE']+"/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg/sm/";
+#XStth = file2map(YRpath+"xs/8TeV/8TeV-ttH.txt")
+BRhvv = file2map(YRpath+"br/BR2bosons.txt")
+BRhff = file2map(YRpath+"br/BR2fermions.txt")
+def mkspline(table,column,sf=1.0):
+    pairs = [ (x,c[column]/sf) for (x,c) in table.iteritems() ]
+    pairs.sort()
+    x,y = ROOT.std.vector('double')(), ROOT.std.vector('double')()
+    for xi,yi in pairs:
+        x.push_back(xi) 
+        y.push_back(yi) 
+    spline = ROOT.ROOT.Math.Interpolator(x,y);
+    spline._x = x
+    spline._y = y
+    return spline
+def mkOneSpline():
+    pairs = [ (100*x,1) for x in range(10) ]
+    pairs.sort()
+    x,y = ROOT.std.vector('double')(), ROOT.std.vector('double')()
+    for xi,yi in pairs:
+        x.push_back(xi) 
+        y.push_back(yi) 
+    spline = ROOT.ROOT.Math.Interpolator(x,y);
+    spline._x = x
+    spline._y = y
+    return spline
+splines = {
+    'ttH' : mkOneSpline(),
+    'hww' : mkOneSpline(),
+    'hzz' : mkOneSpline(),
+    'htt' : mkOneSpline(),
+#    'ttH' : mkspline(XStth, "XS_pb",   0.1271 * 1.00757982823 ), ## get 1 at 125.7
+#    'hww' : mkspline(BRhvv, "H_WW",    2.15e-01 ),
+#    'hzz' : mkspline(BRhvv, "H_ZZ",    2.64e-02 ),
+#    'htt' : mkspline(BRhff, "H_tautau",6.32e-02 ),
+}
+def getYieldScale(mass,process):
+    if "ttH_" not in process: return 1.0
+    scale = splines['ttH'].Eval(mass)
+    for dec in "hww","hzz","htt":
+        if dec in process: 
+            scale *= splines[dec].Eval(mass)
+            if 'efficiency_'+dec in splines:
+                scale *= splines['efficiency_'+dec].Eval(mass)
+            break
+    return scale 
 
 import math
 def rebin2Dto1D(h,funcstring):
@@ -148,8 +123,6 @@ def rebin2Dto1D(h,funcstring):
     newh.SetLineColor(h.GetLineColor())
     return newh
 
-masses = [ 125.0 ]
-
 myout = outdir+"/common/" if len(masses) > 1 else outdir;
 
 report={}
@@ -168,7 +141,7 @@ if options.savefile!=None:
 
 if options.asimov:
     tomerge = []
-    for p in mca.listBackgrounds():
+    for p in mca.listSignals() + mca.listBackgrounds():
         if p in report: tomerge.append(report[p])
     report['data_obs'] = mergePlots("x_data_obs", tomerge) 
 else:
@@ -176,14 +149,11 @@ else:
 
 allyields = dict([(p,h.Integral()) for p,h in report.iteritems()])
 procs = []; iproc = {}
-signals, backgrounds = [], []
 for i,s in enumerate(mca.listSignals()):
     if allyields[s] == 0: continue
-    signals.append(s)
     procs.append(s); iproc[s] = i-len(mca.listSignals())+1
 for i,b in enumerate(mca.listBackgrounds()):
     if allyields[b] == 0: continue
-    backgrounds.append(b)
     procs.append(b); iproc[b] = i+1
 
 systs = {}
@@ -198,17 +168,17 @@ for sysfile in args[4:]:
             raise RuntimeError, "Malformed line %s in file %s"%(line.strip(),sysfile)
         elif len(field) == 4 or field[4] == "lnN":
             (name, procmap, binmap, amount) = field[:4]
-            if re.match(binmap+"$",binname) == None: continue
+            if re.match(binmap+"$",truebinname) == None: continue
             if name not in systs: systs[name] = []
             systs[name].append((re.compile(procmap+"$"),amount))
         elif field[4] in ["envelop","shapeOnly","templates","alternateShape","alternateShapeOnly"] or '2D' in field[4]:
             (name, procmap, binmap, amount) = field[:4]
-            if re.match(binmap+"$",binname) == None: continue
+            if re.match(binmap+"$",truebinname) == None: continue
             if name not in systs: systsEnv[name] = []
             systsEnv[name].append((re.compile(procmap+"$"),amount,field[4]))
         elif field[4] in ["stat_foreach_shape_bins"]:
             (name, procmap, binmap, amount) = field[:4]
-            if re.match(binmap+"$",binname) == None: continue
+            if re.match(binmap+"$",truebinname) == None: continue
             if name not in systsEnv: systsEnv[name] = []
             systsEnv[name].append((re.compile(procmap+"$"),amount,field[4],field[5].split(',')))
         else:
@@ -217,12 +187,19 @@ for sysfile in args[4:]:
         print "Loaded %d systematics" % len(systs)
         print "Loaded %d envelop systematics" % len(systsEnv)
 
+
 for name in systs.keys():
     effmap = {}
     for p in procs:
         effect = "-"
         for (procmap,amount) in systs[name]:
             if re.match(procmap, p): effect = amount
+        if mca._projection != None and effect not in ["-","0","1"]:
+            if "/" in effect:
+                e1, e2 = effect.split("/")
+                effect = "%.3f/%.3f" % (mca._projection.scaleSyst(name, float(e1)), mca._projection.scaleSyst(name, float(e2)))
+            else:
+                effect = str(mca._projection.scaleSyst(name, float(effect)))
         effmap[p] = effect
     systs[name] = effmap
 
@@ -238,8 +215,10 @@ for name in systsEnv.keys():
         effect = "-"
         effect0  = "-"
         effect12 = "-"
-        for (procmap,amount,mode) in systsEnv[name]:
+        for entry in systsEnv[name]:
+            procmap,amount,mode = entry[:3]
             if re.match(procmap, p): effect = float(amount) if mode not in ["templates","alternateShape", "alternateShapeOnly"] else amount
+            print "EFFECT = ",effect
         if mca._projection != None and effect not in ["-","0","1",1.0,0.0] and type(effect) == type(1.0):
             effect = mca._projection.scaleSyst(name, effect)
         if effect == "-" or effect == "0": 
@@ -254,9 +233,9 @@ for name in systsEnv.keys():
             p1dn = nominal.Clone(nominal.GetName()+"_"+name+"1Down");
             p2up = nominal.Clone(nominal.GetName()+"_"+name+"2Up"  );
             p2dn = nominal.Clone(nominal.GetName()+"_"+name+"2Down");
-            nbin = nominal.GetNbinsX()
-            xmin = nominal.GetBinCenter(1)
-            xmax = nominal.GetBinCenter(nbin)
+            nbinx = nominal.GetNbinsX()
+            xmin = nominal.GetXaxis().GetBinCenter(1)
+            xmax = nominal.GetXaxis().GetBinCenter(nbinx)
             if '2D' in mode:
                 if 'TH2' not in nominal.ClassName(): raise RuntimeError, 'Trying to use 2D shape systs on a 1D histogram'
                 nbiny = nominal.GetNbinsY()
@@ -266,10 +245,10 @@ for name in systsEnv.keys():
             c2def = lambda x: 1 - 8*(x-0.5)**2 # parabola through (0,-1), (0.5,~1), (1,-1)
             if '2D' not in mode:
                 if 'TH1' not in nominal.ClassName(): raise RuntimeError, 'Trying to use 1D shape systs on a 2D histogram'+nominal.ClassName()+" "+nominal.GetName()
-                for b in xrange(1,nbin+1):
-                    x = (nominal.GetBinCenter(b)-xmin)/(xmax-xmin)
-                    c1 = 2*(x-0.5)         # straight line from (0,-1) to (1,+1)
-                    c2 = 1 - 8*(x-0.5)**2  # parabola through (0,-1), (0.5,~1), (1,-1)
+                for b in xrange(1,nbinx+1):
+                    x = (nominal.GetBinCenter(bx)-xmin)/(xmax-xmin)
+                    c1 = c1def(x)
+                    c2 = c2def(x)
                     p1up.SetBinContent(b, p1up.GetBinContent(b) * pow(effect,+c1))
                     p1dn.SetBinContent(b, p1dn.GetBinContent(b) * pow(effect,-c1))
                     p2up.SetBinContent(b, p2up.GetBinContent(b) * pow(effect,+c2))
@@ -365,18 +344,18 @@ for name in systsEnv.keys():
                         if re.match(binmatch+"$",'%d'%bin):
                             if nominal.GetBinContent(bin) == 0 or nominal.GetBinError(bin) == 0:
                                 if nominal.Integral() != 0: 
-                                    print "WARNING: for process %s in binname %s, bin %d has zero yield or zero error." % (p,binname,bin)
+                                    print "WARNING: for process %s in truebinname %s, bin %d has zero yield or zero error." % (p,truebinname,bin)
                                 break
                             if (effect*nominal.GetBinError(bin)<0.1*sqrt(nominal.GetBinContent(bin)+0.04)):
                                 if options.verbose: print 'skipping stat_foreach_shape_bins %s %d because it is irrelevant'%(p,bin)
                                 break
-                            p0Up = nominal.Clone("%s_%s_%s_%s_bin%dUp"% (nominal.GetName(),name,binname,p,bin))
-                            p0Dn = nominal.Clone("%s_%s_%s_%s_bin%dDown"% (nominal.GetName(),name,binname,p,bin))
+                            p0Up = nominal.Clone("%s_%s_%s_%s_bin%dUp"% (nominal.GetName(),name,truebinname,p,bin))
+                            p0Dn = nominal.Clone("%s_%s_%s_%s_bin%dDown"% (nominal.GetName(),name,truebinname,p,bin))
                             p0Up.SetBinContent(bin,nominal.GetBinContent(bin)+effect*nominal.GetBinError(bin))
                             p0Dn.SetBinContent(bin,nominal.GetBinContent(bin)**2/p0Up.GetBinContent(bin))
                             report[str(p0Up.GetName())[2:]] = p0Up
                             report[str(p0Dn.GetName())[2:]] = p0Dn
-                            systsEnv2["%s_%s_%s_bin%d"%(name,binname,p,bin)] = (dict([(_p,"1" if _p==p else "-") for _p in procs]),dict([(_p,"1" if _p==p else "-") for _p in procs]),"templates")
+                            systsEnv2["%s_%s_%s_bin%d"%(name,truebinname,p,bin)] = (dict([(_p,"1" if _p==p else "-") for _p in procs]),dict([(_p,"1" if _p==p else "-") for _p in procs]),"templates")
                             break # otherwise you apply more than once to the same bin if more regexps match
             elif 'TH2' in nominal.ClassName():
                 for binx in xrange(1,nominal.GetNbinsX()+1):
@@ -385,18 +364,18 @@ for name in systsEnv.keys():
                             if re.match(binmatch+"$",'%d,%d'%(binx,biny)):
                                 if nominal.GetBinContent(binx,biny) == 0 or nominal.GetBinError(binx,biny) == 0:
                                     if nominal.Integral() != 0: 
-                                        print "WARNING: for process %s in binname %s, bin %d,%d has zero yield or zero error." % (p,binname,binx,biny)
+                                        print "WARNING: for process %s in truebinname %s, bin %d,%d has zero yield or zero error." % (p,truebinname,binx,biny)
                                     break
                                 if (effect*nominal.GetBinError(binx,biny)<0.1*sqrt(nominal.GetBinContent(binx,biny)+0.04)):
                                     if options.verbose: print 'skipping stat_foreach_shape_bins %s %d,%d because it is irrelevant'%(p,binx,biny)
                                     break
-                                p0Up = nominal.Clone("%s_%s_%s_%s_bin%d_%dUp"% (nominal.GetName(),name,binname,p,binx,biny))
-                                p0Dn = nominal.Clone("%s_%s_%s_%s_bin%d_%dDown"% (nominal.GetName(),name,binname,p,binx,biny))
+                                p0Up = nominal.Clone("%s_%s_%s_%s_bin%d_%dUp"% (nominal.GetName(),name,truebinname,p,binx,biny))
+                                p0Dn = nominal.Clone("%s_%s_%s_%s_bin%d_%dDown"% (nominal.GetName(),name,truebinname,p,binx,biny))
                                 p0Up.SetBinContent(binx,biny,nominal.GetBinContent(binx,biny)+effect*nominal.GetBinError(binx,biny))
                                 p0Dn.SetBinContent(binx,biny,nominal.GetBinContent(binx,biny)**2/p0Up.GetBinContent(binx,biny))
                                 report[str(p0Up.GetName())[2:]] = p0Up
                                 report[str(p0Dn.GetName())[2:]] = p0Dn
-                                systsEnv2["%s_%s_%s_bin%d_%d"%(name,binname,p,binx,biny)] = (dict([(_p,"1" if _p==p else "-") for _p in procs]),dict([(_p,"1" if _p==p else "-") for _p in procs]),"templates")
+                                systsEnv2["%s_%s_%s_bin%d_%d"%(name,truebinname,p,binx,biny)] = (dict([(_p,"1" if _p==p else "-") for _p in procs]),dict([(_p,"1" if _p==p else "-") for _p in procs]),"templates")
                                 break # otherwise you apply more than once to the same bin if more regexps match
         elif mode in ["templates"]:
             nominal = report[p]
@@ -464,121 +443,158 @@ systsEnv = {}
 systsEnv.update(systsEnv1)
 systsEnv.update(systsEnv2)
 
+## create efficiency scale factors, if needed
+if len(masses) > 1 and options.massIntAlgo not in [ "sigmaBR","noeff"]:
+    x = ROOT.std.vector('double')()
+    y = { "hww": ROOT.std.vector('double')(), "hzz": ROOT.std.vector('double')(), "htt": ROOT.std.vector('double')() }
+    for m in 110,115,120,130,135,140:
+        x.push_back(m)
+        for d in "htt","hww","hzz":
+            p = "ttH_%s_%d" % (d,m)
+            h0 = report[p] 
+            h  = report["ttH_%s" % d] 
+            #print "efficiency scale factor %s @ %d = %.3f" % (d,m,h.Integral()/h0.Integral())
+            y[d].push_back(h.Integral()/h0.Integral())
+        if m == 120:
+            x.push_back(125)
+            y["hww"].push_back(1)
+            y["htt"].push_back(1)
+            y["hzz"].push_back(1)
+    for d in "htt","hww":#,"hzz": h->ZZ is bad
+        splines["efficiency_"+d] = ROOT.ROOT.Math.Interpolator(x,y[d])
+
+if len(masses) > 1:
+    for mass in masses:
+        smass = str(mass).replace(".0","")
+        for p in "ttH_hww ttH_hzz ttH_htt".split():
+            scale = getYieldScale(mass,p)
+            posts = ['']
+            for name,(effmap0,effmap12,mode) in systsEnv.iteritems():
+                if re.match('envelop.*',mode) and effmap0[p] != "-": 
+                    posts += [ "_%s%d%s" % (name,i,d) for (i,d) in [(0,'Up'),(0,'Down'),(1,'Up'),(1,'Down'),(2,'Up'),(2,'Down')]]
+                elif re.match('shapeOnly2D.*',mode): 
+                    posts += [ "_%s%d%s" % (name,i,d) for (i,d) in [(1,'Up'),(1,'Down'),]]
+                elif effmap0[p]  != "-":
+                    posts += [ "_%s%s" % (name,d) for d in ['Up','Down']]
+                elif effmap12[p] != "-":
+                    posts += [ "_%s%d%s" % (name,i,d) for (i,d) in [(1,'Up'),(1,'Down'),(2,'Up'),(2,'Down')]]
+            for post in posts:
+                template = report["%s%s" % (p,post)].Clone("x_%s%s%s" % (p,smass,post))
+                template.Scale(scale)
+                if options.massIntAlgo == "full":
+                    pythias = [ 110,115,120,125,130,135,140]
+                    pythias.sort(key = lambda x : abs(x-mass))
+                    mpythia1 = pythias[0]
+                    mpythia2 = pythias[1]
+                    if mpythia1 > mpythia2: (mpythia1, mpythia2) = (mpythia2, mpythia1)
+                    #print "for mass %s, take closest pythias from %d, %d" % (mass, mpythia1, mpythia2)
+                    norm = template.Integral()
+                    h0_m0 = report[p]
+                    h0_m1  = report[("%s_%d" % (p,mpythia1)) if mpythia1 != 125 else p]
+                    h0_m2  = report[("%s_%d" % (p,mpythia2)) if mpythia2 != 125 else p]
+                    w1 = abs(mass-mpythia2)/abs(mpythia1-mpythia2)
+                    w2 = abs(mass-mpythia1)/abs(mpythia1-mpythia2)
+                    for b in xrange(1,template.GetNbinsX()+1):
+                        avg = w1*h0_m1.GetBinContent(b) + w2*h0_m2.GetBinContent(b)
+                        ref = h0_m0.GetBinContent(b)
+                        if avg > 0 and ref > 0: 
+                            template.SetBinContent(b, template.GetBinContent(b) * avg/ref)
+                        #print "bin %d: m1 %7.4f   m2 %7.4f  avg %7.4f   ref %7.4f " % (b, h0_m1.GetBinContent(b), h0_m2.GetBinContent(b), avg, ref)
+                    template.Scale(norm/template.Integral())
+                    #exit(0)
+                report["%s%s%s" % (p,smass,post)] = template
+                #print "created x_%s%s%s" % (p,mass,post)
+if len(masses) > 1: 
+    if not os.path.exists(outdir+"/common"): os.mkdir(outdir+"/common")
 for mass in masses:
     smass = str(mass).replace(".0","")
     myout = outdir
-    myout += "%s/" % mass
-    myyields = dict([(k,v) for (k,v) in allyields.iteritems()]) 
-    if not os.path.exists(myout): os.mkdir(myout)
-    datacard = open(myout+binname+".card.txt", "w"); 
-    datacard.write("## Datacard for cut file %s\n"%args[1])
+    if len(masses) > 1:
+        myout += "%s/" % smass 
+        if not os.path.exists(myout): os.mkdir(myout)
+        myyields = dict([(k,getYieldScale(mass,k)*v) for (k,v) in allyields.iteritems()]) 
+        datacard = open(myout+binname+".card.txt", "w"); 
+        datacard.write("## Datacard for cut file %s (mass %s)\n"%(args[1],mass))
+        datacard.write("shapes *        * ../common/%s.input.root x_$PROCESS x_$PROCESS_$SYSTEMATIC\n" % binname)
+        datacard.write("shapes ttH_hww  * ../common/%s.input.root x_$PROCESS$MASS x_$PROCESS$MASS_$SYSTEMATIC\n" % binname)
+        datacard.write("shapes ttH_hzz  * ../common/%s.input.root x_$PROCESS$MASS x_$PROCESS$MASS_$SYSTEMATIC\n" % binname)
+        datacard.write("shapes ttH_htt  * ../common/%s.input.root x_$PROCESS$MASS x_$PROCESS$MASS_$SYSTEMATIC\n" % binname)
+    else:
+        myyields = dict([(k,v) for (k,v) in allyields.iteritems()]) 
+        if not os.path.exists(myout): os.mkdir(myout)
+        datacard = open(myout+binname+".card.txt", "w"); 
+        datacard.write("## Datacard for cut file %s\n"%args[1])
+        datacard.write("shapes *        * %s.input.root x_$PROCESS x_$PROCESS_$SYSTEMATIC\n" % binname)
+    datacard.write('##----------------------------------\n')
+    datacard.write('bin         %s\n' % binname)
+    datacard.write('observation %s\n' % myyields['data_obs'])
+    datacard.write('##----------------------------------\n')
     klen = max([7, len(binname)]+[len(p) for p in procs])
     kpatt = " %%%ds "  % klen
     fpatt = " %%%d.%df " % (klen,3)
     datacard.write('##----------------------------------\n')
-    if options.unbinned:
-        wsfile = binname+".input.root" if options.appendWorkspace == None else options.appendWorkspace
-        myunbinnedyields = {}
-        for proc in procs:
-            myunbinnedyields[proc] = -1
-            if len(options.processesFromCR):
-                for p0 in options.processesFromCR:
-                    for p in p0.split(","): 
-                        if re.match(p+"$", proc):  myunbinnedyields[proc] = 1
-            datacard.write(('shapes %-10s %-7s %-20s' % (proc,binname,wsfile))+" w:"+ proc + "_" + options.region)
-            if myunbinnedyields[proc]==-1: datacard.write("%30s" % ("     w:"+ proc + "_" + options.region + "$SYSTEMATIC\n"))
-            else:  datacard.write("\n")
-        if len(options.correlateProcessCR):
-            for p0 in options.correlateProcessCR:
-                corr_proc = p0.split(",")[0]
-                datacard.write(('shapes %-10s %-7s %-20s' % (corr_proc,binname,wsfile))+" w:"+ corr_proc + "_" + options.region+"\n")
-        datacard.write(('shapes %-10s %-7s %-20s' % ("data_obs",binname,wsfile))+" w:data_obs_" + options.region+"\n")
-        datacard.write('##----------------------------------\n')
-        datacard.write('bin         %s\n' % binname)
-        datacard.write('observation -1\n')
-        datacard.write('##----------------------------------\n')
-        datacard.write('##----------------------------------\n')
-        if len(options.correlateProcessCR):
-            for p0 in options.correlateProcessCR:
-                pars = p0.split(",")
-                corr_proc = pars[0]
-                datacard.write('bin                          '+(" ".join([kpatt % binname  for p in procs + [""]]))+"\n")
-                datacard.write('process                      '+(" ".join([kpatt % p        for p in procs]))+(kpatt % corr_proc)+"\n")
-                datacard.write('process                      '+(" ".join([kpatt % iproc[p] for p in procs]))+(kpatt % str(len(procs)+1))+"\n")
-                datacard.write('rate                         '+(" ".join([kpatt % myunbinnedyields[p] for p in procs]))+(kpatt % "1")+"\n")
-        else:
-            datacard.write('bin                          '+(" ".join([kpatt % binname  for p in procs]))+"\n")
-            datacard.write('process                      '+(" ".join([kpatt % p        for p in procs]))+"\n")
-            datacard.write('process                      '+(" ".join([kpatt % iproc[p] for p in procs]))+"\n")
-            datacard.write('rate                         '+(" ".join([kpatt % myunbinnedyields[p] for p in procs]))+"\n")
-        datacard.write('##----------------------------------\n')
-    else:
-        datacard.write("shapes *        * %s.input.root x_$PROCESS x_$PROCESS_$SYSTEMATIC\n" % binname)
-        datacard.write('##----------------------------------\n')
-        datacard.write('bin         %s\n' % binname)
-        datacard.write('observation %s\n' % myyields['data_obs'])
-        datacard.write('##----------------------------------\n')
-        datacard.write('##----------------------------------\n')
-        datacard.write('bin                          '+(" ".join([kpatt % binname  for p in procs]))+"\n")
-        datacard.write('process                      '+(" ".join([kpatt % p        for p in procs]))+"\n")
-        datacard.write('process                      '+(" ".join([kpatt % iproc[p] for p in procs]))+"\n")
-        datacard.write('rate                         '+(" ".join([fpatt % myyields[p] for p in procs]))+"\n")
-        datacard.write('##----------------------------------\n')
-    dummy_syst = '' if not len(options.correlateProcessCR) else (kpatt % '-')
+    datacard.write('bin             '+(" ".join([kpatt % binname  for p in procs]))+"\n")
+    datacard.write('process         '+(" ".join([kpatt % p        for p in procs]))+"\n")
+    datacard.write('process         '+(" ".join([kpatt % iproc[p] for p in procs]))+"\n")
+    datacard.write('rate            '+(" ".join([fpatt % myyields[p] for p in procs]))+"\n")
+    datacard.write('##----------------------------------\n')
     for name,effmap in systs.iteritems():
-        datacard.write(('%-25s lnN' % name) + " ".join([kpatt % effmap[p]   for p in procs]) + dummy_syst +"\n")
+        datacard.write(('%-12s lnN' % name) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
     for name,(effmap0,effmap12,mode) in systsEnv.iteritems():
         if mode == "templates":
-            datacard.write(('%-10s shape' % name) + " ".join([kpatt % effmap0[p]  for p in procs]) + dummy_syst + "\n")
+            datacard.write(('%-10s shape' % name) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
         if re.match('envelop.*',mode):
-            datacard.write(('%-10s shape' % (name+"0")) + " ".join([kpatt % effmap0[p]  for p in procs]) + dummy_syst + "\n")
+            datacard.write(('%-10s shape' % (name+"0")) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
         if any([re.match(x+'.*',mode) for x in ["envelop", "shapeOnly"]]):
-            datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in procs]) + dummy_syst + "\n")
+            datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
             if "shapeOnly2D" not in mode:
-                datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in procs]) + dummy_syst + "\n")
-    if len(options.correlateProcessCR):
-        for p0 in options.correlateProcessCR:
-            corr_proc = p0.split(",")[0]
-            nbins = next(report.itervalues()).GetNbinsX()
-            for b in range(1,nbins+1): 
-                datacard.write(('%-20s param    %-7d %-7d' % ("_".join([corr_proc,options.region,("bin%d"%b),"Runc"]),0,1 )) + "\n")
+                datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
+if len(masses) > 1:
+    myout = outdir
+    myyields = dict([(k,-1 if "ttH" in k else v) for (k,v) in allyields.iteritems()]) 
+    if not os.path.exists(myout): os.mkdir(myout)
+    datacard = open(myout+binname+".card.txt", "w"); 
+    datacard.write("## Datacard for cut file %s (all massess, taking signal normalization from templates)\n")
+    datacard.write("shapes *        * common/%s.input.root x_$PROCESS x_$PROCESS_$SYSTEMATIC\n" % binname)
+    datacard.write("shapes ttH_hww  * common/%s.input.root x_$PROCESS$MASS x_$PROCESS$MASS_$SYSTEMATIC\n" % binname)
+    datacard.write("shapes ttH_hzz  * common/%s.input.root x_$PROCESS$MASS x_$PROCESS$MASS_$SYSTEMATIC\n" % binname)
+    datacard.write("shapes ttH_htt  * common/%s.input.root x_$PROCESS$MASS x_$PROCESS$MASS_$SYSTEMATIC\n" % binname)
+    datacard.write('##----------------------------------\n')
+    datacard.write('bin         %s\n' % binname)
+    datacard.write('observation %s\n' % myyields['data_obs'])
+    datacard.write('##----------------------------------\n')
+    klen = max([7, len(binname)]+[len(p) for p in procs])
+    kpatt = " %%%ds "  % klen
+    fpatt = " %%%d.%df " % (klen,3)
+    datacard.write('##----------------------------------\n')
+    datacard.write('bin             '+(" ".join([kpatt % binname  for p in procs]))+"\n")
+    datacard.write('process         '+(" ".join([kpatt % p        for p in procs]))+"\n")
+    datacard.write('process         '+(" ".join([kpatt % iproc[p] for p in procs]))+"\n")
+    datacard.write('rate            '+(" ".join([fpatt % myyields[p] for p in procs]))+"\n")
+    datacard.write('##----------------------------------\n')
+    for name,effmap in systs.iteritems():
+        datacard.write(('%-12s lnN' % name) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
+    for name,(effmap0,effmap12,mode) in systsEnv.iteritems():
+        if mode == "templates":
+            datacard.write(('%-10s shape' % name) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
+        if re.match('envelop.*',mode):
+            datacard.write(('%-10s shape' % (name+"0")) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
+        if any([re.match(x+'.*',mode) for x in ["envelop", "shapeOnly"]]):
+            datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
+            datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
+    datacard.close()
+    print "Wrote to ",myout+binname+".card.txt"
+    if options.verbose:
+        print "="*120
+        os.system("cat %s.card.txt" % (myout+binname));
+        print "="*120
 
-for mass in masses:
-    myout = outdir + ("%s/" % mass)
-    if options.appendWorkspace == None:
-        fout = myout+binname+".input.root"
-        input_file = ROOT.TFile.Open(fout,"recreate")
-        workspace = ROOT.RooWorkspace("w","workspace")
-    else:
-        fout = myout+"/"+options.appendWorkspace
-        input_file = ROOT.TFile.Open(fout,"update")
-        workspace = input_file.Get("w")
+myout = outdir+"/common/" if len(masses) > 1 else outdir;
+workspace = ROOT.TFile.Open(myout+binname+".input.root", "RECREATE")
+for n,h in report.iteritems():
+    if options.verbose: print "\t%s (%8.3f events)" % (h.GetName(),h.Integral())
+    workspace.WriteTObject(h,h.GetName())
+workspace.Close()
 
-    var = getBinnedVar("x",report.itervalues().next())
-    varlist = ROOT.RooArgList(var)
+print "Wrote to ",myout+binname+".input.root"
 
-    if len(options.correlateProcessCR):
-        for p0 in options.correlateProcessCR:
-            pars = p0.split(",")
-            proc = pars[0]; corr_region = pars[1]; alphahist = pars[2]; filealpha = pars[3]
-            addCorrelatedShapeFromSR(proc,var,options.region,corr_region,workspace,h,alphahist,filealpha)
-    
-    for n,h in report.iteritems():
-        if options.verbose > 0: print "\t%s (%8.3f events)" % (h.GetName(),h.Integral())
-        proc = "_".join((h.GetName()).split("_")[1:])
-        if proc == "data": continue
-        simpleTemplate = True
-        if len(options.processesFromCR):
-            for p0 in options.processesFromCR:
-                for p in p0.split(","):
-                    if re.match(p+"$", proc): 
-                        simpleTemplate = False
-                        addCorrelatedShape(proc,var,options.region,workspace,h)
-        if simpleTemplate: 
-            print "adding template for process ",proc
-            addTemplate(proc,varlist,options.region,workspace,h)
-
-    workspace.writeToFile(fout,ROOT.kTRUE)
-
-    if options.verbose > -1:
-        print "Wrote to ",fout
