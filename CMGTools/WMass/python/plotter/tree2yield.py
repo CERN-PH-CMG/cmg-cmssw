@@ -16,7 +16,7 @@ from copy import *
 
 from CMGTools.WMass.plotter.cutsFile import *
 from CMGTools.TTHAnalysis.plotter.mcCorrections import *
-from CMGTools.TTHAnalysis.plotter.fakeRate import *
+from CMGTools.WMass.plotter.fakeRate import *
 
 if "/functions_cc.so" not in ROOT.gSystem.GetLibraries(): 
     ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/WMass/python/plotter/functions.cc+" % os.environ['CMSSW_BASE']);

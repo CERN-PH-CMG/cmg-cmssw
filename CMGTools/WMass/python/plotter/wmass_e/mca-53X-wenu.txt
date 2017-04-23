@@ -1,8 +1,8 @@
 # ZJets
-Z   : DYJetsM50 : 3503.7; FillColor=ROOT.kAzure+2, Label="Z"
+Z   : DYJetsM50 : 3503.7; FillColor=ROOT.kAzure+2, Label="Z", NormSystematic=0.20
 
 # WJets
-W+   : WJets :  37509.0; FillColor=ROOT.kRed+2, Label="W"
+W+   : WJets :  37509.0; FillColor=ROOT.kRed+2, Label="W", NormSystematic=0.20
 
 #T Top
 Top  : TTJets :  245.59; FillColor=ROOT.kGray+2, Label="Top"
@@ -18,7 +18,6 @@ DiBosons : WWJets : 5.995;      FillColor=ROOT.kViolet+2, Label="DiBosons"
 DiBosons : WZJets : 1.057*1.10; FillColor=ROOT.kViolet+2, Label="DiBosons"
 
 # -- 2012 Data ---
-data: SingleElectronAB ; Label="Data"
-data: SingleElectronC ; Label="Data"
-data: SingleElectronD ; Label="Data"
+data: SingleElectronAB+SingleElectronC+SingleElectronD ; Label="Data"
 
+qcd_data: SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/qcd_e_data.txt", Label="QCD", FillColor=ROOT.kBlack, FillStyle=3005, NormSystematic=10.00
