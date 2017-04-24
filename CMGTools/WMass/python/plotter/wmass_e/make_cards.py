@@ -2,7 +2,8 @@
 from shutil import copyfile
 import re, sys, os, os.path, subprocess
 
-FASTTEST='--max-entries 1000 '
+FASTTEST=''
+#FASTTEST='--max-entries 1000 '
 T='/data1/emanuele/wmass/TREES_1LEP_53X_V2_WSKIM_V1/'
 J=4
 MCA='wmass_e/mca-53X-wenu.txt'
@@ -27,6 +28,7 @@ def writePdfSystsToSystFile(sample,syst,channel,filename):
         
 from optparse import OptionParser
 parser = OptionParser(usage="%prog testname ")
+parser.add_option("--etaBins", dest="etaBins", action="append", default=[], help="Give a list of lepton eta bins to make fit categories")
 (options, args) = parser.parse_args()
 
 outdir="cards/"+args[0]
@@ -61,11 +63,16 @@ for mass in masses:
     charges=[POS,NEG]
     if not os.path.exists(myout): os.mkdir(myout)
     for c in charges: 
-        BIN_OPTS=OPTIONS+W+" -o wenu_"+("pos" if "positive" in c else "neg")+" --od "+myout
-        cmd = "python makeShapeCards.py "+ARGS+" "+BIN_OPTS+c
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-        out, err = p.communicate() 
-        result = out.split('\n')
-        for lin in result:
-            if not lin.startswith('#'):
-                print(lin)
+        dcnamePref="wenu_"+("pos" if "positive" in c else "neg")
+        etaBins=options.etaBins if options.etaBins!=[] else ['0','5']
+        for ieta in range(len(etaBins)-1):
+            dcname = dcnamePref+"_eta"+str(ieta) if options.etaBins!=[] else dcnamePref+'_etaIncl'
+            etacut=" -A alwaystrue eta%d 'abs(LepGood1_eta)>%s && abs(LepGood1_eta)<%s' " % (ieta,etaBins[ieta],etaBins[ieta+1])
+            BIN_OPTS=OPTIONS+W+" -o "+dcname+" --od "+myout
+            cmd = "python makeShapeCards.py "+ARGS+" "+BIN_OPTS+c+etacut
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+            out, err = p.communicate() 
+            result = out.split('\n')
+            for lin in result:
+                if not lin.startswith('#'):
+                    print(lin)
