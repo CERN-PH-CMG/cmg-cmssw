@@ -766,7 +766,7 @@ class PlotMaker:
                             plot.SetMarkerStyle(0)
 
 
-                if not self._options.emptyStack and stack.GetNhists() == 0:
+                if not self._options.emptyStack and stack.GetHists().Capacity() == 0:
                     print "ERROR: for %s, all histograms are empty\n " % pspec.name
                     return
 
