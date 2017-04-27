@@ -1,14 +1,42 @@
 import ROOT
 import os, types
+import numpy as np
 from ROOT import TRandom3
 from math import *
 
 class ElectronCalibrator:
-    def __init__(self,isMC,correctionsFile):
+    def __init__(self,isMC,correctionsFile,scaleSystFile=None):
         self.electronEnergyCalibrator = ROOT.ElectronEnergyCalibratorRun2(1 if isMC else 0, # isMC
                                                                           True, #sync: trick to apply only scale corrections to data
                                                                           correctionsFile)
         self.isMC = isMC
+        if scaleSystFile!=None: 
+            self.setSystFile(scaleSystFile)
+
+    def getBin(self, bvec, val):
+        return int(bvec.searchsorted(val, side="right")) - 1
+
+    def setSystFile(self,filename):
+        if not os.path.exists(filename):
+            print "WARNING! standaloneElectronCalibrator systematic file ",filename," does not exist!"
+            return
+        lines = [line.rstrip('\n') for line in open(filename)]
+        pts=[]; etas=[]
+        for l in lines:
+            fields=l.split()
+            if float(fields[1]) not in pts: pts.append(float(fields[1]))
+            if float(fields[2]) not in pts: pts.append(float(fields[2]))
+            if float(fields[4]) not in etas: etas.append(float(fields[4]))
+            if float(fields[5]) not in etas: etas.append(float(fields[5]))
+        self.pt_bins=np.array(pts)
+        self.eta_bins=np.array(etas)
+        self.scaleSystMap={}
+        for l in lines:
+            fields=l.split()
+            ptbin=self.getBin(self.pt_bins,float(fields[1]))
+            etabin=self.getBin(self.eta_bins,float(fields[4]))
+            self.scaleSystMap[(ptbin,etabin)]=float(fields[6])
+
     def correct(self,electron,run):
         oldMomentum = ROOT.TLorentzVector()
         oldMomentum.SetPtEtaPhiM(electron.pt,electron.eta,electron.phi,0.51e-3)
@@ -41,3 +69,12 @@ class ElectronCalibrator:
         electron.pt = electron.pt * scale
         electron.pterr = mySimpleElectron.getNewEnergyError()/cosh(abs(electron.eta))
 
+    def getOneSigmaScaleFromClosure(self,electron):
+        if not hasattr(self,'scaleSystMap'): 
+            print "ERROR! Scale systematics not set! Return 0!"
+            return 0
+        k = (self.getBin(self.pt_bins,electron.pt),self.getBin(self.eta_bins,abs(electron.eta)))
+        if k in self.scaleSystMap: return self.scaleSystMap[k]
+        else: 
+            print "electron with pT,eta = ",electron.pt,electron.eta," do not fit in the systematics map. Return 0 systematic"
+            return 0.

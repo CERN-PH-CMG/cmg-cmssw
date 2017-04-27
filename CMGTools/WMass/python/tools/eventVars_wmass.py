@@ -1,7 +1,7 @@
 from CMGTools.TTHAnalysis.treeReAnalyzer import *
 from CMGTools.WMass.tools.standaloneElectronCalibrator import ElectronCalibrator
 from CMGTools.WMass.tools.PileUpReWeighter import PileUpReWeighter
-import types
+import types, os
 
 class SimpleVBoson:
     def __init__(self,legs):
@@ -29,7 +29,8 @@ class EventVarsWmass:
         self.sample_nevt = sample_nevt        
         self.isMC = not any(x in dataset for x in "DoubleMu DoubleEl DoubleEG MuEG MuonEG SingleMu SingleEl".split())
         self.electronEnergyCalibrator = ElectronCalibrator(self.isMC,
-                                                           "EgammaAnalysis/ElectronTools/data//WMass_Winter17_ResidualCorrections_ele")
+                                                           "EgammaAnalysis/ElectronTools/data//WMass_Winter17_ResidualCorrections_ele",
+                                                           "%s/src/CMGTools/WMass/python/tools/data/systs_el_scale.txt" % os.environ['CMSSW_BASE'])
     def listBranches(self):
         self.wmass_nsteps = 40
         biglist = [ ("nLepCorr", "I"), ("iL","I",10,"nLepCorr"),
@@ -37,7 +38,7 @@ class EventVarsWmass:
                     ("w_pt","F"), ("w_mt","F"), ("z_pt","F"), ("z_mll","F") ]
         for jfloat in "pt eta phi mass btagCSV rawPt leadClean".split():
             biglist.append( ("JetClean"+"_"+jfloat,"F",10,"nJetClean") )
-        for lfloat in "eta pt pterr".split():
+        for lfloat in "eta pt pterr ptScaleUp ptScaleDn".split():
             biglist.append( ("LepCorr"+"_"+lfloat,"F",10,"nLepCorr") ) 
         mclist = [("nWMassSteps", "I"), ("mwWeight","F",self.wmass_nsteps+1,"nWMassSteps")]
         if self.isMC: biglist = biglist + mclist
@@ -127,14 +128,18 @@ class EventVarsWmass:
                     ret["nBTag20"] += 1
 
         # Lepton residual momentum scale corrections
-        for lfloat in "eta pt pterr".split():
+        for lfloat in "eta pt pterr ptScaleUp ptScaleDn".split():
             lepret[lfloat] = []
+        scaleVars=['ptScaleUp','ptScaleDn']; scaleCoeffs=[1.0,-1.0]; 
         for il in ret["iL"]:
             l=tightleps[il]
             if abs(l.pdgId)==11:
                 self.electronEnergyCalibrator.correct(l,event.run)
             for lfloat in "eta pt pterr".split():
                 lepret[lfloat].append(getattr(l,lfloat) if hasattr(l,lfloat) else 0.0)
+            for t in zip(scaleVars,scaleCoeffs):
+                syst = 0.0 if abs(l.pdgId)!=11 else self.electronEnergyCalibrator.getOneSigmaScaleFromClosure(l)
+                lepret[t[0]].append((1+t[1]*syst)*l.pt)
 
         # event variables with corrected quantities (METs to be corrected)
         pfmet = self.PtEtaPhi3V(event.met_pt,0.,event.met_phi)
