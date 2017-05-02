@@ -46,7 +46,7 @@ class EventVarsWmass:
         print "self.branches = ",self.branches[:]
         return self.branches[:]
     def lepIdTight(self,lep):
-        if not lep.trgMatch: return False
+        # if not lep.trgMatch: return False
         if abs(lep.pdgId) == 13:
             if lep.pt <= 25 or abs(lep.eta)>2.1: return False
             return lep.tightId >=1 and lep.relIso04 < 0.15
