@@ -5,13 +5,8 @@ import os.path
 
 MODULES = []
 
-from CMGTools.MonoXAnalysis.tools.lep_SF import AllLepSFs
+from CMGTools.WMass.tools.lep_SF import AllLepSFs
 MODULES.append( ('lep',AllLepSFs()) )
-
-#from CMGTools.MonoXAnalysis.tools.trigger_SF import LepTriggerSF_Event, MetNoMuTriggerSF_Spline
-#MODULES.append( ('trig1lep',LepTriggerSF_Event()) )
-
-#MODULES.append( ('trigmetnomu',MetNoMuTriggerSF_Spline()) )
 
 #from CMGTools.MonoXAnalysis.tools.xsec_KF import xsec_KF
 #MODULES.append(('nlokf', xsec_KF("/afs/cern.ch/work/e/emanuele/public/monox/leptonsf/uncertainties_EWK_24bins.root") ))
@@ -56,7 +51,7 @@ parser.add_option("-N", "--events",  dest="chunkSize", type="int",    default=50
 parser.add_option("-j", "--jobs",    dest="jobs",      type="int",    default=1, help="Use N threads");
 parser.add_option("-p", "--pretend", dest="pretend",   action="store_true", default=False, help="Don't run anything");
 parser.add_option("-q", "--queue",   dest="queue",     type="string", default=None, help="Run jobs on lxbatch instead of locally");
-parser.add_option("-t", "--tree",    dest="tree",      default='treeProducerDarkMatterMonoJet', help="Pattern for tree name");
+parser.add_option("-t", "--tree",    dest="tree",      default='treeProducerWMassEle', help="Pattern for tree name");
 parser.add_option("-V", "--vector",  dest="vectorTree",action="store_true", default=True, help="Input tree is a vector")
 (options, args) = parser.parse_args()
 
@@ -69,15 +64,15 @@ if len(options.chunks) != 0 and len(options.datasets) != 1:
 
 jobs = []
 for D in glob(args[0]+"/*"):
-    treename = "tree"
-    fname    = "%s/%s/tree.root" % (D,options.tree)
+    treename = options.tree
+    fname    = "%s/%s/%s_tree.root" % (D,options.tree,options.tree)
 
-    if (not os.path.exists(fname)) and (os.path.exists("%s/%s/tree.root.url" % (D,options.tree)) ):
-        treename = "tree"
-        fname    = "%s/%s/tree.root" % (D,options.tree)
+    if (not os.path.exists(fname)) and (os.path.exists("%s/%s/%s_tree.root.url" % (D,options.tree,options.tree)) ):
+        treename = options.tree
+        fname    = "%s/%s/%s_tree.root" % (D,options.tree,options.tree)
         fname    = open(fname+".url","r").readline().strip()
 
-    if os.path.exists(fname) or (os.path.exists("%s/%s/tree.root.url" % (D,options.tree))):
+    if os.path.exists(fname) or (os.path.exists("%s/%s/%s_tree.root.url" % (D,options.tree,options.tree))):
         short = os.path.basename(D)
         if options.datasets != []:
             if short not in options.datasets: continue

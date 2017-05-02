@@ -16,11 +16,12 @@ class Lep_SF_one:
             xmax = h2d.GetXaxis().GetXmax()-1e-3
             ymin = h2d.GetYaxis().GetXmin()+1e-3
             ymax = h2d.GetYaxis().GetXmax()-1e-3
-            ybin = h2d.GetYaxis().FindBin(min(max(pt,ymin),ymax))
             if abs(pdgid)==11:
-                xbin = h2d.GetXaxis().FindBin(min(max(eta,xmin),xmax))
-            else:
                 xbin = h2d.GetXaxis().FindBin(min(max(abs(eta),xmin),xmax))
+                ybin = h2d.GetYaxis().FindBin(min(max(pt,ymin),ymax))
+            else:
+                xbin = h2d.GetXaxis().FindBin(min(max(pt,xmin),xmax))
+                ybin = h2d.GetYaxis().FindBin(min(max(eta,ymin),ymax))
             sfone *= h2d.GetBinContent(xbin,ybin)
         return sfone
     def __call__(self,lepton):        
@@ -28,11 +29,8 @@ class Lep_SF_one:
 
 class Lep_SF_both:
     def __init__(self,hists_el,hists_mu):
-        thists_el = [hists_el[0].Get("EGamma_SF2D")]
-        thists_mu = []
-        thists_mu.append(hists_mu[0].Get("Lep_eff_IsoMu24_OR_IsoTkMu24_PtEtaBins_abseta_pt_ratio"))
-        thists_mu.append(hists_mu[1].Get("Lep_eff_MC_NUM_TightID_DEN_genTracks_PAR_pt_eta_abseta_pt_ratio"))
-        thists_mu.append(hists_mu[2].Get("Lep_eff_TightISO_TightID_pt_eta_abseta_pt_ratio"))
+        thists_el = [hists_el[0].Get("electronsDATAMCratio_FO_ID_ISO")]
+        thists_mu = [hists_mu[0].Get("TH2D_ALL_2012")]
         self.sf_el = Lep_SF_one(thists_el)
         self.sf_mu = Lep_SF_one(thists_mu)
     def __call__(self,lepton):
@@ -52,10 +50,8 @@ class Lep_SF_Event:
 
 class AllLepSFs:
     def __init__(self):
-        self.f_el = [ROOT.TFile("/afs/cern.ch/work/e/emanuele/public/wmass/leptonsf/eff_eleID_CutsID_Loose_Moriond17.root")]
-        self.f_mu = [ROOT.TFile("/afs/cern.ch/work/e/emanuele/public/wmass/leptonsf/MuonTriggerEfficienciesAndSF_RunBtoH_Weighted.root"),
-                     ROOT.TFile("/afs/cern.ch/work/e/emanuele/public/wmass/leptonsf/MuonIDEfficienciesAndSF_BCDEFGH_Weighted.root"),
-                     ROOT.TFile("/afs/cern.ch/work/e/emanuele/public/wmass/leptonsf/MuonIsoEfficienciesAndSF_BCDEFGH_Weighted.root") ] 
+        self.f_el = [ROOT.TFile("/afs/cern.ch/work/e/emanuele/public/wmass/leptonsf/Electrons_SF_Run1_TriggeringMVA.root")]
+        self.f_mu = [ROOT.TFile("%s/src/CMGTools/TTHAnalysis/data/eff_mu12.root" % os.environ['CMSSW_BASE'])]
         self.sf_Tight = Lep_SF_Event(self.f_el,self.f_mu)
         f_lep = self.f_el + self.f_mu
         for f in f_lep: f.Close()
