@@ -2,8 +2,8 @@
 from shutil import copyfile
 import re, sys, os, os.path, subprocess
 
-FASTTEST=''
-#FASTTEST='--max-entries 1000 '
+#FASTTEST=''
+FASTTEST='--max-entries 1000 '
 T='/data1/emanuele/wmass/TREES_1LEP_53X_V2_WSKIM_V1/'
 J=4
 MCA='wmass_e/mca-53X-wenu.txt'
@@ -48,27 +48,25 @@ OPTIONS=" -P "+T+" --s2v -j "+str(J)+" -l 19.7 -f "+FASTTEST
 if not os.path.exists(outdir): os.makedirs(outdir)
 OPTIONS+=' -F mjvars/t "'+T+'/friends/evVarFriend_{cname}.root" '
 
-#masses = [ 19,20,21 ]
-masses = [20]
-mass_offs = 20
+masses = [ 19,20,21 ]
+#masses = [20]
+mass_offs = 0
 
-for mass in masses:
-    smass=str(mass-mass_offs)
-    myout = outdir
-    if len(masses) > 1:
-        myout += "/mW%s/" % smass 
-    W=" -W puWeight*mwWeight["+str(mass)+"] "
-    POS=" -A alwaystrue positive 'LepGood1_charge>0' "
-    NEG=" -A alwaystrue negative 'LepGood1_charge<0' "
-    charges=[POS,NEG]
+etaBins=options.etaBins if options.etaBins!=[] else ['0','5']
+for ieta in range(len(etaBins)-1):
+    subdir = "eta_"+str(ieta) if options.etaBins!=[] else 'etaIncl'
+    etacut=" -A alwaystrue eta%d 'abs(LepGood1_eta)>%s && abs(LepGood1_eta)<%s' " % (ieta,etaBins[ieta],etaBins[ieta+1])
+    myout = outdir + "/" + subdir
     if not os.path.exists(myout): os.mkdir(myout)
-    for c in charges: 
-        dcnamePref="wenu_"+("pos" if "positive" in c else "neg")
-        etaBins=options.etaBins if options.etaBins!=[] else ['0','5']
-        for ieta in range(len(etaBins)-1):
-            dcname = dcnamePref+"_eta"+str(ieta) if options.etaBins!=[] else dcnamePref+'_etaIncl'
-            etacut=" -A alwaystrue eta%d 'abs(LepGood1_eta)>%s && abs(LepGood1_eta)<%s' " % (ieta,etaBins[ieta],etaBins[ieta+1])
-            BIN_OPTS=OPTIONS+W+" -o "+dcname+" --od "+myout
+    for mass in masses:
+        smass=str(mass-mass_offs)
+        W=" -W puWeight*mwWeight["+str(mass)+"] "
+        POS=" -A alwaystrue positive 'LepGood1_charge>0' "
+        NEG=" -A alwaystrue negative 'LepGood1_charge<0' "
+        charges=[POS,NEG]
+        for c in charges: 
+            dcname="wenu_mass"+smass+("_pos" if "positive" in c else "_neg")
+            BIN_OPTS=OPTIONS+W+" -o "+dcname+" --od "+myout+" --floatProcesses W --groupSystematics pdfUncertainties pdf"
             cmd = "python makeShapeCards.py "+ARGS+" "+BIN_OPTS+c+etacut
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
             out, err = p.communicate() 

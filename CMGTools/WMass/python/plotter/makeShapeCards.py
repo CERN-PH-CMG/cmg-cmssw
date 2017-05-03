@@ -15,6 +15,8 @@ parser.add_option("--asimov", dest="asimov", action="store_true", help="Asimov")
 parser.add_option("--2d-binning-function",dest="binfunction", type="string", default=None, help="Function used to bin the 2D histogram: nbins:func, where func(x,y) = bin in [1,nbins]")
 parser.add_option("--infile",dest="infile", type="string", default=None, help="File to read histos from")
 parser.add_option("--savefile",dest="savefile", type="string", default=None, help="File to save histos to")
+parser.add_option("--floatProcesses",dest="floatProcesses", type="string", default=None, help="Completely float the yields of these processes")
+parser.add_option("--groupSystematics",dest="groupSystematics", type="string", nargs=2, default=None, help="Group systematics by [groupname pattern]")
 
 (options, args) = parser.parse_args()
 options.weight = True
@@ -35,6 +37,10 @@ outdir  = options.outdir+"/" if options.outdir else ""
 masses = [ 20 ]
 if options.masses:
     masses = [ float(x) for x in open(options.masses) ]
+
+floatProcs = []
+if options.floatProcesses:
+    floatProcs = [str(x) for x in options.floatProcesses]
 
 def file2map(x):
     ret = {}; headers = []
@@ -549,6 +555,10 @@ for mass in masses:
             datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
             if "shapeOnly2D" not in mode:
                 datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
+    for fp in floatProcs:
+        datacard.write('norm_'+fp+' rateParam * '+fp+' 1 [0.5,1.5]\n')
+    if options.groupSystematics:
+        datacard.write(options.groupSystematics[0]+' group = '+(" ".join([name for name,(effmap0,effmap12,mode) in systsEnv.iteritems() if options.groupSystematics[1] in name]))+"\n")
 if len(masses) > 1:
     myout = outdir
     myyields = dict([(k,-1 if "ttH" in k else v) for (k,v) in allyields.iteritems()]) 
