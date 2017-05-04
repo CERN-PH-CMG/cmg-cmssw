@@ -2,8 +2,8 @@
 from shutil import copyfile
 import re, sys, os, os.path, subprocess
 
-#FASTTEST=''
-FASTTEST='--max-entries 1000 '
+FASTTEST=''
+#FASTTEST='--max-entries 1000 '
 T='/data1/emanuele/wmass/TREES_1LEP_53X_V2_WSKIM_V1/'
 J=4
 MCA='wmass_e/mca-53X-wenu.txt'
@@ -48,7 +48,7 @@ OPTIONS=" -P "+T+" --s2v -j "+str(J)+" -l 19.7 -f "+FASTTEST
 if not os.path.exists(outdir): os.makedirs(outdir)
 OPTIONS+=' -F mjvars/t "'+T+'/friends/evVarFriend_{cname}.root" '
 
-masses = [ 19,20,21 ]
+masses = [ 10,20,40 ]
 #masses = [20]
 mass_offs = 0
 
@@ -60,14 +60,15 @@ for ieta in range(len(etaBins)-1):
     if not os.path.exists(myout): os.mkdir(myout)
     for mass in masses:
         smass=str(mass-mass_offs)
-        W=" -W puWeight*mwWeight["+str(mass)+"] "
+        W=" -W 'puWeight*mwWeight["+str(mass)+"]' "
         POS=" -A alwaystrue positive 'LepGood1_charge>0' "
         NEG=" -A alwaystrue negative 'LepGood1_charge<0' "
         charges=[POS,NEG]
         for c in charges: 
-            dcname="wenu_mass"+smass+("_pos" if "positive" in c else "_neg")
+            dcname="wenu_mass"+smass+("_pos_" if "positive" in c else "_neg_")+subdir
             BIN_OPTS=OPTIONS+W+" -o "+dcname+" --od "+myout+" --floatProcesses W --groupSystematics pdfUncertainties pdf"
             cmd = "python makeShapeCards.py "+ARGS+" "+BIN_OPTS+c+etacut
+            #print cmd
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
             out, err = p.communicate() 
             result = out.split('\n')
