@@ -8,8 +8,8 @@ W   : WJets :  37509.0; FillColor=ROOT.kRed+2, Label="W"
 Top  : TTJets :  245.59; FillColor=ROOT.kGray+2, Label="Top"
 Top  : Tsch :      3.79; FillColor=ROOT.kGray+2, Label="Top"
 Top  : Tbarsch :   1.76; FillColor=ROOT.kGray+2, Label="Top"
-Top  : Ttch :     56.4;  FillColor=ROOT.kGray+2, Label="Top"
-Top  : Tbartch :  30.7;  FillColor=ROOT.kGray+2, Label="Top"
+Top  : Ttch :      56.4; FillColor=ROOT.kGray+2, Label="Top"
+Top  : Tbartch :   30.7; FillColor=ROOT.kGray+2, Label="Top"
 Top  : TtW :      11.73; FillColor=ROOT.kGray+2, Label="Top"
 Top  : TbartW :   11.73; FillColor=ROOT.kGray+2, Label="Top"
 
@@ -18,7 +18,57 @@ DiBosons : WWJets : 5.995;      FillColor=ROOT.kViolet+2, Label="DiBosons"
 DiBosons : WZJets : 1.057*1.10; FillColor=ROOT.kViolet+2, Label="DiBosons"
 
 # -- 2012 Data ---
-data: DoubleElectronAB ; Label="Data"
-data: DoubleElectronC ; Label="Data"
-data: DoubleElectronD ; Label="Data"
+data: SingleElectronAB+SingleElectronC+SingleElectronD ; Label="Data"
 
+Z_pdf1_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[1]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf1_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[2]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf2_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[3]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf2_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[4]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf3_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[5]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf3_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[6]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf4_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[7]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf4_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[8]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf5_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[9]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf5_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[10]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf6_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[11]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf6_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[12]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf7_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[13]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf7_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[14]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf8_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[15]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf8_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[16]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf9_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[17]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf9_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[18]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf10_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[19]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf10_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[20]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf11_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[21]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf11_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[22]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf12_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[23]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf12_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[24]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf13_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[25]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf13_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[26]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf14_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[27]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf14_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[28]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf15_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[29]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf15_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[30]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf16_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[31]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf16_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[32]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf17_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[33]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf17_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[34]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf18_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[35]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf18_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[36]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf19_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[37]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf19_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[38]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf20_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[39]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf20_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[40]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf21_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[41]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf21_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[42]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf22_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[43]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf22_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[44]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf23_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[45]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf23_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[46]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf24_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[47]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf24_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[48]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf25_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[49]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf25_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[50]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf26_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[51]/pdfWeight_CT10[0]; SkipMe=True 
+Z_pdf26_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[52]/pdfWeight_CT10[0]; SkipMe=True 
