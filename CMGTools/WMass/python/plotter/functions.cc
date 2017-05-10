@@ -122,6 +122,15 @@ float u2_2(float met_pt, float met_phi, float ref_pt, float ref_phi)
     return (ux*ref_py - uy*ref_px)/ref_pt;
 }
 
+float met_cal(float met_pt, float met_phi, float lep_pt, float lep_phi, float u_coeff, float u_syst)
+{
+    float met_px = met_pt*std::cos(met_phi), met_py = met_pt*std::sin(met_phi);
+    float lep_px = lep_pt*std::cos(lep_phi), lep_py = lep_pt*std::sin(lep_phi);
+    float ux = met_px + lep_px, uy = met_py + lep_py;
+    float metcal_px = - u_coeff*ux*(1+u_syst) - lep_px, metcal_py = - u_coeff*uy*(1+u_syst) - lep_py;
+    return hypot(metcal_px,metcal_py);
+}
+
 int monojetIDcentralJet(float jetClean_leadClean, float jetClean_eta)
 {
 
