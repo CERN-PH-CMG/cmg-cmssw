@@ -32,7 +32,7 @@ class EventVarsWmass:
                                                            "EgammaAnalysis/ElectronTools/data//WMass_Winter17_ResidualCorrections_ele",
                                                            "%s/src/CMGTools/WMass/python/tools/data/systs_el_scale.txt" % os.environ['CMSSW_BASE'])
     def listBranches(self):
-        self.wmass_nsteps = 40
+        self.wmass_steps = [x for x in range(0,10,2)] + [x for x in range(10,25,5)] + [x for x in range(25,55,10)] + [x for x in range(55,141,20)]
         biglist = [ ("nLepCorr", "I"), ("iL","I",10,"nLepCorr"),
                     ("nJetClean", "I"), ("iJ","I",10,"nJetClean"),
                     ("w_pt","F"), ("w_mt","F"), ("z_pt","F"), ("z_mll","F") ]
@@ -40,7 +40,7 @@ class EventVarsWmass:
             biglist.append( ("JetClean"+"_"+jfloat,"F",10,"nJetClean") )
         for lfloat in "eta pt pterr ptScaleUp ptScaleDn".split():
             biglist.append( ("LepCorr"+"_"+lfloat,"F",10,"nLepCorr") ) 
-        mclist = [("nWMassSteps", "I"), ("mwWeight","F",self.wmass_nsteps+1,"nWMassSteps")]
+        mclist = [("nWMassSteps", "I"), ("mwWeight","F",2*len(self.wmass_steps)-1,"nWMassSteps")]
         if self.isMC: biglist = biglist + mclist
         self.branches = self.branches + biglist
         print "self.branches = ",self.branches[:]
@@ -164,11 +164,11 @@ class EventVarsWmass:
             genw = [p for p in genp if abs(p.pdgId)==24]
             if len(genw)>0:
                 genmass = genw[0].mass
-                step = 0.002
-                imass = 80.398 - self.wmass_nsteps/2*step # 40 MeV interval
-                while (imass<80.398 + self.wmass_nsteps/2*step):
-                    bw_w.append(self.BW_weight(24,genmass,imass))
-                    imass=imass+step
+                wmass_central = 80.398
+                wmass_steps_full = [-1e-3*x + wmass_central for x in self.wmass_steps[1:]]
+                wmass_steps_full += [1e-3*x + wmass_central for x in self.wmass_steps]
+                wmass_steps_full.sort()
+                bw_w = [self.BW_weight(24,genmass,x) for x in wmass_steps_full]
             ret["nWMassSteps"] = len(bw_w)
             ret["mwWeight"] = bw_w
 
