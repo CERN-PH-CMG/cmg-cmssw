@@ -25,7 +25,7 @@ def base(selection):
     CORE=' '.join([TREES,TREESONLYSKIMZ])
     if 'pccmsrm29' in os.environ['HOSTNAME']: CORE = CORE.replace('/data1/emanuele/wmass','/u2/emanuele')
 
-    CORE+=" -f -j 4 -l 19.7 --s2v --tree treeProducerWMassEle "# --neg"
+    CORE+=" -f -j 2 -l 19.7 --s2v --tree treeProducerWMassEle "# --neg"
     if dowhat == "plots": CORE+=" --lspam '#bf{CMS} #it{Preliminary}' --legendWidth 0.20 --legendFontSize 0.035 --showRatio --maxRatioRange 0.8 1.2 --fixRatioRange  --showMCError"
 
     if selection=='wenu':
@@ -34,7 +34,7 @@ def base(selection):
         if dowhat in ["plots","ntuple"]: GO+=" wmass_e/wenu_plots.txt "
     elif selection=='zee':
         GO="%s wmass_e/mca-53X-zee.txt wmass_e/zee.txt "%CORE
-        GO="%s -W 'puWeight*SF_LepTight_1l'"%GO
+        GO="%s -W 'puWeight*SF_LepTight_2l'"%GO
         if dowhat in ["plots","ntuple"]: GO+=" wmass_e/zee_plots.txt --xP 'mZ1' "
     else:
         raise RuntimeError, 'Unknown selection'
@@ -73,8 +73,8 @@ if __name__ == '__main__':
 
     if 'zee_' in torun:
         x = base('zee')
-        if '_ebeb' in torun: x = add(x,"-A alwaystrue ebeb 'max(abs(LepGood1_eta),abs(LepGood2_eta))<1.44'")
-        if '_notebeb' in torun: x = add(x,"-A alwaystrue notebeb 'max(abs(LepGood1_eta),abs(LepGood2_eta))>1.57'")
+        if '_ebeb' in torun: x = add(x,"-A alwaystrue ebeb 'max(abs(LepGood1_eta),abs(LepGood2_eta))<1.44'  --scaleSigToData")
+        if '_notebeb' in torun: x = add(x,"-A alwaystrue notebeb 'max(abs(LepGood1_eta),abs(LepGood2_eta))>1.57' --scaleSigToData")
         if '_gg' in torun: x = add(x,"-A alwaystrue goldgold 'min(LepGood1_r9,LepGood2_r9)>0.94' --scaleSigToData")
         if '_notgg' in torun: x = add(x,"-A alwaystrue notgoldgold 'min(LepGood1_r9,LepGood2_r9)<0.94' --scaleSigToData")
         

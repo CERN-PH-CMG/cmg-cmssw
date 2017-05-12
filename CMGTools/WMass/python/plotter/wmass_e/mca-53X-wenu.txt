@@ -20,7 +20,9 @@ DiBosons : WZJets : 1.057*1.10; FillColor=ROOT.kViolet+2, Label="DiBosons"
 # -- 2012 Data ---
 data: SingleElectronAB+SingleElectronC+SingleElectronD ; Label="Data"
 
-#qcd_data: SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/qcd_e_data.txt", Label="QCD", FillColor=ROOT.kBlack, FillStyle=3005, NormSystematic=10.00
+qcd_data: SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/qcd_e_data.txt", Label="QCD", FillColor=ROOT.kBlack, FillStyle=3005, NormSystematic=10.00
+
+# PDF systematics (CT10 set)
 W_pdf1_Up+   : WJets :  37509.0 : pdfWeight_CT10[1]/pdfWeight_CT10[0]; SkipMe=True 
 W_pdf1_Dn+   : WJets :  37509.0 : pdfWeight_CT10[2]/pdfWeight_CT10[0]; SkipMe=True 
 W_pdf2_Up+   : WJets :  37509.0 : pdfWeight_CT10[3]/pdfWeight_CT10[0]; SkipMe=True 
@@ -73,3 +75,11 @@ W_pdf25_Up+   : WJets :  37509.0 : pdfWeight_CT10[49]/pdfWeight_CT10[0]; SkipMe=
 W_pdf25_Dn+   : WJets :  37509.0 : pdfWeight_CT10[50]/pdfWeight_CT10[0]; SkipMe=True 
 W_pdf26_Up+   : WJets :  37509.0 : pdfWeight_CT10[51]/pdfWeight_CT10[0]; SkipMe=True 
 W_pdf26_Dn+   : WJets :  37509.0 : pdfWeight_CT10[52]/pdfWeight_CT10[0]; SkipMe=True 
+
+# electron scale systematics
+W_elescale_Up+ : WJets : 37509.0 ; FakeRate="wmass_e/fr-lepUp.txt", SkipMe=True, PostFix="_lepscale_Up" 
+W_elescale_Dn+ : WJets : 37509.0 ; FakeRate="wmass_e/fr-lepDn.txt", SkipMe=True, PostFix="_lepscale_Dn" 
+
+# recoil systemaics
+W_recoil_Up+ : WJets : 37509.0 ; FakeRate="wmass_e/fr-recoilUp.txt", SkipMe=True, PostFix="_lepscale_Up" 
+W_recoil_Dn+ : WJets : 37509.0 ; FakeRate="wmass_e/fr-recoilDn.txt", SkipMe=True, PostFix="_lepscale_Dn" 

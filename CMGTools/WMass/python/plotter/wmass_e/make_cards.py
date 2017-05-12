@@ -9,7 +9,7 @@ J=4
 MCA='wmass_e/mca-53X-wenu.txt'
 CUTFILE='wmass_e/wenu.txt'
 SYSTFILE='wmass_e/systsEnv.txt'
-VAR="w_mt 90,20,120"
+VAR="mt_2(LepCorr1_pt,LepGood1_phi,tkmet_pt,tkmet_phi) 90,20,120"
 NPDFSYSTS=53 # for CT10
 
 def writePdfSystsToMCA(sample,syst,dataset,xsec,vec_weight,filename):
@@ -43,18 +43,18 @@ SYSTFILEALL=('.').join(SYSTFILE.split('.')[:-1])+"-all.txt"
 copyfile(SYSTFILE,SYSTFILEALL)
 writePdfSystsToSystFile("W","pdf","CMS_We",SYSTFILEALL)
 
-ARGS=' '.join([MCASYSTS,CUTFILE,VAR,SYSTFILEALL])
+fitvar = VAR.split()[0]
+x_range = (VAR.split()[1]).split(",")[-2:]
+ARGS=" ".join([MCASYSTS,CUTFILE,"'"+fitvar+"' "+VAR.split()[1],SYSTFILEALL])
 OPTIONS=" -P "+T+" --s2v -j "+str(J)+" -l 19.7 -f "+FASTTEST
 if not os.path.exists(outdir): os.makedirs(outdir)
 OPTIONS+=' -F mjvars/t "'+T+'/friends/evVarFriend_{cname}.root" '
 
-masses = range(0,41,4)
-print "Mass IDs that will be done: ",masses," (20 is the central one)"
-#masses = [20]
+#masses = range(0,31)
+masses = [20]
+print "Mass IDs that will be done: ",masses," (15 is the central one)"
 mass_offs = 0
 
-fitvar = VAR.split()[0]
-x_range = (VAR.split()[1]).split(",")[-2:]
 FITRANGE=" -A alwaystrue fitrange '%s>%s && %s<%s' " % (fitvar,x_range[0],fitvar,x_range[1])
 OPTIONS += FITRANGE
 
