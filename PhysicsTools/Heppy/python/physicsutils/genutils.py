@@ -78,21 +78,25 @@ def isNotFromHadronicShower(l):
         if id >= 22 and id <= 39: return True
     return True
 
-def realGenDaughters(gp,excludeRadiation=True):
+def realGenDaughters(gp,dauChecked=[],excludeRadiation=True):
     """Get the daughters of a particle, going through radiative X -> X' + a
        decays, either including or excluding the radiation among the daughters
        e.g. for  
                   X -> X' + a, X' -> b c 
            realGenDaughters(X, excludeRadiation=True)  = { b, c }
-           realGenDaughters(X, excludeRadiation=False) = { a, b, c }"""
+           realGenDaughters(X, excludeRadiation=False) = { a, b, c }
+       Keep track of the daughters we've already checked so that we don't get
+       stuck in an infinite loop"""
     ret = []
     for i in xrange(gp.numberOfDaughters()):
         dau = gp.daughter(i)
+        if dau in dauChecked: continue
+        dauChecked.append(dau)
         if dau.pdgId() == gp.pdgId():
             if excludeRadiation:
-                return realGenDaughters(dau)
+                return realGenDaughters(dau, dauChecked)
             else:
-                ret += realGenDaughters(dau)
+                ret += realGenDaughters(dau, dauChecked)
         else:
             ret.append(dau)
     return ret
