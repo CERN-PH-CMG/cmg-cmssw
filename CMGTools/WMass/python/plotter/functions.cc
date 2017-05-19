@@ -112,21 +112,21 @@ float mt_lu_cart(float lep_pt, float lep_phi, float u_x, float u_y)
     float lep_px = lep_pt*std::cos(lep_phi), lep_py = lep_pt*std::sin(lep_phi);
     float u = hypot(u_x,u_y);
     float uDotLep = u_x*lep_px + u_y*lep_py;
-    return sqrt(2*lep_pt*sqrt(u*u+lep_pt*lep_pt+2*uDotLep) + 2*uDotLep + 2*lep_pt*lep_pt;
+    return sqrt(2*lep_pt*sqrt(u*u+lep_pt*lep_pt+2*uDotLep) + 2*uDotLep + 2*lep_pt*lep_pt);
 }
 
 float u1_2(float met_pt, float met_phi, float ref_pt, float ref_phi) 
 {
     float met_px = met_pt*std::cos(met_phi), met_py = met_pt*std::sin(met_phi);
     float ref_px = ref_pt*std::cos(ref_phi), ref_py = ref_pt*std::sin(ref_phi);
-    float ux = - met_px + ref_px, uy = - met_px + ref_px;
+    float ux = - met_px + ref_px, uy = - met_py + ref_py;
     return (ux*ref_px + uy*ref_py)/ref_pt;
 }
 float u2_2(float met_pt, float met_phi, float ref_pt, float ref_phi)
 {
     float met_px = met_pt*std::cos(met_phi), met_py = met_pt*std::sin(met_phi);
     float ref_px = ref_pt*std::cos(ref_phi), ref_py = ref_pt*std::sin(ref_phi);
-    float ux = - met_px + ref_px, uy = - met_px + ref_px;
+    float ux = - met_px + ref_px, uy = - met_py + ref_py;
     return (ux*ref_py - uy*ref_px)/ref_pt;
 }
 
@@ -138,8 +138,5 @@ float met_cal(float met_pt, float met_phi, float lep_pt, float lep_phi, float u_
     float metcal_px = - u_coeff*ux*(1+u_syst) - lep_px, metcal_py = - u_coeff*uy*(1+u_syst) - lep_py;
     return hypot(metcal_px,metcal_py);
 }
-
-// calculate mt from 
-float 
 
 void functions() {}
