@@ -12,10 +12,16 @@ class SimpleVBoson:
         self.pt2 = legs[1].Pt()
         self.dphi = self.legs[0].Phi()-self.legs[1].Phi()
         self.deta = self.legs[0].Eta()-self.legs[1].Eta()
+        self.px1 = legs[0].Px(); self.py1 = legs[0].Py();
+        self.px2 = legs[1].Px(); self.py2 = legs[1].Py();
     def pt(self):
         return sqrt(hypot(self.pt1 + self.pt2 * cos(self.dphi), self.pt2*sin(self.dphi)))
     def mt(self):
         return sqrt(2*self.pt1*self.pt2*(1-cos(self.dphi)))
+    def ux(self):
+        return (-self.px1-self.px2)
+    def uy(self):
+        return (-self.py1-self.py2)    
     def mll(self):
         return sqrt(2*self.pt1*self.pt2*(cosh(self.deta)-cos(self.dphi)))
 
@@ -35,7 +41,8 @@ class EventVarsWmass:
         self.wmass_steps = [x for x in range(0,10,2)] + [x for x in range(10,25,5)] + [x for x in range(25,55,10)] + [x for x in range(55,141,20)]
         biglist = [ ("nLepCorr", "I"), ("iL","I",10,"nLepCorr"),
                     ("nJetClean", "I"), ("iJ","I",10,"nJetClean"),
-                    ("w_pt","F"), ("w_mt","F"), ("z_pt","F"), ("z_mll","F") ]
+                    ("w_pt","F"), ("w_mt","F"), ("z_pt","F"), ("z_mll","F"),
+                    ("w_ux","F"), ("w_uy","F"), ("z_ux","F"), ("z_uy","F") ]
         for jfloat in "pt eta phi mass btagCSV rawPt leadClean".split():
             biglist.append( ("JetClean"+"_"+jfloat,"F",10,"nJetClean") )
         for lfloat in "eta pt pterr ptScaleUp ptScaleDn".split():
@@ -151,12 +158,14 @@ class EventVarsWmass:
             W = SimpleVBoson([tightleps_3v[0],tkmet])
             ret["w_pt"] = W.pt()
             ret["w_mt"] = W.mt()
-        else: ret["w_pt"] = ret["w_mt"] = -99
+            ret["w_ux"] = W.ux(); ret["w_uy"] = W.uy()
+        else: ret["w_pt"] = ret["w_mt"] = ret["w_ux"] = ret["w_uy"] = -999
         if len(tightleps)>1:
             Z = SimpleVBoson(tightleps_3v[:2])
             ret["z_pt"] = Z.pt()
             ret["z_mll"] = Z.mll()
-        else: ret["z_pt"] = ret["z_mll"] = -99
+            ret["z_ux"] = Z.ux() - tkmet.Px(); ret["z_uy"] = Z.uy() - tkmet.Py()
+        else: ret["z_pt"] = ret["z_mll"] = ret["z_ux"] = ret["z_uy"] = -999
 
         # W-mass BW weights
         if self.isMC:
