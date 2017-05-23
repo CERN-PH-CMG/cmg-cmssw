@@ -247,7 +247,10 @@ class TreeToYield:
         if 'FriendsSimple' in self._settings: friendOpts += [ ('sf/t', d+"/evVarFriend_{cname}.root") for d in self._settings['FriendsSimple'] ]
         for tf_tree,tf_file in friendOpts:
 #            print 'Adding friend',tf_tree,tf_file
-            tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname, P=getattr(self._options,'path',''))),
+            friendrootfile = tf_file.format(name=self._name, cname=self._cname, P=getattr(self._options,'path',''))
+            if os.path.exists(friendrootfile+".url"):
+                friendrootfile = open(friendrootfile+".url","r").readline().strip()
+            tf = self._tree.AddFriend(tf_tree, friendrootfile),
             self._friends.append(tf)
         self._isInit = True
         

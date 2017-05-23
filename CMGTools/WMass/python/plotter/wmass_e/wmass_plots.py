@@ -11,7 +11,7 @@ dowhat = "plots"
 #dowhat = "yields" 
 
 TREES = "-F mjvars/t '{P}/friends/evVarFriend_{cname}.root' --FMC sf/t '{P}/friends/sfFriend_{cname}.root' "
-TREESONLYSKIMW = "-P /data1/emanuele/wmass/TREES_1LEP_53X_V2_WSKIM_V3/"
+TREESONLYSKIMW = "-P /data1/emanuele/wmass/TREES_1LEP_53X_V2_WSKIM_V4/"
 TREESONLYSKIMZ = "-P /data1/emanuele/wmass/TREES_1LEP_53X_V2_ZEESKIM_V3/"
 TREESONLYFULL = "-P /data1/emanuele/wmass/TREES_1LEP_53X_V2"
 

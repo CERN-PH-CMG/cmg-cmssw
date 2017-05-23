@@ -33,7 +33,7 @@ if __name__ == "__main__":
            os.makedirs(outputDirFSkims)
     else: print "Make only the friend trees in dir ",outputDirFSkims
 
-    OPTS = ' -P '+treeDir+' --s2v -j 2 -F mjvars/t "'+treeFDir+'/evVarFriend_{cname}.root" '
+    OPTS = ' -P '+treeDir+' --s2v -j 4 -F mjvars/t "'+treeFDir+'/evVarFriend_{cname}.root" '
 
     varsToKeep = []
     if options.varfile!=None:

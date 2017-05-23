@@ -1,3 +1,3 @@
-change: tkmet_pt\b: 1.03*tkmet_pt
-change: LepCorr1_pt\b: 1.03*LepCorr1_pt
+change: w_ux\b: 1.03*w_ux
+change: w_uy\b: 1.03*w_uy
 weight: 1

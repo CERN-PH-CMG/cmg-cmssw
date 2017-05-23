@@ -1,2 +1,4 @@
 mt_std: w_mt : 100,20,120 ; XTitle="m_{T} [GeV]", Legend='TL'
-mt: mt_2(LepCorr1_pt,LepGood1_phi,tkmet_pt,tkmet_hi)
+#mt: mt_2(LepCorr1_pt,LepGood1_phi,tkmet_pt,tkmet_hi)
+mt: mt_lu_cart(LepCorr1_pt,LepGood1_phi,w_ux,w_uy)
+ptw: Hypot(w_ux,w_uy)

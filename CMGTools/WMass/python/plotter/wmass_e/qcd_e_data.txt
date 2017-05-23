@@ -4,7 +4,9 @@ cut-change: LepGood1_relIso03: 0
 cut-change: LepGood1_convVetoFull: 1
 # let event pass the pfmet cut
 cut-change: met_pt > : 10000 >
-#cut-change: met_pt: 0
+# take the QCD from unique bin in eta
+cut-change: abs(LepGood1_eta)> : 10>
+cut-change: abs(LepGood1_eta)< : 0<
 # the weight is obtained by a template fit to mt to get an initial value
 weight: 24.554
 

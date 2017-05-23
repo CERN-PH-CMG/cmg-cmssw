@@ -25,6 +25,10 @@ float deltaR(float eta1, float phi1, float eta2, float phi2) {
     return std::sqrt(deltaR2(eta1,phi1,eta2,phi2));
 }
 
+float Hypot(float x, float y) {
+  return hypot(x,y);
+}
+
 float pt_2(float pt1, float phi1, float pt2, float phi2) {
     phi2 -= phi1;
     return hypot(pt1 + pt2 * std::cos(phi2), pt2*std::sin(phi2));
