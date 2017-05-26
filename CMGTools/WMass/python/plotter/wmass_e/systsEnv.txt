@@ -13,5 +13,12 @@ CMS_We_pdf_qasym  : W : .*neg.* : 0.95
 CMS_We_VV : DiBosons : .* : 1.16 
 
 # QCD
-CMS_We_QCDnorm : qcd_.* : .* : 100.0
+CMS_We_QCDnorm  : qcd_.* : .* : 100.0
+CMS_We_QCDshape : qcd_.* : .* : shape : templates 
+
+# lepton scale
+CMS_We_elescale :  W: .* : elescale       : templates 
+
+# recoil uncertainty
+CMS_We_recoil :  W: .* : recoil       : templates 
 

@@ -2,15 +2,14 @@
 from shutil import copyfile
 import re, sys, os, os.path, subprocess
 
-#FASTTEST=''
-FASTTEST='--max-entries 1000 '
-#masses = range(0,31)
-masses = range(14,17)
+FASTTEST=''
+#FASTTEST='--max-entries 1000 '
+masses = range(0,31)
 T='/data1/emanuele/wmass/TREES_1LEP_53X_V2_WSKIM_V4/'
-#T='/afs/cern.ch/work/e/emanuele/TREES/TREES_1LEP_53X_V2_WSKIM_V3/'
 if 'pccmsrm29' in os.environ['HOSTNAME']: T = T.replace('/data1/emanuele/wmass','/u2/emanuele')
 elif 'lxplus' in os.environ['HOSTNAME']: T = T.replace('/data1/emanuele/wmass','/afs/cern.ch/work/e/emanuele/TREES/')
-print "used tree location = ",T
+elif 'cmsrm-an' in os.environ['HOSTNAME']: T = T.replace('/data1/emanuele/wmass','/t3/users/dimarcoe/')
+print "used trees from: ",T
 J=4
 BASECONFIG="wmass_e"
 MCA=BASECONFIG+'/mca-53X-wenu.txt'
