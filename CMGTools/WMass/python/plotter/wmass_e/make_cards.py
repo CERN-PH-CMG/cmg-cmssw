@@ -2,14 +2,15 @@
 from shutil import copyfile
 import re, sys, os, os.path, subprocess
 
-FASTTEST=''
-#FASTTEST='--max-entries 1000 '
-masses = range(0,31)
-#masses = [15]
+#FASTTEST=''
+FASTTEST='--max-entries 1000 '
+#masses = range(0,31)
+masses = range(14,17)
 T='/data1/emanuele/wmass/TREES_1LEP_53X_V2_WSKIM_V4/'
 #T='/afs/cern.ch/work/e/emanuele/TREES/TREES_1LEP_53X_V2_WSKIM_V3/'
 if 'pccmsrm29' in os.environ['HOSTNAME']: T = T.replace('/data1/emanuele/wmass','/u2/emanuele')
 elif 'lxplus' in os.environ['HOSTNAME']: T = T.replace('/data1/emanuele/wmass','/afs/cern.ch/work/e/emanuele/TREES/')
+print "used tree location = ",T
 J=4
 BASECONFIG="wmass_e"
 MCA=BASECONFIG+'/mca-53X-wenu.txt'
@@ -63,7 +64,7 @@ OPTIONS+=' -F mjvars/t "'+T+'/friends/evVarFriend_{cname}.root" '
 print "Mass IDs that will be done: ",masses," (15 is the central one)"
 mass_offs = 0
 
-FITRANGE=' -A alwaystrue fitrange "%s>%s && %s<%s" ' % (fitvar,x_range[0],fitvar,x_range[1])
+FITRANGE=" -A alwaystrue fitrange '%s>%s && %s<%s' " % (fitvar,x_range[0],fitvar,x_range[1])
 OPTIONS += FITRANGE
 
 if options.queue:
@@ -75,15 +76,15 @@ if options.queue:
 etaBins=options.etaBins if options.etaBins!=[] else ['0','5']
 for ieta in range(len(etaBins)-1):
     subdir = "eta_"+str(ieta) if options.etaBins!=[] else 'etaIncl'
-    etacut=' -A alwaystrue eta%d "abs(LepGood1_eta)>%s && abs(LepGood1_eta)<%s" ' % (ieta,etaBins[ieta],etaBins[ieta+1])
+    etacut=" -A alwaystrue eta%d 'abs(LepGood1_eta)>%s && abs(LepGood1_eta)<%s' " % (ieta,etaBins[ieta],etaBins[ieta+1])
     myout = outdir + "/" + subdir
     if not os.path.exists(myout): os.mkdir(myout)
     if options.queue and not os.path.exists(outdir+"/jobs"): os.mkdir(outdir+"/jobs")
     for mass in masses:
         smass=str(mass-mass_offs)
-        W=' -W "puWeight*mwWeight['+str(mass)+']" '
-        POS=' -A alwaystrue positive "LepGood1_charge>0" '
-        NEG=' -A alwaystrue negative "LepGood1_charge<0" '
+        W=" -W 'puWeight*mwWeight["+str(mass)+"]' "
+        POS=" -A alwaystrue positive 'LepGood1_charge>0' "
+        NEG=" -A alwaystrue negative 'LepGood1_charge<0' "
         charges=[POS,NEG]
         for c in charges: 
             dcname="wenu_mass"+smass+("_pos_" if "positive" in c else "_neg_")+subdir
@@ -93,8 +94,10 @@ for ieta in range(len(etaBins)-1):
                 logfile=outdir+"/jobs/"+dcname+".log"
                 srcfile_op = open(srcfile,"w")
                 srcfile_op.write("#! /bin/sh\n")
-                srcfile_op.write("{dir}/lxbatch_runner.sh {dir} {cmssw} python {dir}/makeShapeCards.py {args} \n".format(
-                        dir = os.getcwd(), cmssw = os.environ['CMSSW_BASE'], args = ARGS+" "+BIN_OPTS+c+etacut))
+                srcfile_op.write("cd {cmssw};\neval $(scramv1 runtime -sh);\ncd {dir};\n".format( 
+                        dir = os.getcwd(), cmssw = os.environ['CMSSW_BASE']))
+                srcfile_op.write("python {dir}/makeShapeCards.py {args} \n".format(
+                        dir = os.getcwd(), args = ARGS+" "+BIN_OPTS+c+etacut))
                 os.system("chmod a+x "+srcfile)
                 cmd = "bsub -q {queue} -o {dir}/{logfile} {dir}/{srcfile}\n".format(
                     queue=options.queue, dir=os.getcwd(), logfile=logfile, srcfile=srcfile)

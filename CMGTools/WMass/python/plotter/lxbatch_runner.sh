@@ -1,1 +1,0 @@
-../../macros/lxbatch_runner.sh
