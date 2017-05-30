@@ -16,13 +16,14 @@ def harvestEm(subdir, mwrange, charge='both'):
     # We extracted this part of the datacard name into the channel variable above,
     # so can just copy it and override the specific bin name that was in all the cards
     cmb.ForEachObj(lambda obj: obj.set_bin(obj.channel()))
-    
+
     # We'll have three copies of the observation, one for each mass point.
     # Filter all but one copy.
-    cmb.FilterObs(lambda obj: obj.mass() != '20')
+    cmb.FilterObs(lambda obj: obj.mass() != '15')
     
     # Create workspace to hold the morphing pdfs and the mass
     w = ROOT.RooWorkspace('morph', 'morph')
+    print mwrange
     mass = w.factory('mw[{mwrange}]'.format(mwrange=mwrange))
     
     # BuildRooMorphing will dump a load of debug plots here
@@ -62,16 +63,17 @@ def harvestEm(subdir, mwrange, charge='both'):
 date = datetime.date.today().isoformat()
 date+='_charges'
 
-card_dir = 'cards/test2/'
+card_dir = 'cards/cards_260517/'
 subdirs = [x[0] for x in os.walk(card_dir)]
 
-mwrange = '10,20,40'
-npoints = 3
-central = 20
+mwrange='0,30'
+npoints = 31
+central = 15
 
 runHarvest = True
 runBatch   = False
 justHadd   = False
+justHarvest = True
 
 charges = ['both']#['neg', 'pos']
 
@@ -124,6 +126,8 @@ for charge in charges:
             print t2wCmd
             os.system(t2wCmd)
             target_ws = target_dc.replace('txt','root')
+
+            if justHarvest: exit(0)
     
         ## constructing the command
         combine_base  = 'combine -t -1 -M MultiDimFit --setPhysicsModelParameters mw={central},r=1 --setPhysicsModelParameterRanges mw={mwrange} '.format(central=central,mwrange=mwrange)
@@ -154,7 +158,7 @@ for charge in charges:
         os.system(run_combine_noPdf )
     
         impactBase = 'combineTool.py -M Impacts -n {date}_{name} -d {target_ws} -m {mass} '.format(subdir=subdir,mass=name[-1],date=date,name=name, target_ws=target_ws)
-        impactBase += ' --setPhysicsModelParameters mw=20,r=1  --redefineSignalPOIs=mw --setPhysicsModelParameterRanges mw={mwrange} -t -1 '.format(mwrange=mwrange)
+        impactBase += ' --setPhysicsModelParameters mw={central},r=1  --redefineSignalPOIs=mw --setPhysicsModelParameterRanges mw={mwrange} -t -1 '.format(central=central,mwrange=mwrange)
         impactInitial = impactBase+'  --robustFit 1 --doInitialFit '
         impactFits    = impactBase+'  --robustFit 1 --doFits '
         impactJSON    = impactBase+'  -o impacts_{name}_{charge}.json '.format(name=name, charge=charge)
@@ -165,9 +169,9 @@ for charge in charges:
         os.system(impactJSON   )
         os.system(impactPlot   )
 
-## combineTool.py -M Impacts -d morphed_datacard_plusminus.root -m 999 --setPhysicsModelParameters mw=20,r=1  --redefineSignalPOIs=mw  --setPhysicsModelParameterRanges mw=91,111 -t -1 --robustFit 1 --doInitialFit
-## combineTool.py -M Impacts -d morphed_datacard_plusminus.root -m 999 --setPhysicsModelParameters mw=20,r=1  --redefineSignalPOIs=mw  --setPhysicsModelParameterRanges mw=91,111 -t -1 --robustFit 1 --doFits
-## combineTool.py -M Impacts -d morphed_datacard_plusminus.root -m 999 --setPhysicsModelParameters mw=20,r=1  --redefineSignalPOIs=mw  --setPhysicsModelParameterRanges mw=91,111 -t -1 -o impacts.json
+## combineTool.py -M Impacts -d morphed_datacard_plusminus.root -m 999 --setPhysicsModelParameters mw=15,r=1  --redefineSignalPOIs=mw  --setPhysicsModelParameterRanges mw=0,30 -t -1 --robustFit 1 --doInitialFit
+## combineTool.py -M Impacts -d morphed_datacard_plusminus.root -m 999 --setPhysicsModelParameters mw=15,r=1  --redefineSignalPOIs=mw  --setPhysicsModelParameterRanges mw=0,30 -t -1 --robustFit 1 --doFits
+## combineTool.py -M Impacts -d morphed_datacard_plusminus.root -m 999 --setPhysicsModelParameters mw=15,r=1  --redefineSignalPOIs=mw  --setPhysicsModelParameterRanges mw=0,30 -t -1 -o impacts.json
 ## plotImpacts.py -i impacts.json -o impacts
 
 
