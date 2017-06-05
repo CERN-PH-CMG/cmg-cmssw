@@ -33,3 +33,5 @@ W_recoil_Dn+ : WJets : 37509.0 ; FakeRate="wmass_e/fr-recoilDn.txt", SkipMe=True
 # shape systematics for qcd (arbitrarily conservative)
 qcd_data_shape_Up+ :  SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/fr-qcdShapeUp.txt", SkipMe=True, PostFix="_qcdShape_Up"
 qcd_data_shape_Dn+ :  SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/fr-qcdShapeDn.txt", SkipMe=True, PostFix="_qcdShape_Dn"
+qcd_data_crsel_Up+ :  SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/fr-qcdCRSelectionUp.txt", SkipMe=True, PostFix="_qcdCrSel_Up"
+qcd_data_crsel_Dn+ :  SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/fr-qcdCRSelectionDn.txt", SkipMe=True, PostFix="_qcdCrSel_Dn"

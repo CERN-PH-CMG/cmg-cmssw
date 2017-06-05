@@ -15,6 +15,7 @@ CMS_We_VV : DiBosons : .* : 1.16
 # QCD
 CMS_We_QCDnorm  : qcd_.* : .* : 100.0
 CMS_We_QCDshape : qcd_.* : .* : shape : templates 
+CMS_We_QCDcrsel : qcd_.* : .* : crsel : templates 
 
 # lepton scale
 CMS_We_elescale :  W: .* : elescale       : templates 
