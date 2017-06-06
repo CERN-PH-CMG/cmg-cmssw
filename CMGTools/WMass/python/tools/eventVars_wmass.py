@@ -32,13 +32,13 @@ class EventVarsWmass:
         ROOT.gSystem.Load("libCMGToolsWMass.so")
         self.branches = [ "nBTag20", "events_ntot" ]
     def initSample(self,sample_nevt,dataset):
-        self.sample_nevt = sample_nevt        
+        self.sample_nevt = sample_nevt
         self.isMC = not any(x in dataset for x in "DoubleMu DoubleEl DoubleEG MuEG MuonEG SingleMu SingleEl".split())
         self.electronEnergyCalibrator = ElectronCalibrator(self.isMC,
                                                            "EgammaAnalysis/ElectronTools/data//WMass_Winter17_ResidualCorrections_ele",
                                                            "%s/src/CMGTools/WMass/python/tools/data/systs_el_scale.txt" % os.environ['CMSSW_BASE'])
     def listBranches(self):
-        self.wmass_steps = [x for x in range(0,10,2)] + [x for x in range(10,25,5)] + [x for x in range(25,55,10)] + [x for x in range(55,141,20)]
+        self.wmass_steps = [x for x in range(0,24,2)] + [x for x in range(24,54,10)] + [x for x in range(54,141,20)]
         biglist = [ ("nLepCorr", "I"), ("iL","I",10,"nLepCorr"),
                     ("nJetClean", "I"), ("iJ","I",10,"nJetClean"),
                     ("w_pt","F"), ("w_mt","F"), ("z_pt","F"), ("z_mll","F"),
@@ -88,7 +88,7 @@ class EventVarsWmass:
             ret["iL"].append(il)
         ret["nLepCorr"] = len(ret["iL"])
         # Define cleaned jets 
-        ret["iJ"] = []; 
+        ret["iJ"] = [];
         # 0. mark each identified jet as clean
         for j in alljets: 
             # remove PU jet ID for the time being
