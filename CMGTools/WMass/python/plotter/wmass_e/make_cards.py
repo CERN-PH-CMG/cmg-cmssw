@@ -4,7 +4,8 @@ import re, sys, os, os.path, subprocess
 
 FASTTEST=''
 #FASTTEST='--max-entries 1000 '
-masses = range(0,31)
+masses = range(0,39)
+#masses = [19]
 T='/data1/emanuele/wmass/TREES_1LEP_53X_V2_WSKIM_V4/'
 if 'pccmsrm29' in os.environ['HOSTNAME']: T = T.replace('/data1/emanuele/wmass','/u2/emanuele')
 elif 'lxplus' in os.environ['HOSTNAME']: T = T.replace('/data1/emanuele/wmass','/afs/cern.ch/work/e/emanuele/TREES/')
@@ -15,7 +16,7 @@ BASECONFIG="wmass_e"
 MCA=BASECONFIG+'/mca-53X-wenu.txt'
 CUTFILE=BASECONFIG+'/wenu.txt'
 SYSTFILE=BASECONFIG+'/systsEnv.txt'
-VAR="mt_lu_cart(LepCorr1_pt,LepGood1_phi,w_ux,w_uy) 90,20,120"
+VAR="mt_lu_cart(LepCorr1_pt,LepGood1_phi,w_ux,w_uy) 90,30,120"
 NPDFSYSTS=53 # for CT10
 
 def writePdfSystsToMCA(sample,syst,dataset,xsec,vec_weight,filename):
@@ -60,7 +61,7 @@ OPTIONS=" -P "+T+" --s2v -j "+str(J)+" -l 19.7 -f "+FASTTEST
 if not os.path.exists(outdir): os.makedirs(outdir)
 OPTIONS+=' -F mjvars/t "'+T+'/friends/evVarFriend_{cname}.root" '
 
-print "Mass IDs that will be done: ",masses," (15 is the central one)"
+print "Mass IDs that will be done: ",masses," (19 is the central one)"
 mass_offs = 0
 
 FITRANGE=" -A alwaystrue fitrange '%s>%s && %s<%s' " % (fitvar,x_range[0],fitvar,x_range[1])
