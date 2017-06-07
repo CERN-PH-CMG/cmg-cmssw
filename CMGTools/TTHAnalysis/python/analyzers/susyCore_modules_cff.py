@@ -6,7 +6,7 @@
 import CMGTools.RootTools.fwlite.Config as cfg
 
 #PDFWeights = []
-PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
+PDFWeights = [ ("CT10",53), ("NNPDF21_100",101), ("cteq6ll.LHpdf",1) ]
 
 # Find the initial events before the skim
 skimAnalyzer = cfg.Analyzer(

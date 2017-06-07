@@ -58,9 +58,9 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
                 self.pdfWeights = self.cfg_ana.PDFWeights
                 for (pdf,nvals) in self.pdfWeights:
                     if self.scalar:
-                        for i in range(nvals): tr.var('pdfWeight_%s_%d' % (pdf,i))
+                        for i in range(nvals): tr.var('pdfWeight_%s_%d' % (pdf.split(".")[0],i))
                     else:
-                        tr.vector('pdfWeight_%s' % pdf, nvals)
+                        tr.vector('pdfWeight_%s' % pdf.split(".")[0], nvals)
 
     def declareVariables(self):
         if not hasattr(self,'initDone'): return
@@ -100,9 +100,9 @@ class ttHLepTreeProducerNew( TreeAnalyzerNumpy ):
                     raise RuntimeError, "PDF lenght mismatch for %s, declared %d but the event has %d" % (pdf,nvals,event.pdfWeights[pdf])
                 if self.scalar:
                     for i,w in enumerate(event.pdfWeights[pdf]):
-                        tr.fill('pdfWeight_%s_%d' % (pdf,i), w)
+                        tr.fill('pdfWeight_%s_%d' % (pdf.split(".")[0],i), w)
                 else:
-                    tr.vfill('pdfWeight_%s' % pdf, event.pdfWeights[pdf])
+                    tr.vfill('pdfWeight_%s' % pdf.split(".")[0], event.pdfWeights[pdf])
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
