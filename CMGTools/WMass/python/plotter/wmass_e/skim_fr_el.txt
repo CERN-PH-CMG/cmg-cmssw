@@ -1,0 +1,4 @@
+alwaystrue: 1
+trigger: HLT_FR_1e==1
+onelep: nLepGood == 1
+el : abs(LepGood1_pdgId)==11
