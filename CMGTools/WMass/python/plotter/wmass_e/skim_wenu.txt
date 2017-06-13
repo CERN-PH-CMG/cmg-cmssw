@@ -2,6 +2,8 @@ alwaystrue: 1
 trigger: HLT_SingleEl==1
 el acceptance: abs(LepGood1_pdgId)==11 && LepCorr1_pt > 25 && abs(LepCorr1_eta)<2.5
 el trigger ID: LepGood1_eleMVAPreselId==1
-el selection: LepGood1_eleMVAId >=2 && LepGood1_relIso04 < 0.15 && LepGood1_convVetoFull==1
+loose el: if3(abs(LepGood1_eta)<1.479,LepGood1_sigmaIetaIeta<0.01 && abs(LepGood1_detaIn)<0.007 && abs(LepGood1_dphiIn)<0.15 && LepGood1_hcalOverEcal<0.12,LepGood1_sigmaIetaIeta<0.03 && abs(LepGood1_detaIn)<0.009 && abs(LepGood1_dphiIn)<0.10 && LepGood_hcalOverEcal<0.10) && LepGood1_convVetoFull && abs(LepGood1_dxy)<0.02
+el iso: LepGood1_relIso04 < 0.15
+el conv rej: LepGood1_convVetoFull==1
 pfmet: met_pt > 20
 w mt: mt_lu_cart(LepCorr1_pt,LepGood1_phi,w_ux,w_uy) > 20
