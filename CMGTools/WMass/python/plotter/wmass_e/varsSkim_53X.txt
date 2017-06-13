@@ -8,6 +8,7 @@ HLT_DoubleEl
 HLT_DoubleMu
 puWeight
 pdfWeight_CT10
+pdfWeight_cteq6ll
 rho
 nVert
 mZ1

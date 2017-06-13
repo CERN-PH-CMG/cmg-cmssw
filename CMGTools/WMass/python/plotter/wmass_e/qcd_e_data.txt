@@ -1,6 +1,6 @@
 # let the electron pass the tight ID (set them to always-pass values)
 cut-change: LepGood1_eleMVAId: 3
-cut-change: LepGood1_relIso03: 0
+cut-change: LepGood1_relIso04: 0
 cut-change: LepGood1_convVetoFull: 1
 # let event pass the pfmet cut
 cut-change: met_pt > : 10000 >

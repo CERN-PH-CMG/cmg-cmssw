@@ -19,6 +19,7 @@ DiBosons : WZJets : 1.057*1.10; FillColor=ROOT.kViolet+2, Label="DiBosons"
 
 # -- 2012 Data ---
 data: SingleElectronAB+SingleElectronC+SingleElectronD ; Label="Data"
+#data: DoubleElectronAB+DoubleElectronC+DoubleElectronD ; Label="Data"
 
 Z_pdf1_Up+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[1]/pdfWeight_CT10[0]; SkipMe=True 
 Z_pdf1_Dn+   : DYJetsM50 :  3503.7 : pdfWeight_CT10[2]/pdfWeight_CT10[0]; SkipMe=True 

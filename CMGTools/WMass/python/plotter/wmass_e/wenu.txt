@@ -2,7 +2,7 @@ alwaystrue: 1
 trigger: HLT_SingleEl==1
 el acceptance: abs(LepGood1_pdgId)==11 && LepCorr1_pt > 25 && abs(LepCorr1_eta)<2.5
 el trigger ID: LepGood1_eleMVAPreselId==1
-el selection: LepGood1_eleMVAId >=2 && LepGood1_relIso03 < 0.15 && LepGood1_convVetoFull==1
+el selection: LepGood1_eleMVAId >=2 && LepGood1_relIso04 < 0.15 && LepGood1_convVetoFull==1
 pfmet: met_pt > 20
 w pt: Hypot(w_ux,w_uy) < 40
 w mt: mt_lu_cart(LepCorr1_pt,LepGood1_phi,w_ux,w_uy) > 20
