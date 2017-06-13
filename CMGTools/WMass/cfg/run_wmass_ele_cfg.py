@@ -15,7 +15,7 @@ from CMGTools.TTHAnalysis.analyzers.susyCore_modules_cff import *
 # --- LEPTON SKIMMING ---
 ttHLepSkim.minLeptons = 1
 ttHLepSkim.maxLeptons = 999
-ttHLepSkim.idCut  = '(lepton.muonID("POG_ID_Loose") and lepton.relIso04 < 1.0) if abs(lepton.pdgId())==13 else (lepton.electronID("POG_MVA_ID_Trig"))'
+ttHLepSkim.idCut  = '(lepton.muonID("POG_ID_Loose") and lepton.relIso04 < 1.0) if abs(lepton.pdgId())==13 else (lepton.tightIdPreselResult)'
 ttHLepSkim.ptCuts = [20]
 
 
@@ -26,7 +26,7 @@ ttHEventAna = cfg.Analyzer(
     )
 
 
-from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu, triggers_1e
+from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import triggers_mumu, triggers_ee, triggers_mue, triggers_1mu, triggers_1e, triggersFR_1mu, triggersFR_1e
 # Tree Producer
 treeProducer = cfg.Analyzer(
     'treeProducerWMassEle',
@@ -39,7 +39,9 @@ treeProducer = cfg.Analyzer(
             'DoubleMu' : triggers_mumu,
             'DoubleEl' : [ t for t in triggers_ee if "Ele15_Ele8_Ele5" not in t ],
             'TripleEl' : [ t for t in triggers_ee if "Ele15_Ele8_Ele5"     in t ],
-            'MuEG'     : [ t for t in triggers_mue if "Mu" in t and "Ele" in t ]
+            'MuEG'     : [ t for t in triggers_mue if "Mu" in t and "Ele" in t ],
+            'FR_1mu'   : triggersFR_1mu,
+            'FR_1e'    : triggersFR_1e
         }
     )
 
@@ -49,29 +51,29 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV_v517 import *
 mcSamplesW_1 = [WJets,DYJetsM50]
 mcSamplesW_2 = [TTJets,TtW,TbartW,WZJets,WWJets, Tsch,Tbarsch,Ttch,Tbartch]
 mcSamplesW_3 = [QCDMuPt15]
-mcSamplesW = mcSamplesW_1 + mcSamplesW_2
+mcSamplesW = mcSamplesW_1 + mcSamplesW_2 + mcSamplesW_3
 dataSamplesW = dataSamples2L+dataSamples1Mu+dataSamples1E
 
 for mc in mcSamplesW:
-    mc.triggers = triggersMC_mue
+    mc.triggers = triggersMC_mue + triggersFR_MC
 for data in dataSamplesMu:
-    data.triggers = triggers_mumu
+    data.triggers = triggers_mumu + triggersFR_mumu
 for data in dataSamplesE:
-    data.triggers = triggers_ee
+    data.triggers = triggers_ee + triggersFR_1e
 for data in dataSamples1Mu:
-    data.triggers = triggers_1mu
+    data.triggers = triggers_1mu + triggersFR_1mu
 for data in dataSamples1E:
     data.triggers = triggers_1e
 
 
-selectedComponents = mcSamplesW + dataSamplesW
+selectedComponents = mcSamplesW + dataSamplesE + dataSamples1E
 
 #-------- MODULES CUSTOMISATION
 ttHLepAna.doElectronScaleCorrections = True
 ttHLepAna.loose_muon_relIso = 1.0
 ttHLepAna.loose_electron_eta = 2.5
 ttHLepAna.loose_electron_relIso = 999
-ttHLepAna.loose_electron_id = "POG_MVA_ID_Trig"
+ttHLepAna.loose_electron_id = ""
 ttHLepAna.triggerBitsMuons = { 'SingleMu' : triggers_1mu,
                                'DoubleMu' : triggers_mumu }
 ttHLepAna.triggerBitsElectrons = { 'SingleEl' : triggers_1e,
@@ -90,7 +92,7 @@ sequence = cfg.Sequence(susyCoreSequence+[
 
 
 #-------- HOW TO RUN
-test = 1
+test = 0
 if test==1:
     # test a single component, using a single thread.
     comp = TTJets
