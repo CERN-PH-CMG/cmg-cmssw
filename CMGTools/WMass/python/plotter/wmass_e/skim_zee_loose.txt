@@ -1,0 +1,6 @@
+alwaystrue: 1
+trigger: HLT_DoubleEl==1
+twoleps: nLepGood>=2
+el acceptance: abs(LepGood1_pdgId)==11 && LepCorr1_pt > 20 && LepCorr2_pt > 10 && abs(LepCorr1_eta)<2.5 && abs(LepCorr2_eta)<2.5 && LepGood1_pdgId == -LepGood2_pdgId
+#el selection: LepGood1_eleMVAId >=2 && LepGood1_relIso04 < 0.15 && LepGood1_convVetoFull==1 && LepGood2_eleMVAId >=2 && LepGood2_relIso04 < 0.15 && LepGood2_convVetoFull==1
+inv mass: abs(mass_2(LepCorr1_pt,LepGood1_eta,LepGood1_phi,0.5e-3,LepCorr2_pt,LepGood2_eta,LepGood2_phi,0.5e-3)-90) < 20
