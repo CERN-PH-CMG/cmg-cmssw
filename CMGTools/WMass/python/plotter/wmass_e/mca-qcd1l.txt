@@ -1,5 +1,7 @@
-Z   : DYJetsM50 : 3503.7; FillColor=ROOT.kAzure+2, Label="Z"
-W   : WJets :  37509.0; FillColor=ROOT.kRed+2, Label="W"
+Z_fake    : DYJetsM50 : 3503.7 : LepGood_mcMatchId == 0 ; FillColor=ROOT.kAzure+2, Label="Z", NormSystematic=1.0
+W_fake    : WJets :    37509.0 : LepGood_mcMatchId == 0; FillColor=ROOT.kRed+2, Label="W", NormSystematic=1.0
+Z    : DYJetsM50 : 3503.7 ; FillColor=ROOT.kAzure+2, Label="Z", NormSystematic=0.2
+W    : WJets :    37509.0 ; FillColor=ROOT.kRed+2, Label="W", NormSystematic=0.2
 Top  : TTJets :  245.59; FillColor=ROOT.kGray+2, Label="Top"
 Top  : Tsch :      3.79; FillColor=ROOT.kGray+2, Label="Top"
 Top  : Tbarsch :   1.76; FillColor=ROOT.kGray+2, Label="Top"

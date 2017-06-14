@@ -74,7 +74,7 @@ if __name__ == "__main__":
     parser.add_option("--shapeSystSignal", dest="shapeSystSig", type="string", default="l", help="Shape systematic for signal: l = linear, q = quadratic, s = stretch");
     parser.add_option("--shapeSystBackground", dest="shapeSystBkg", type="string", default="l", help="Shape systematic for background: l = linear, q = quadratic, s = stretch");
     parser.add_option("--fcut", dest="fcut", default=None, nargs=2, type='float', help="Cut in the discriminating variable");
-    parser.add_option("--fqcd-ranges", dest="fqcdRanges", default=(0.0, 20.0, 70.0, 120.0), nargs=4, type='float', help="Boundaries for the fqcd method");
+    parser.add_option("--fqcd-ranges", dest="fqcdRanges", default=(0.0, 20.0, 50.0, 120.0), nargs=4, type='float', help="Boundaries for the fqcd method");
     parser.add_option("--same-nd-templates", dest="sameNDTemplates", action="store_true", default=False, help="Just make the first histograms and stop");
     (options, args) = parser.parse_args()
     mca  = MCAnalysis(args[0],options)
@@ -132,7 +132,6 @@ if __name__ == "__main__":
                 hists.append( (y,x2.xvar,x2.fvar,x2,report) )
     else:
         backup = options.globalRebin; options.globalRebin = 1
-        print "make eff for cut ",cut
         hists = [ (y,x2.xvar,x2.fvar,x2,makeEff(mca,cut,y,x2,returnSeparatePassFail=True,notDoProfile=True,mainOptions=options)) for y in ids for x2 in vars2d ]
         options.globalRebin = backup
         if options.bare:
@@ -275,7 +274,7 @@ if __name__ == "__main__":
                                     s2_l += h.GetBinError(ib,iz)**2
                             h.SetBinContent(1, iz, s_s); h.SetBinError(1, iz, sqrt(s2_s))
                             h.SetBinContent(2, iz, s_l); h.SetBinError(2, iz, sqrt(s2_l))
-                    #fzreport["signal"]     = mergePlots("signal",    [fzreport[p] for p in mca.listSignals() if p in fzreport])
+                    fzreport["signal"]     = mergePlots("signal",    [fzreport[p] for p in mca.listSignals() if p in fzreport]) # edm
                     fzreport["background"] = mergePlots("background", [fzreport[p] for p in mca.listBackgrounds() if p in fzreport])
                     ereport = dict([(title, effFromH2D(hist,options)) for (title, hist) in fzreport.iteritems()])
                     for (k,h) in ereport.iteritems():
@@ -580,7 +579,7 @@ if __name__ == "__main__":
         for rep in xzreport, xzreport0: 
             for p,h in rep.iteritems(): 
                 if p in [ "signal", "background", "total", "data_sub", "data" ] : continue
-                #rep["total"].Add(h) 
+                rep["total"].Add(h) # edm
                 if  mca.isSignal(p): rep["signal"    ].Add(h)
                 else:                rep["background"].Add(h)
             makeDataSub(rep,mca)
