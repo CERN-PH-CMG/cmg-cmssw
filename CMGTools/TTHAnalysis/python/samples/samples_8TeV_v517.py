@@ -2,6 +2,7 @@ from CMGTools.TTHAnalysis.samples.getFiles import getFiles
 import CMGTools.RootTools.fwlite.Config as cfg
 import os
 
+patOld='PAT_CMG_V5_16_0'
 pat='PAT_CMG_V5_17_0'
 patNew='PAT_CMG_V5_18_0'
 patPF='CMGPF_V5_16_0'
@@ -35,11 +36,17 @@ triggersMC_mue   = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_T
                     "HLT_Mu17_Mu8_v*",
                     "HLT_Mu17_TkMu8_v*",
                     "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",
-                    "HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"
+                    "HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",
+                    "HLT_IsoMu24_eta2p1_v*",
+                    "HLT_Ele27_WP80_v*"
                    ]
 
 triggers_1mu = [ 'HLT_IsoMu24_eta2p1_v*' ]
 triggersMC_1mu  = triggers_1mu;
+
+triggers_1e = [ "HLT_Ele27_WP80_v*" ]
+triggersMC_1e = triggers_1e; # check this !!!
+
 triggersFR_1mu  = [ 'HLT_Mu5_v*', 'HLT_RelIso1p0Mu5_v*', 'HLT_Mu12_v*', 'HLT_Mu24_eta2p1_v*', 'HLT_Mu40_eta2p1_v*' ]
 triggersFR_mumu = [ 'HLT_Mu17_Mu8_v*', 'HLT_Mu17_TkMu8_v*', 'HLT_Mu8_v*', 'HLT_Mu17_v*' ]
 triggersFR_1e   = [ 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele17_CaloIdL_CaloIsoVL_v*', 'HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele8__CaloIdL_CaloIsoVL_v*']
@@ -446,6 +453,31 @@ SingleMuD = cfg.DataComponent(
     json = json
     )
 
+SingleElectronAB = cfg.DataComponent(
+    name = 'SingleElectronAB',
+    files = getFiles('/SingleElectron/Run2012A-22Jan2013-v1/AOD/'+patOld,userName,filepattern)+ \
+            getFiles('/SingleElectron/Run2012B-22Jan2013-v1/AOD/'+patOld,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+SingleElectronC = cfg.DataComponent(
+    name = 'SingleElectronC',
+    files = getFiles('/SingleElectron/Run2012C-22Jan2013-v1/AOD/'+patOld,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+SingleElectronD = cfg.DataComponent(
+    name = 'SingleElectronD',
+    files = getFiles('/SingleElectron/Run2012D-22Jan2013-v1/AOD/'+patOld,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
 METAB = cfg.DataComponent(
     name = 'METAB',
     files = getFiles('/MET/Run2012A-22Jan2013-v1/AOD/'+patNew,userName,filepattern)+ \
@@ -483,8 +515,9 @@ dataSamplesE=[DoubleElectronAB,DoubleElectronC,DoubleElectronD]
 dataSamplesMuE=[MuEGAB,MuEGC,MuEGD]
 dataSamples2L = dataSamplesMu+dataSamplesE+dataSamplesMuE
 dataSamples1Mu=[SingleMuAB,SingleMuC,SingleMuD]
+dataSamples1E=[SingleElectronAB,SingleElectronC,SingleElectronD]
 dataSamplesMET=[METAB,METC,METD]
-dataSamplesAll = dataSamples2L+dataSamples1Mu+dataSamplesMET
+dataSamplesAll = dataSamples2L+dataSamples1Mu+dataSamples1E+dataSamplesMET
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import eff2012
 
@@ -525,5 +558,9 @@ for comp in dataSamples1Mu:
     comp.isMC = False
     comp.isData = True
 
+for comp in dataSamples1E:
+    comp.splitFactor = 800
+    comp.isMC = False
+    comp.isData = True
 
 

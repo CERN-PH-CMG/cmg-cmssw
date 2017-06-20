@@ -5,8 +5,8 @@
 
 import CMGTools.RootTools.fwlite.Config as cfg
 
-PDFWeights = []
-#PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
+#PDFWeights = []
+PDFWeights = [ ("CT10",53), ("NNPDF21_100",101), ("cteq6ll.LHpdf",1) ]
 
 # Find the initial events before the skim
 skimAnalyzer = cfg.Analyzer(
@@ -111,7 +111,10 @@ ttHLepAna = cfg.Analyzer(
     loose_electron_ptIsoThreshold = 0,
     loose_electron_lostHits = 1.0,
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
-    min_dr_electron_muon = 0.02
+    min_dr_electron_muon = 0.02,
+    # trigger bits for matching
+    triggerBitsMuons = {},
+    triggerBitsElectrons = {}
     )
 
 # Lepton-based Skim (generic, but requirements depend on the final state)

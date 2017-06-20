@@ -1,0 +1,37 @@
+# ZJets
+Z   : DYJetsM50 : 3503.7; FillColor=ROOT.kAzure+2, Label="Z", NormSystematic=0.20
+
+# WJets
+W+   : WJets :  37509.0; FillColor=ROOT.kRed+2, Label="W", NormSystematic=0.20
+
+#T Top
+Top  : TTJets :  245.59; FillColor=ROOT.kGray+2, Label="Top"
+Top  : Tsch :      3.79; FillColor=ROOT.kGray+2, Label="Top"
+Top  : Tbarsch :   1.76; FillColor=ROOT.kGray+2, Label="Top"
+Top  : Ttch :     56.4;  FillColor=ROOT.kGray+2, Label="Top"
+Top  : Tbartch :  30.7;  FillColor=ROOT.kGray+2, Label="Top"
+Top  : TtW :      11.73; FillColor=ROOT.kGray+2, Label="Top"
+Top  : TbartW :   11.73; FillColor=ROOT.kGray+2, Label="Top"
+
+# DiBosons
+DiBosons : WWJets : 5.995;      FillColor=ROOT.kViolet+2, Label="DiBosons"
+DiBosons : WZJets : 1.057*1.10; FillColor=ROOT.kViolet+2, Label="DiBosons"
+
+# -- 2012 Data ---
+data: SingleElectronAB+SingleElectronC+SingleElectronD ; Label="Data"
+
+qcd_data: SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/qcd_e_data.txt", Label="QCD", FillColor=ROOT.kBlack, FillStyle=3005, NormSystematic=10.00
+
+# electron scale systematics
+W_elescale_Up+ : WJets : 37509.0 ; FakeRate="wmass_e/fr-lepUp.txt", SkipMe=True, PostFix="_lepscale_Up" 
+W_elescale_Dn+ : WJets : 37509.0 ; FakeRate="wmass_e/fr-lepDn.txt", SkipMe=True, PostFix="_lepscale_Dn" 
+
+# recoil systematics
+W_recoil_Up+ : WJets : 37509.0 ; FakeRate="wmass_e/fr-recoilUp.txt", SkipMe=True, PostFix="_lepscale_Up" 
+W_recoil_Dn+ : WJets : 37509.0 ; FakeRate="wmass_e/fr-recoilDn.txt", SkipMe=True, PostFix="_lepscale_Dn" 
+
+# shape systematics for qcd (arbitrarily conservative)
+qcd_data_shape_Up+ :  SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/fr-qcdShapeUp.txt", SkipMe=True, PostFix="_qcdShape_Up"
+qcd_data_shape_Dn+ :  SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/fr-qcdShapeDn.txt", SkipMe=True, PostFix="_qcdShape_Dn"
+qcd_data_crsel_Up+ :  SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/fr-qcdCRSelectionUp.txt", SkipMe=True, PostFix="_qcdCrSel_Up"
+qcd_data_crsel_Dn+ :  SingleElectronAB_QCDSKIM+SingleElectronC_QCDSKIM+SingleElectronD_QCDSKIM ; FakeRate="wmass_e/fr-qcdCRSelectionDn.txt", SkipMe=True, PostFix="_qcdCrSel_Dn"

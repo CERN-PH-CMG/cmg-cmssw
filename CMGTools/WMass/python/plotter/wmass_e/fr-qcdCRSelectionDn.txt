@@ -1,0 +1,13 @@
+### --- this is to replicate the QCD selection
+cut-change: LepGood1_relIso04: 0
+cut-change: LepGood1_convVetoFull: 1
+# let event pass the pfmet cut
+cut-change: met_pt > : 10000 >
+# take the QCD from unique bin in eta
+cut-change: abs(LepGood1_eta)> : 10>
+cut-change: abs(LepGood1_eta)< : 0<
+
+### --- this is the change in the CR definition
+# let the electron pass the tight ID (set them to always-pass values) and tighten inverted dPhi cut
+cut-change: LepGood1_eleMVAId >=2 : 1 && if3(abs(LepGood1_eta)<1.479,abs(LepGood1_detaIn)>0.004 && abs(LepGood1_dphiIn)>0.06,abs(LepGood1_detaIn)>0.005 && abs(LepGood1_dphiIn)>0.06) 
+weight: 24.554

@@ -1,0 +1,25 @@
+# luminosity
+lumi_8TeV              : W|Z|Top|DiBosons: .* : 1.026
+
+# lepton efficiencies
+CMS_We_lepEff   : W|Z|Top|DiBosons: .* : 1.10
+
+# charge asymmetry uncertainties: this should be Y-dependent
+# actual numbers to be changed
+CMS_We_pdf_qasym  : W : .*pos.* : 1.02
+CMS_We_pdf_qasym  : W : .*neg.* : 0.95
+
+# Diboson backgrounds 
+CMS_We_VV : DiBosons : .* : 1.16 
+
+# QCD
+CMS_We_QCDnorm  : qcd_.* : .* : 100.0
+CMS_We_QCDshape : qcd_.* : .* : shape : templates 
+CMS_We_QCDcrsel : qcd_.* : .* : crsel : templates 
+
+# lepton scale
+CMS_We_elescale :  W: .* : elescale       : templates 
+
+# recoil uncertainty
+CMS_We_recoil :  W: .* : recoil       : templates 
+

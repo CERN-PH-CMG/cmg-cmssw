@@ -1,0 +1,28 @@
+Z_fake    : DYJetsM50 : 3503.7 : LepGood_mcMatchId == 0 ; FillColor=ROOT.kAzure+2, Label="Z", NormSystematic=1.0
+W_fake    : WJets :    37509.0 : LepGood_mcMatchId == 0; FillColor=ROOT.kRed+2, Label="W", NormSystematic=1.0
+Z    : DYJetsM50 : 3503.7 ; FillColor=ROOT.kAzure+2, Label="Z", NormSystematic=0.2
+W    : WJets :    37509.0 ; FillColor=ROOT.kRed+2, Label="W", NormSystematic=0.2
+Top  : TTJets :  245.59; FillColor=ROOT.kGray+2, Label="Top"
+Top  : Tsch :      3.79; FillColor=ROOT.kGray+2, Label="Top"
+Top  : Tbarsch :   1.76; FillColor=ROOT.kGray+2, Label="Top"
+Top  : Ttch :     56.4;  FillColor=ROOT.kGray+2, Label="Top"
+Top  : Tbartch :  30.7;  FillColor=ROOT.kGray+2, Label="Top"
+Top  : TtW :      11.73; FillColor=ROOT.kGray+2, Label="Top"
+Top  : TbartW :   11.73; FillColor=ROOT.kGray+2, Label="Top"
+DiBosons : WWJets : 5.995;      FillColor=ROOT.kViolet+2, Label="DiBosons"
+DiBosons : WZJets : 1.057*1.10; FillColor=ROOT.kViolet+2, Label="DiBosons"
+
+#EWK : DYJetsM50 : 3503.7; FillColor=ROOT.kAzure+2, Label="Prompt"
+#EWK : WJets :  37509.0; FillColor=ROOT.kRed+2, Label="Prompt"
+#EWK : TTJets :  245.59; FillColor=ROOT.kGray+2, Label="Prompt"
+#EWK : Tsch :      3.79; FillColor=ROOT.kGray+2, Label="Prompt"
+#EWK : Tbarsch :   1.76; FillColor=ROOT.kGray+2, Label="Prompt"
+#EWK : Ttch :     56.4;  FillColor=ROOT.kGray+2, Label="Prompt"
+#EWK : Tbartch :  30.7;  FillColor=ROOT.kGray+2, Label="Prompt"
+#EWK : TtW :      11.73; FillColor=ROOT.kGray+2, Label="Prompt"
+#EWK : TbartW :   11.73; FillColor=ROOT.kGray+2, Label="Prompt"
+#EWK : WWJets : 5.995;      FillColor=ROOT.kViolet+2, Label="Prompt"
+#EWK : WZJets : 1.057*1.10; FillColor=ROOT.kViolet+2, Label="Prompt"
+
+# -- 2012 Data ---
+data: DoubleElectronAB+DoubleElectronC+DoubleElectronD ; Label="Data"

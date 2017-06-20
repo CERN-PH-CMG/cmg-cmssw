@@ -1,0 +1,7 @@
+nJet30: nJetClean > 0 && JetClean1_pt > 30
+onelep: nLepGood == 1
+el : abs(LepGood1_pdgId)==11
+den: if3(abs(LepGood1_eta)<1.479,LepGood1_sigmaIetaIeta<0.01 && abs(LepGood1_detaIn)<0.007 && abs(LepGood1_dphiIn)<0.15 && LepGood1_hcalOverEcal<0.12,LepGood1_sigmaIetaIeta<0.03 && abs(LepGood1_detaIn)<0.009 && abs(LepGood1_dphiIn)<0.10 && LepGood_hcalOverEcal<0.10) && LepGood1_convVetoFull && abs(LepGood1_dxy)<0.02 && LepGood1_eleMVAPreselId==1
+barrel : abs(LepGood_eta) <= (1.2 + 0.279 *(abs(LepGood_pdgId)==11)); Disable=True
+dphilj: deltaPhi(LepGood1_phi,JetClean1_phi) > 0.7
+

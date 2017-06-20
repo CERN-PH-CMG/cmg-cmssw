@@ -1,0 +1,8 @@
+alwaystrue: 1
+trigger: HLT_SingleEl==1
+el acceptance: abs(LepGood1_pdgId)==11 && LepCorr1_pt > 25 && abs(LepCorr1_eta)<2.5
+el trigger ID: LepGood1_eleMVAPreselId==1
+el invID: if3(abs(LepGood1_eta)<1.479,abs(LepGood1_detaIn)>0.004 && abs(LepGood1_dphiIn)>0.03,abs(LepGood1_detaIn)>0.005 && abs(LepGood1_dphiIn)>0.02) 
+pfmet: met_pt < 30
+w pt: Hypot(w_ux,w_uy) < 40
+w mt: mt_lu_cart(LepCorr1_pt,LepGood1_phi,w_ux,w_uy) > 20

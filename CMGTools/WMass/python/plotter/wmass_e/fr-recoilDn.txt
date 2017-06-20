@@ -1,0 +1,3 @@
+change: w_ux\b: 0.93*w_ux
+change: w_uy\b: 0.93*w_uy
+weight: 1

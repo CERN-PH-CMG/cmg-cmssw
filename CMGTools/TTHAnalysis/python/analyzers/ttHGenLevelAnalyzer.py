@@ -183,7 +183,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
         self.pdfWeightInit = True
         self.pdfWeightTool = PdfWeightProducerTool()
         for pdf in self.cfg_ana.PDFWeights:
-            self.pdfWeightTool.addPdfSet(pdf+".LHgrid")
+            if "." in pdf: self.pdfWeightTool.addPdfSet(pdf)
+            else: self.pdfWeightTool.addPdfSet(pdf+".LHgrid")
         self.pdfWeightTool.beginJob()
 
     def makePDFWeights(self, event):
@@ -191,7 +192,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
         self.pdfWeightTool.processEvent(self.mchandles['pdfstuff'].product())
         event.pdfWeights = {}
         for pdf in self.cfg_ana.PDFWeights:
-            ws = self.pdfWeightTool.getWeights(pdf+".LHgrid")
+            if "." in pdf: ws = self.pdfWeightTool.getWeights(pdf)
+            else: ws = self.pdfWeightTool.getWeights(pdf+".LHgrid")
             event.pdfWeights[pdf] = [w for w in ws]
             #print "Produced %d weights for %s: %s" % (len(ws),pdf,event.pdfWeights[pdf])
 
