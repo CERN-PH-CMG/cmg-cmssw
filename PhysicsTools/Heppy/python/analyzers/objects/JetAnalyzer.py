@@ -136,9 +136,10 @@ class JetAnalyzer( Analyzer ):
         self.rho = rho
 
         run=event.input.eventAuxiliary().id().run()
-        runBin=bisect(self.runsGT, run)-1
-        if runBin==-1:
-            raise RuntimeError, "ERROR: run range not covered by the Jet recalibrator (jetAnalyzer), check the JECs"
+        if self.doJEC:
+            runBin=bisect(self.runsGT, run)-1
+            if runBin==-1:
+                raise RuntimeError, "ERROR: run range not covered by the Jet recalibrator (jetAnalyzer), check the JECs"
         
         ## Read jets, if necessary recalibrate and shift MET
         if self.cfg_ana.copyJetsByValue: 
