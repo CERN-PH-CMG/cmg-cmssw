@@ -58,7 +58,16 @@ class Muon( Lepton ):
                 if not self.looseId(): return False
                 goodGlb = self.physObj.isGlobalMuon() and self.physObj.globalTrack().normalizedChi2() < 3 and self.physObj.combinedQuality().chi2LocalPosition < 12 and self.physObj.combinedQuality().trkKink < 20;
                 return self.physObj.innerTrack().validFraction() > 0.49 and self.physObj.segmentCompatibility() >= (0.303 if goodGlb else 0.451)
-
+            if name == "POG_ID_Medium_Moriond":
+                # Allow the run-dependent treatment from the muonPOG recommendation
+                # https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Short_Term_Instructions_for_Mori
+                # muon should have the muon.event attribute to determine the run'''
+                run = self.event.eventAuxiliary().id().run()
+                if run > 273016 and run < 278820:
+                    return self.muonID("POG_ID_Medium_ICHEP")
+                else:
+                    return self.muonID("POG_ID_Medium")
+                
             if name == "POG_Global_OR_TMArbitrated":
                 return self.physObj.isGlobalMuon() or (self.physObj.isTrackerMuon() and self.physObj.numberOfMatchedStations() > 0)
         elif name.startswith("HZZ_"):
@@ -74,7 +83,7 @@ class Muon( Lepton ):
                 if self.physObj.isLooseMuon(): return True
                 return self.physObj.pt() > 200 and self.muonID("HZZ_ID_TkHighPt")
         return self.physObj.muonID(name)
-            
+
     def mvaId(self):
         '''For a transparent treatment of electrons and muons. Returns -99'''
         return -99
