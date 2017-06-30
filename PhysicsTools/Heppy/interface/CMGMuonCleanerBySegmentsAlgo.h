@@ -9,10 +9,7 @@ namespace heppy {
 
 class CMGMuonCleanerBySegmentsAlgo {
     public:
-        CMGMuonCleanerBySegmentsAlgo(double sharedFraction=0.499, const std::string & preselection="track.isNonnull", const std::string & passthrough="isGlobalMuon && numberOfMatches >= 2") :
-            sharedFraction_(sharedFraction), 
-            preselection_(preselection,true),
-            passthrough_(passthrough,true) {}
+        CMGMuonCleanerBySegmentsAlgo(double sharedFraction=0.499, const std::string & preselection="track.isNonnull", const std::string & passthrough="isGlobalMuon && numberOfMatches >= 2") ;
         ~CMGMuonCleanerBySegmentsAlgo() ;
 
         /// Return a vector of boolean marking the muons to be considered clean

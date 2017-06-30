@@ -1,6 +1,13 @@
 #include "PhysicsTools/Heppy/interface/CMGMuonCleanerBySegmentsAlgo.h"
+#include <iostream>
 
 namespace heppy {
+
+CMGMuonCleanerBySegmentsAlgo::CMGMuonCleanerBySegmentsAlgo(double sharedFraction, const std::string & preselection, const std::string & passthrough) :
+        sharedFraction_(sharedFraction), 
+        preselection_(preselection,true),
+        passthrough_(passthrough,true) {
+}
 
 CMGMuonCleanerBySegmentsAlgo::~CMGMuonCleanerBySegmentsAlgo() {
 }
