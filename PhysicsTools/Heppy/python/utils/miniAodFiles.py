@@ -45,6 +45,12 @@ def miniAodFiles():
             '/store/mc/RunIISummer16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/165F54A0-A3BE-E611-B3F7-0025905A606A.root',
             '/store/mc/RunIISummer16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/18E31463-B3BE-E611-B6A3-0CC47A4D7678.root',
             ]
+    elif (big,medium)==(9,2):
+        files=[
+            '/store/relval/CMSSW_9_2_4/RelValTTbar_13/MINIAODSIM/PU25ns_92X_upgrade2017_realistic_v2-v1/00000/A6E29287-535C-E711-B579-0CC47A4D7668.root',
+            '/store/relval/CMSSW_9_2_4/RelValTTbar_13/MINIAODSIM/PU25ns_92X_upgrade2017_realistic_v2-v1/00000/B6BE639D-535C-E711-8689-0CC47A4D7606.root',
+            ]
+ 
     else:
         raise ValueError('no mini AOD file defined for release '+cmsswRelease())
     eosfiles = [''.join(['root://eoscms//eos/cms', lfn]) for lfn in files]
