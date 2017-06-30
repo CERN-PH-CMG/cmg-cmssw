@@ -28,6 +28,10 @@ class METAnalyzer( Analyzer ):
     def declareHandles(self):
         super(METAnalyzer, self).declareHandles()
         self.handles['met'] = AutoHandle( self.cfg_ana.metCollection, 'std::vector<pat::MET>' )
+
+        if self.cfg_ana.storePuppiExtra:
+            self.handles['corX'] = AutoHandle( 'puppiMETEGCor:corX', 'float' )
+            self.handles['corY'] = AutoHandle( 'puppiMETEGCor:corY', 'float' )
         if self.cfg_ana.doMetNoPU: 
             self.handles['nopumet'] = AutoHandle( self.cfg_ana.noPUMetCollection, 'std::vector<pat::MET>' )
         if self.cfg_ana.doTkMet:
@@ -191,7 +195,6 @@ class METAnalyzer( Analyzer ):
           deltaMetSmear = getattr(event, 'deltaMetFromJetSmearing'+self.jetAnalyzerPostFix)
           self.applyDeltaMet(self.met, deltaMetSmear)
 
-
         if (not self.cfg_ana.copyMETsByValue) and getattr(self.cfg_ana, 'makeShiftedMETs', True):
           shifts = [] 
           for obj in 'JetEn', 'JetRes', 'MuonEn', 'ElectronEn', 'PhotonEn', 'TauEn', 'UnclusteredEn':
@@ -208,8 +211,15 @@ class METAnalyzer( Analyzer ):
                setattr(event, "met{0}_shifted_{1}".format(self.cfg_ana.collectionPostFix, i),m)
                setattr(event, "met{0}_shifted_{1}".format(self.cfg_ana.collectionPostFix, name),m)
 
-        self.met_sig = self.met.significance()
+        self.met_sig = self.met.metSignificance()
         self.met_sumet = self.met.sumEt()
+
+        if self.cfg_ana.storePuppiExtra:
+            self.met.EGCorX = self.handles['corX'].product()[0]
+            self.met.EGCorY = self.handles['corY'].product()[0]
+            setattr(event,"met_EGCorX"+self.cfg_ana.collectionPostFix, self.met.EGCorX)
+            setattr(event,"met_EGCorY"+self.cfg_ana.collectionPostFix, self.met.EGCorY)
+
 
         if self.old74XMiniAODs and self.recalibrateMET != "type1":
            oldraw = self.met.shiftedP2_74x(12,0);
@@ -233,7 +243,7 @@ class METAnalyzer( Analyzer ):
             setattr(event,"met_raw.upara_gamma"+self.cfg_ana.collectionPostFix, self.met_raw.upara_gamma)
             setattr(event,"met_raw.uperp_gamma"+self.cfg_ana.collectionPostFix, self.met_raw.uperp_gamma)
 
-        if hasattr(event,"met"+self.cfg_ana.collectionPostFix): raise RuntimeError("Event already contains met with the following postfix: "+self.cfg_ana.collectionPostFix)
+        if hasattr(event,"met"+self.cfg_ana.collectionPostFix): raise RuntimeError, "Event already contains met with the following postfix: "+self.cfg_ana.collectionPostFix
         setattr(event, "met"+self.cfg_ana.collectionPostFix, self.met)
         if self.cfg_ana.doMetNoPU: setattr(event, "metNoPU"+self.cfg_ana.collectionPostFix, self.metNoPU)
         setattr(event, "met_sig"+self.cfg_ana.collectionPostFix, self.met_sig)
@@ -289,6 +299,7 @@ setattr(METAnalyzer,"defaultConfig", cfg.Analyzer(
     doMetNoMu = False,  
     doMetNoEle = False,  
     doMetNoPhoton = False,  
+    storePuppiExtra = False,
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,

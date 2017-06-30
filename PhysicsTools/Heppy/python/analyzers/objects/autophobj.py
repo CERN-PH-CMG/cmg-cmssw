@@ -49,6 +49,7 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
     NTupleVariable("charge",   lambda x : x.charge(), int),
     # Identification
     NTupleVariable("tightId",     lambda x : x.tightId(), int, help="POG Tight ID (for electrons it's configured in the analyzer)"),
+    NTupleVariable("hltId",    lambda x : x.hltId() if abs(x.pdgId()) == 11 else -1, int, help="POG HLT-safe cut-based ID (for electrons, includes also isolation)"),
     NTupleVariable("eleCutIdCSA14_25ns_v1",     lambda x : (1*x.electronID("POG_Cuts_ID_CSA14_25ns_v1_Veto") + 1*x.electronID("POG_Cuts_ID_CSA14_25ns_v1_Loose") + 1*x.electronID("POG_Cuts_ID_CSA14_25ns_v1_Medium") + 1*x.electronID("POG_Cuts_ID_CSA14_25ns_v1_Tight")) if abs(x.pdgId()) == 11 else -1, int, help="Electron cut-based id (POG CSA14_25ns_v1): 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
     NTupleVariable("eleCutIdCSA14_50ns_v1",     lambda x : (1*x.electronID("POG_Cuts_ID_CSA14_50ns_v1_Veto") + 1*x.electronID("POG_Cuts_ID_CSA14_50ns_v1_Loose") + 1*x.electronID("POG_Cuts_ID_CSA14_50ns_v1_Medium") + 1*x.electronID("POG_Cuts_ID_CSA14_50ns_v1_Tight")) if abs(x.pdgId()) == 11 else -1, int, help="Electron cut-based id (POG CSA14_50ns_v1): 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
     NTupleVariable("eleCutIdSpring15_25ns_v1",     lambda x : (1*x.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-veto") + 1*x.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-loose") + 1*x.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-medium") + 1*x.electronID("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")) if abs(x.pdgId()) == 11 and x.isElectronIDAvailable("cutBasedElectronID-Spring15-25ns-V1-standalone-veto") else -1, int, help="Electron cut-based id (POG Spring15_25ns_v1): 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
@@ -75,10 +76,15 @@ leptonType = NTupleObjectType("lepton", baseObjectTypes = [ particleType ], vari
     NTupleVariable("mcMatchTau", lambda x : getattr(x, 'mcMatchTau', -99), int, mcOnly=True, help="True if the leptons comes from a tau"),
     NTupleVariable("mcPt",   lambda x : x.mcLep.pt() if getattr(x,"mcLep",None) else 0., mcOnly=True, help="p_{T} of associated gen lepton"),
     NTupleVariable("mediumMuonId",   lambda x : x.muonID("POG_ID_Medium") if abs(x.pdgId())==13 else 1, int, help="Muon POG Medium id"),
+    NTupleVariable("ICHEPsoftMuonId",   lambda x : x.muonID("POG_ID_Soft_ICHEP") if abs(x.pdgId())==13 else 1, int, help="Muon POG Soft id with fix for ICHEP 2016"),
+    NTupleVariable("ICHEPmediumMuonId",   lambda x : x.muonID("POG_ID_Medium_ICHEP") if abs(x.pdgId())==13 else 1, int, help="Muon POG Medium id with fix for ICHEP 2016"),
+
 ])
 
 ### EXTENDED VERSION WITH INDIVIUAL DISCRIMINATING VARIABLES
 leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType ], variables = [
+    # Loose id 
+    NTupleVariable("looseIdOnly",   lambda x : x.looseIdOnly, int, help="Loose ID as per LeptonAnalyzer (only what configured in the id part, not also dxy/dz/iso cuts of the lepton analyzer)"),
     # Extra isolation variables
     NTupleVariable("chargedHadRelIso03",  lambda x : x.chargedHadronIsoR(0.3)/x.pt(), help="PF Rel Iso, R=0.3, charged hadrons only"),
     NTupleVariable("chargedHadRelIso04",  lambda x : x.chargedHadronIsoR(0.4)/x.pt(), help="PF Rel Iso, R=0.4, charged hadrons only"),
@@ -86,7 +92,7 @@ leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType
     NTupleVariable("softMuonId", lambda x : x.muonID("POG_ID_Soft") if abs(x.pdgId())==13 else 1, int, help="Muon POG Soft id"),
     NTupleVariable("pfMuonId",   lambda x : x.muonID("POG_ID_Loose") if abs(x.pdgId())==13 else 1, int, help="Muon POG Loose id"),
     # Extra electron ID working points
-    NTupleVariable("eleCutId2012_full5x5",     lambda x : (1*x.electronID("POG_Cuts_ID_2012_full5x5_Veto") + 1*x.electronID("POG_Cuts_ID_2012_full5x5_Loose") + 1*x.electronID("POG_Cuts_ID_2012_full5x5_Medium") + 1*x.electronID("POG_Cuts_ID_2012_full5x5_Tight")) if abs(x.pdgId()) == 11 else -1, int, help="Electron cut-based id (POG 2012, full5x5 shapes): 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
+    NTupleVariable("eleCutId2012",     lambda x : (1*x.electronID("POG_Cuts_ID_2012_Veto") + 1*x.electronID("POG_Cuts_ID_2012_Loose") + 1*x.electronID("POG_Cuts_ID_2012_Medium") + 1*x.electronID("POG_Cuts_ID_2012_Tight")) if abs(x.pdgId()) == 11 else -1, int, help="Electron cut-based id (POG 2012, full5x5 shapes): 0=none, 1=veto, 2=loose, 3=medium, 4=tight"),
     # Extra tracker-related variables
     NTupleVariable("trackerLayers", lambda x : (x.track() if abs(x.pdgId())==13 else x.gsfTrack()).hitPattern().trackerLayersWithMeasurement(), int, help="Tracker Layers"),
     NTupleVariable("pixelLayers", lambda x : (x.track() if abs(x.pdgId())==13 else x.gsfTrack()).hitPattern().pixelLayersWithMeasurement(), int, help="Pixel Layers"),
@@ -103,6 +109,10 @@ leptonTypeExtra = NTupleObjectType("leptonExtra", baseObjectTypes = [ leptonType
     NTupleVariable("chi2LocalPosition",    lambda lepton : lepton.combinedQuality().chi2LocalPosition if abs(lepton.pdgId()) == 13 else 0, help="Tracker-Muon matching in position"), 
     NTupleVariable("chi2LocalMomentum",    lambda lepton : lepton.combinedQuality().chi2LocalMomentum if abs(lepton.pdgId()) == 13 else 0, help="Tracker-Muon matching in momentum"), 
     NTupleVariable("glbTrackProbability",  lambda lepton : lepton.combinedQuality().glbTrackProbability if abs(lepton.pdgId()) == 13 else 0, help="Global track pseudo-probability"), 
+    NTupleVariable("TMOneStationTightMuonId",   lambda x : x.muonID("TMOneStationTight") if abs(x.pdgId())==13 else 1, int, help="Muon TMOneStationTight ID"),
+    NTupleVariable("trackHighPurityMuon",   lambda x : x.innerTrack().quality(ROOT.reco.TrackBase.highPurity) if abs(x.pdgId())==13 else 1, int, help="Muon track high purity"),
+    NTupleVariable("isGlobalMuon",   lambda x : x.physObj.isGlobalMuon() if abs(x.pdgId())==13 else 1, int, help="Muon is global"),
+    NTupleVariable("isTrackerMuon",   lambda x : x.physObj.isTrackerMuon() if abs(x.pdgId())==13 else 1, int, help="Muon is tracker"),
     # Extra electron ID variables
     NTupleVariable("sigmaIEtaIEta",  lambda x : x.full5x5_sigmaIetaIeta() if abs(x.pdgId())==11 else 0, help="Electron sigma(ieta ieta), with full5x5 cluster shapes"),
     NTupleVariable("dEtaScTrkIn",    lambda x : x.deltaEtaSuperClusterTrackAtVtx() if abs(x.pdgId())==11 else 0, help="Electron deltaEtaSuperClusterTrackAtVtx (without absolute value!)"),
@@ -155,7 +165,8 @@ isoTrackType = NTupleObjectType("isoTrack",  baseObjectTypes = [ particleType ],
 ##------------------------------------------  
 
 photonType = NTupleObjectType("gamma", baseObjectTypes = [ particleType ], variables = [
-    NTupleVariable("idCutBased", lambda x : x.idCutBased, int, help="1,2,3 if the gamma passes the loose, medium, tight WP of PhotonCutBasedID"),
+    NTupleVariable("etaSc", lambda x : x.superCluster().eta(), help="Photon supercluster pseudorapidity"),
+    NTupleVariable("idCutBased", lambda x : x.idWPs, int, help="1,2,3 if the gamma passes the loose, medium, tight WP of PhotonCutBasedID"),
     NTupleVariable("hOverE",  lambda x : x.hOVERe(), float, help="hoverE for photons"),
     NTupleVariable("r9",  lambda x : x.full5x5_r9(), float, help="r9 for photons"),
     NTupleVariable("sigmaIetaIeta",  lambda x : x.full5x5_sigmaIetaIeta(), float, help="sigmaIetaIeta for photons"),
@@ -228,6 +239,7 @@ metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variable
 genParticleType = NTupleObjectType("genParticle", baseObjectTypes = [ particleType ], mcOnly=True, variables = [
     NTupleVariable("charge",   lambda x : x.threeCharge()/3.0, float),
     NTupleVariable("status",   lambda x : x.status(),int),
+    NTupleVariable("isPromptHard", lambda x : getattr(x,"promptHardFlag",0), int)
 ])
 genParticleWithMotherId = NTupleObjectType("genParticleWithMotherId", baseObjectTypes = [ genParticleType ], mcOnly=True, variables = [
     NTupleVariable("motherId", lambda x : x.mother(0).pdgId() if x.mother(0) else 0, int, help="pdgId of the mother of the particle"),
@@ -241,4 +253,3 @@ genParticleWithAncestryType = NTupleObjectType("genParticleWithAncestry", baseOb
 genParticleWithLinksType = NTupleObjectType("genParticleWithLinks", baseObjectTypes = [ genParticleWithAncestryType ], mcOnly=True, variables = [
     NTupleVariable("motherIndex", lambda x : x.motherIndex, int, help="index of the mother in the generatorSummary")
 ])
-

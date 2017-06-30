@@ -35,6 +35,13 @@ class Muon( Lepton ):
             if name == "POG_ID_Tight":  return self.physObj.isTightMuon(vertex)
             if name == "POG_ID_HighPt": return self.physObj.isHighPtMuon(vertex)
             if name == "POG_ID_Soft":   return self.physObj.isSoftMuon(vertex)
+            if name == "POG_ID_Soft_ICHEP":
+                if not self.physObj.muonID("TMOneStationTight"): return False
+                if not self.physObj.innerTrack().hitPattern().trackerLayersWithMeasurement() > 5: return False
+                if not self.physObj.innerTrack().hitPattern().pixelLayersWithMeasurement() > 0: return False
+                if not abs(self.physObj.innerTrack().dxy(vertex.position())) < 0.3 : return False
+                if not abs(self.physObj.innerTrack().dz(vertex.position())) < 20 : return False
+                return True
             if name == "POG_ID_TightNoVtx":  return self.looseId() and \
                                                  self.isGlobalMuon() and \
                                                  self.globalTrack().normalizedChi2() < 10 and \
@@ -46,10 +53,37 @@ class Muon( Lepton ):
                 if not self.looseId(): return False
                 goodGlb = self.physObj.isGlobalMuon() and self.physObj.globalTrack().normalizedChi2() < 3 and self.physObj.combinedQuality().chi2LocalPosition < 12 and self.physObj.combinedQuality().trkKink < 20;
                 return self.physObj.innerTrack().validFraction() > 0.8 and self.physObj.segmentCompatibility() >= (0.303 if goodGlb else 0.451)
+            if name == "POG_ID_Medium_ICHEP":
+                #validFraction() > 0.49 changed from 0.8
+                if not self.looseId(): return False
+                goodGlb = self.physObj.isGlobalMuon() and self.physObj.globalTrack().normalizedChi2() < 3 and self.physObj.combinedQuality().chi2LocalPosition < 12 and self.physObj.combinedQuality().trkKink < 20;
+                return self.physObj.innerTrack().validFraction() > 0.49 and self.physObj.segmentCompatibility() >= (0.303 if goodGlb else 0.451)
+            if name == "POG_ID_Medium_Moriond":
+                # Allow the run-dependent treatment from the muonPOG recommendation
+                # https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Short_Term_Instructions_for_Mori
+                # muon should have the muon.event attribute to determine the run'''
+                run = self.event.eventAuxiliary().id().run()
+                if run > 273016 and run < 278820:
+                    return self.muonID("POG_ID_Medium_ICHEP")
+                else:
+                    return self.muonID("POG_ID_Medium")
+                
             if name == "POG_Global_OR_TMArbitrated":
                 return self.physObj.isGlobalMuon() or (self.physObj.isTrackerMuon() and self.physObj.numberOfMatchedStations() > 0)
+        elif name.startswith("HZZ_"):
+            if name == "HZZ_ID_TkHighPt":
+                primaryVertex = vertex if vertex != None else getattr(self, 'associatedVertex', None) 
+                return ( self.physObj.numberOfMatchedStations() > 1 
+                         and (self.physObj.muonBestTrack().ptError()/self.physObj.muonBestTrack().pt()) < 0.3 
+                         and abs(self.physObj.muonBestTrack().dxy(primaryVertex.position())) < 0.2 
+                         and abs(self.physObj.muonBestTrack().dz(primaryVertex.position())) < 0.5 
+                         and self.physObj.innerTrack().hitPattern().numberOfValidPixelHits() > 0 
+                         and self.physObj.innerTrack().hitPattern().trackerLayersWithMeasurement() > 5 )
+            if name == "HZZ_ID_LooseOrTkHighPt":
+                if self.physObj.isLooseMuon(): return True
+                return self.physObj.pt() > 200 and self.muonID("HZZ_ID_TkHighPt")
         return self.physObj.muonID(name)
-            
+
     def mvaId(self):
         '''For a transparent treatment of electrons and muons. Returns -99'''
         return -99
