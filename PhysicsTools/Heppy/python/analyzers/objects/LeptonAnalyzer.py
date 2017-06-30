@@ -15,7 +15,8 @@ from PhysicsTools.HeppyCore.utils.deltar import *
 from PhysicsTools.Heppy.physicsutils.genutils import *
 
 
-from ROOT import heppy
+from ROOT import heppy, TLorentzVector
+import math
 cmgMuonCleanerBySegments = heppy.CMGMuonCleanerBySegmentsAlgo()
 
 class LeptonAnalyzer( Analyzer ):
@@ -24,9 +25,9 @@ class LeptonAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(LeptonAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
         if hasattr(self.cfg_ana, 'doMuScleFitCorrections'):
-            raise RuntimeError("doMuScleFitCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'MuScleFit', <name> )")
+            raise RuntimeError, "doMuScleFitCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'MuScleFit', <name> )"
         if hasattr(self.cfg_ana, 'doRochesterCorrections'):
-            raise RuntimeError("doRochesterCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'Rochester', <name> )")
+            raise RuntimeError, "doRochesterCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'Rochester', <name> )"
         if self.cfg_ana.doMuonScaleCorrections:
             algo, options = self.cfg_ana.doMuonScaleCorrections
             if algo == "Kalman":
@@ -41,11 +42,11 @@ class LeptonAnalyzer( Analyzer ):
             elif algo == "MuScleFit":
                 print "WARNING: the MuScleFit correction in heppy is still from Run 1 (and probably no longer functional)"
                 if options not in [ "prompt", "prompt-sync", "rereco", "rereco-sync" ]:
-                    raise RuntimeError('MuScleFit correction name must be one of [ "prompt", "prompt-sync", "rereco", "rereco-sync" ] ')
+                    raise RuntimeError, 'MuScleFit correction name must be one of [ "prompt", "prompt-sync", "rereco", "rereco-sync" ] '
                     rereco = ("prompt" not in self.cfg_ana.doMuScleFitCorrections)
                     sync   = ("sync"       in self.cfg_ana.doMuScleFitCorrections)
                     self.muonScaleCorrector = MuScleFitCorr(cfg_comp.isMC, rereco, sync)
-            else: raise RuntimeError("Unknown muon scale correction algorithm")
+            else: raise RuntimeError, "Unknown muon scale correction algorithm"
         else:
             self.muonScaleCorrector = None
 	#FIXME: only Embedded works
@@ -103,7 +104,10 @@ class LeptonAnalyzer( Analyzer ):
                 self.IsolationComputer = heppy.IsolationComputer()
             
 
+        self.vertexChoice = getattr(cfg_ana, 'vertexChoice', 'goodVertices')
         self.doMatchToPhotons = getattr(cfg_ana, 'do_mc_match_photons', False)
+        self.doDirectionalIsolation = getattr(cfg_ana, 'doDirectionalIsolation', []) if self.doMiniIsolation else []
+        self.doFixedConeIsoWithMiniIsoVeto = getattr(cfg_ana, 'doFixedConeIsoWithMiniIsoVeto', False)
 
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
@@ -121,6 +125,7 @@ class LeptonAnalyzer( Analyzer ):
         self.handles['rhoMu'] = AutoHandle( self.cfg_ana.rhoMuon, 'double')
         #rho for electrons
         self.handles['rhoEle'] = AutoHandle( self.cfg_ana.rhoElectron, 'double')
+        self.handles['rhoEleHLT'] = AutoHandle( 'fixedGridRhoFastjetCentralCalo', 'double')
 
         if self.doMiniIsolation or self.doIsolationScan:
             self.handles['packedCandidates'] = AutoHandle( self.cfg_ana.packedCandidates, 'std::vector<pat::PackedCandidate>')
@@ -189,7 +194,9 @@ class LeptonAnalyzer( Analyzer ):
                     self.IsolationComputer.addVetos(lep.physObj)
             for lep in event.inclusiveLeptons:
                 self.attachMiniIsolation(lep)
-        
+                for cone_size in self.doDirectionalIsolation:
+                    self.attachDirectionalIsolation(lep,cone_size)
+
         if self.doIsoAnnulus:
             for lep in event.inclusiveLeptons:
                 self.attachIsoAnnulus04(lep)
@@ -200,7 +207,8 @@ class LeptonAnalyzer( Analyzer ):
 
         # make loose leptons (basic selection)
         for mu in inclusiveMuons:
-                if (mu.muonID(self.cfg_ana.loose_muon_id) and 
+                mu.looseIdOnly = mu.muonID(self.cfg_ana.loose_muon_id)
+                if (mu.looseIdOnly and 
                         mu.pt() > self.cfg_ana.loose_muon_pt and abs(mu.eta()) < self.cfg_ana.loose_muon_eta and 
                         abs(mu.dxy()) < self.cfg_ana.loose_muon_dxy and abs(mu.dz()) < self.cfg_ana.loose_muon_dz and
                         self.muIsoCut(mu)):
@@ -212,7 +220,9 @@ class LeptonAnalyzer( Analyzer ):
                     event.otherLeptons.append(mu)
         looseMuons = event.selectedLeptons[:]
         for ele in inclusiveElectrons:
-               if (ele.electronID(self.cfg_ana.loose_electron_id) and
+               ele.looseIdOnly = ele.electronID(self.cfg_ana.loose_electron_id)
+               if ele.looseIdOnly < 0: print "Negative id for electron of pt %.1f, id %s, ret %r"  % (ele.pt(),self.cfg_ana.loose_electron_id, ele.looseIdOnly) 
+               if (ele.looseIdOnly and
                          ele.pt()>self.cfg_ana.loose_electron_pt and abs(ele.eta())<self.cfg_ana.loose_electron_eta and 
                          abs(ele.dxy()) < self.cfg_ana.loose_electron_dxy and abs(ele.dz())<self.cfg_ana.loose_electron_dz and 
                          self.eleIsoCut(ele) and 
@@ -290,10 +300,11 @@ class LeptonAnalyzer( Analyzer ):
               elif aeta < 2.200: mu.EffectiveArea03 = 0.0433
               else:              mu.EffectiveArea03 = 0.0577
               mu.EffectiveArea04 = 0 # not computed
-          else: raise RuntimeError("Unsupported value for mu_effectiveAreas: can only use Data2012 (rho: ?) and Phys14_25ns_v1 or Spring15_25ns_v1 (rho: fixedGridRhoFastjetAll)")
+          else: raise RuntimeError,  "Unsupported value for mu_effectiveAreas: can only use Data2012 (rho: ?) and Phys14_25ns_v1 or Spring15_25ns_v1 (rho: fixedGridRhoFastjetAll)"
         # Attach the vertex to them, for dxy/dz calculation
+        goodVertices = getattr(event, self.vertexChoice)
         for mu in allmuons:
-            mu.associatedVertex = event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]
+            mu.associatedVertex = goodVertices[0] if len(goodVertices)>0 else event.vertices[0]
             mu.setTrackForDxyDz(self.cfg_ana.muon_dxydz_track)
 
         # Set tight id if specified
@@ -335,6 +346,7 @@ class LeptonAnalyzer( Analyzer ):
         # fill EA for rho-corrected isolation
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
+          ele.rhoHLT = float(self.handles['rhoEleHLT'].product()[0])
           if self.eleEffectiveArea == "Data2012":
               # https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection?rev=14
               SCEta = abs(ele.superCluster().eta())
@@ -386,7 +398,19 @@ class LeptonAnalyzer( Analyzer ):
               else:              ele.EffectiveArea03 = 0.2687
               # warning: EAs not computed for cone DR=0.4 yet. Do not correct
               ele.EffectiveArea04 = 0.0
-          else: raise RuntimeError("Unsupported value for ele_effectiveAreas: can only use Data2012 (rho: ?), Phys14_v1 and Spring15_v1 (rho: fixedGridRhoFastjetAll)")
+          elif self.eleEffectiveArea == "Spring16_25ns_v1":
+              SCEta = abs(ele.superCluster().eta())
+              ## ----- https://github.com/ikrav/cmssw/blob/egm_id_747_v2/RecoEgamma/ElectronIdentification/data/Spring15/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_25ns.txt
+              if   SCEta < 1.000: ele.EffectiveArea03 = 0.1703
+              elif SCEta < 1.479: ele.EffectiveArea03 = 0.1715
+              elif SCEta < 2.000: ele.EffectiveArea03 = 0.1213
+              elif SCEta < 2.200: ele.EffectiveArea03 = 0.1230
+              elif SCEta < 2.300: ele.EffectiveArea03 = 0.1635
+              elif SCEta < 2.400: ele.EffectiveArea03 = 0.1937
+              else:              ele.EffectiveArea03 = 0.2393
+              # warning: EAs not computed for cone DR=0.4 yet. Do not correct
+              ele.EffectiveArea04 = 0.0
+          else: raise RuntimeError,  "Unsupported value for ele_effectiveAreas: can only use Data2012 (rho: ?), Phys14_v1 and Spring15_v1 (rho: fixedGridRhoFastjetAll)"
 
         # Electron scale calibrations
         if self.cfg_ana.doElectronScaleCorrections:
@@ -394,8 +418,13 @@ class LeptonAnalyzer( Analyzer ):
                 self.electronEnergyCalibrator.correct(ele, event.run)
 
         # Attach the vertex
+        goodVertices = getattr(event, self.vertexChoice)
         for ele in allelectrons:
-            ele.associatedVertex = event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]
+            ele.associatedVertex = goodVertices[0] if len(goodVertices)>0 else event.vertices[0]
+
+        # Attach the event (for MVA Id)
+        for ele in allelectrons:
+            ele.event = event.input.object()
 
         # Compute relIso with R=0.3 and R=0.4 cones
         for ele in allelectrons:
@@ -415,18 +444,20 @@ class LeptonAnalyzer( Analyzer ):
             if self.cfg_ana.ele_tightId=="MVA" :
                  ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
             elif self.cfg_ana.ele_tightId=="Cuts_2012" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_2012_Tight_full5x5")
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto") + 1*ele.electronID("POG_Cuts_ID_2012_Loose") + 1*ele.electronID("POG_Cuts_ID_2012_Medium") + 1*ele.electronID("POG_Cuts_ID_2012_Tight")
             elif self.cfg_ana.ele_tightId=="Cuts_PHYS14_25ns_v1_ConvVetoDxyDz" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Tight_full5x5")
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Tight")
             elif self.cfg_ana.ele_tightId=="Cuts_SPRING15_25ns_v1_ConvVetoDxyDz" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto_full5x5") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Loose_full5x5") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Medium_full5x5") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight_full5x5")
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight")
+            elif self.cfg_ana.ele_tightId=="Cuts_SPRING16_25ns_v1_ConvVetoDxyDz" :
+                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Tight")
 
             else :
                  try:
                      ele.tightIdResult = ele.electronID(self.cfg_ana.ele_tightId)
                  except RuntimeError:
                      raise RuntimeError("Unsupported ele_tightId name '" + str(self.cfg_ana.ele_tightId) +  "'! For now only 'MVA' and 'Cuts_2012' are supported, in addition to what provided in Electron.py.")
-
+            ele.hltSafeIdResult = ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_HLT")
         
         return allelectrons 
 
@@ -437,8 +468,14 @@ class LeptonAnalyzer( Analyzer ):
         what = "mu" if (abs(mu.pdgId()) == 13) else ("eleB" if mu.isEB() else "eleE")
         if what == "mu":
             mu.miniAbsIsoCharged = self.IsolationComputer.chargedAbsIso(mu.physObj, mu.miniIsoR, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0);
+            if self.doFixedConeIsoWithMiniIsoVeto:
+                mu.AbsIsoMIVCharged03 = self.IsolationComputer.chargedAbsIso(mu.physObj, 0.3, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0);
+                mu.AbsIsoMIVCharged04 = self.IsolationComputer.chargedAbsIso(mu.physObj, 0.4, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0);
         else:
             mu.miniAbsIsoCharged = self.IsolationComputer.chargedAbsIso(mu.physObj, mu.miniIsoR, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0,self.IsolationComputer.selfVetoNone);
+            if self.doFixedConeIsoWithMiniIsoVeto:
+                mu.AbsIsoMIVCharged03 = self.IsolationComputer.chargedAbsIso(mu.physObj, 0.3, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0,self.IsolationComputer.selfVetoNone);
+                mu.AbsIsoMIVCharged04 = self.IsolationComputer.chargedAbsIso(mu.physObj, 0.4, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0,self.IsolationComputer.selfVetoNone);
 
         if self.miniIsolationPUCorr == None: puCorr = self.cfg_ana.mu_isoCorr if what=="mu" else self.cfg_ana.ele_isoCorr
         else: puCorr = self.miniIsolationPUCorr
@@ -469,10 +506,41 @@ class LeptonAnalyzer( Analyzer ):
                     mu.miniAbsIsoPU = self.IsolationComputer.puAbsIso(mu.physObj, mu.miniIsoR, 0.015 if what == "eleE" else 0.0, 0.0,self.IsolationComputer.selfVetoNone);
                 mu.miniAbsIsoNeutral = max(0.0, mu.miniAbsIsoNeutral - 0.5*mu.miniAbsIsoPU)
             elif puCorr != 'raw':
-                raise RuntimeError("Unsupported miniIsolationCorr name '" + puCorr +  "'! For now only 'rhoArea', 'deltaBeta', 'raw', 'weights' are supported (and 'weights' is not tested).")
+                raise RuntimeError, "Unsupported miniIsolationCorr name '" + puCorr +  "'! For now only 'rhoArea', 'deltaBeta', 'raw', 'weights' are supported (and 'weights' is not tested)."
+
+        if self.doFixedConeIsoWithMiniIsoVeto:
+            if what == "mu":
+                mu.AbsIsoMIVNeutral03 = self.IsolationComputer.neutralAbsIsoRaw(mu.physObj, 0.3, 0.01, 0.5);
+                mu.AbsIsoMIVNeutral04 = self.IsolationComputer.neutralAbsIsoRaw(mu.physObj, 0.4, 0.01, 0.5);
+            else:
+                mu.AbsIsoMIVPho03  = self.IsolationComputer.photonAbsIsoRaw(    mu.physObj, 0.3, 0.08 if what == "eleE" else 0.0, 0.0, self.IsolationComputer.selfVetoNone)
+                mu.AbsIsoMIVNHad03 = self.IsolationComputer.neutralHadAbsIsoRaw(mu.physObj, 0.3, 0.0, 0.0, self.IsolationComputer.selfVetoNone)
+                mu.AbsIsoMIVNeutral03 = mu.AbsIsoMIVPho03 + mu.AbsIsoMIVNHad03
+                mu.AbsIsoMIVPho04  = self.IsolationComputer.photonAbsIsoRaw(    mu.physObj, 0.4, 0.08 if what == "eleE" else 0.0, 0.0, self.IsolationComputer.selfVetoNone)
+                mu.AbsIsoMIVNHad04 = self.IsolationComputer.neutralHadAbsIsoRaw(mu.physObj, 0.4, 0.0, 0.0, self.IsolationComputer.selfVetoNone)
+                mu.AbsIsoMIVNeutral04 = mu.AbsIsoMIVPho04 + mu.AbsIsoMIVNHad04
+            if puCorr == "rhoArea":
+                mu.AbsIsoMIVNeutral03 = max(0.0, mu.AbsIsoMIVNeutral03 - mu.rho * mu.EffectiveArea03)
+                mu.AbsIsoMIVNeutral04 = max(0.0, mu.AbsIsoMIVNeutral04 - mu.rho * mu.EffectiveArea03 * 16./9.)
+            elif puCorr == "deltaBeta":
+                if what == "mu":
+                    mu.AbsIsoMIVPU03 = self.IsolationComputer.puAbsIso(mu.physObj, 0.3, 0.01, 0.5);
+                    mu.AbsIsoMIVPU04 = self.IsolationComputer.puAbsIso(mu.physObj, 0.4, 0.01, 0.5);
+                else:
+                    mu.AbsIsoMIVPU03 = self.IsolationComputer.puAbsIso(mu.physObj, 0.3, 0.015 if what == "eleE" else 0.0, 0.0,self.IsolationComputer.selfVetoNone);
+                    mu.AbsIsoMIVPU04 = self.IsolationComputer.puAbsIso(mu.physObj, 0.4, 0.015 if what == "eleE" else 0.0, 0.0,self.IsolationComputer.selfVetoNone);
+                mu.AbsIsoMIVNeutral03 = max(0.0, mu.AbsIsoMIVNeutral03 - 0.5*mu.AbsIsoMIVPU03)
+                mu.AbsIsoMIVNeutral04 = max(0.0, mu.AbsIsoMIVNeutral04 - 0.5*mu.AbsIsoMIVPU04)
+            elif puCorr != 'raw':
+                raise RuntimeError, "Unsupported isolationCorr name for MIV03/04 '" + puCorr +  "'! For now only 'rhoArea', 'deltaBeta', 'raw' are supported."
 
         mu.miniAbsIso = mu.miniAbsIsoCharged + mu.miniAbsIsoNeutral
         mu.miniRelIso = mu.miniAbsIso/mu.pt()
+        if self.doFixedConeIsoWithMiniIsoVeto:
+            mu.AbsIsoMIV03 = mu.AbsIsoMIVCharged03 + mu.AbsIsoMIVNeutral03
+            mu.RelIsoMIV03 = mu.AbsIsoMIV03/mu.pt()
+            mu.AbsIsoMIV04 = mu.AbsIsoMIVCharged04 + mu.AbsIsoMIVNeutral04
+            mu.RelIsoMIV04 = mu.AbsIsoMIV04/mu.pt()
 
 
     def attachIsoAnnulus04(self, mu):  # annulus isolation with outer cone of 0.4 and delta beta PU correction
@@ -518,6 +586,22 @@ class LeptonAnalyzer( Analyzer ):
             mu.ScanAbsIsoNeutral02 = self.IsolationComputer.photonAbsIsoRaw(mu.physObj, 0.2, vetoreg, 0.0, self.IsolationComputer.selfVetoNone)+self.IsolationComputer.neutralHadAbsIsoRaw(mu.physObj, 0.2, 0.0, 0.0, self.IsolationComputer.selfVetoNone)
             mu.ScanAbsIsoNeutral03 = self.IsolationComputer.photonAbsIsoRaw(mu.physObj, 0.3, vetoreg, 0.0, self.IsolationComputer.selfVetoNone)+self.IsolationComputer.neutralHadAbsIsoRaw(mu.physObj, 0.3, 0.0, 0.0, self.IsolationComputer.selfVetoNone)
             mu.ScanAbsIsoNeutral04 = self.IsolationComputer.photonAbsIsoRaw(mu.physObj, 0.4, vetoreg, 0.0, self.IsolationComputer.selfVetoNone)+self.IsolationComputer.neutralHadAbsIsoRaw(mu.physObj, 0.4, 0.0, 0.0, self.IsolationComputer.selfVetoNone)
+
+    def attachDirectionalIsolation(self, mu, conesize=0.3):
+
+        what = "mu" if (abs(mu.pdgId()) == 13) else ("eleB" if mu.isEB() else "eleE")
+        vetoreg = {"mu":0.0001,"eleB":0,"eleE":0.015}[what]
+
+        if what=="mu":
+            setattr(mu,('isoSumRawP4Charged%s'%str(conesize)).replace('.',''),self.IsolationComputer.chargedP4Iso(mu.physObj, conesize, vetoreg, 0.0))
+        else:
+            setattr(mu,('isoSumRawP4Charged%s'%str(conesize)).replace('.',''),self.IsolationComputer.chargedP4Iso(mu.physObj, conesize, vetoreg, 0.0, self.IsolationComputer.selfVetoNone))
+
+        if what=="mu":
+            setattr(mu,('isoSumRawP4Neutral%s'%str(conesize)).replace('.',''),self.IsolationComputer.neutralP4IsoRaw(mu.physObj, conesize,  0.01, 0.5))
+        else:
+            vetoreg = {"eleB":0.0,"eleE":0.08}[what]
+            setattr(mu,('isoSumRawP4Neutral%s'%str(conesize)).replace('.',''),self.IsolationComputer.photonP4IsoRaw(mu.physObj, conesize, vetoreg, 0.0, self.IsolationComputer.selfVetoNone)+self.IsolationComputer.neutralHadP4IsoRaw(mu.physObj, conesize, 0.0, 0.0, self.IsolationComputer.selfVetoNone))
 
 
     def matchLeptons(self, event):
@@ -672,6 +756,8 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     miniIsolationPUCorr = 'rhoArea', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
                                      # Choose None to just use the individual object's PU correction
     miniIsolationVetoLeptons = None, # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
+    doDirectionalIsolation = [], # calculate directional isolation with leptons (works only with doMiniIsolation, pass list of cone sizes)
+    doFixedConeIsoWithMiniIsoVeto = False, # calculate fixed cone isolations with the same vetoes used for miniIso,
     # Activity Annulus
     doIsoAnnulus = False, # off by default since it requires access to all PFCandidates 
     # do MC matching 
