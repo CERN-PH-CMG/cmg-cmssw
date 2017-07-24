@@ -101,16 +101,16 @@ do
    source $VO_CMS_SW_DIR/cmsset_default.sh
    for try in `seq 1 3`; do
       echo "Stageout try $try"
-      echo "/afs/cern.ch/project/eos/installation/pro/bin/eos.select mkdir {srm}"
-      /afs/cern.ch/project/eos/installation/pro/bin/eos.select mkdir {srm}
-      echo "/afs/cern.ch/project/eos/installation/pro/bin/eos.select cp `pwd`/$f {srm}/${{ff}}_{idx}.root"
-      /afs/cern.ch/project/eos/installation/pro/bin/eos.select cp `pwd`/$f {srm}/${{ff}}_{idx}.root
+      echo "eos mkdir {srm}"
+      eos mkdir {srm}
+      echo "eos cp `pwd`/$f {srm}/${{ff}}_{idx}.root"
+      eos cp `pwd`/$f {srm}/${{ff}}_{idx}.root
       if [ $? -ne 0 ]; then
          echo "ERROR: remote copy failed for file $ff"
          continue
       fi
       echo "remote copy succeeded"
-      remsize=$(/afs/cern.ch/project/eos/installation/pro/bin/eos.select find --size {srm}/${{ff}}_{idx}.root | cut -d= -f3) 
+      remsize=$(eos find --size {srm}/${{ff}}_{idx}.root | cut -d= -f3) 
       locsize=$(cat `pwd`/$f | wc -c)
       ok=$(($remsize==$locsize))
       if [ $ok -ne 1 ]; then
