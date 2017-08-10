@@ -66,9 +66,37 @@ class METAnalyzer( Analyzer ):
         chargedchs = []
         chargedPVLoose = []
         chargedPVTight = []
-        dochs=getattr(self.cfg_ana,"includeTkMetCHS",True)       
-        dotight=getattr(self.cfg_ana,"includeTkMetPVTight",True)       
-        doloose=getattr(self.cfg_ana,"includeTkMetPVLoose",True)       
+        chargedNoPV = []
+        chargedPVUsedInFit = []
+        chargedUsedInFitTight = []
+        chargedUsedInFitLoose = []
+        chargedCompatibilityDz = []
+        chargedCompatibilityBTag = []
+        chargedNotReconstructedPrimary = []
+        chargedOtherDeltaZ = []
+        dochs=getattr(self.cfg_ana,"includeTkMetCHS",True)
+        dotight=getattr(self.cfg_ana,"includeTkMetPVTight",True)
+        doloose=getattr(self.cfg_ana,"includeTkMetPVLoose",True)
+        doPVUsedInFit=getattr(self.cfg_ana,"includeTkMetPVUsedInFit",True)
+        doNoPV=getattr(self.cfg_ana,"includeTkMetNoPV",True)
+        doUsedInFitTight=getattr(self.cfg_ana,"includeTkMetUsedInFitTight",True)
+        doUsedInFitLoose=getattr(self.cfg_ana,"includeTkMetUsedInFitLoose",True)
+        doCompatibilityDz=getattr(self.cfg_ana,"includeTkMetCompatibilityDz",True)
+        doCompatibilityBTag=getattr(self.cfg_ana,"includeTkMetCompatibilityBTag",True)
+        doNotReconstructedPrimary=getattr(self.cfg_ana,"includeTkMetNotReconstructedPrimary",True)
+        doOtherDeltaZ=getattr(self.cfg_ana,"includeTkMetOtherDeltaZ",True)
+        doPuppichs=getattr(self.cfg_ana,"includeTkMetPuppiCHS",True)
+        doPuppitight=getattr(self.cfg_ana,"includeTkMetPuppiPVTight",True)
+        doPuppiloose=getattr(self.cfg_ana,"includeTkMetPuppiPVLoose",True)
+        doPuppiPVUsedInFit=getattr(self.cfg_ana,"includeTkMetPuppiPVUsedInFit",True)
+        doPuppiNoPV=getattr(self.cfg_ana,"includeTkMetPuppiNoPV",True)
+        doPuppiUsedInFitTight=getattr(self.cfg_ana,"includeTkMetPuppiUsedInFitTight",True)
+        doPuppiUsedInFitLoose=getattr(self.cfg_ana,"includeTkMetPuppiUsedInFitLoose",True)
+        doPuppiCompatibilityDz=getattr(self.cfg_ana,"includeTkMetPuppiCompatibilityDz",True)
+        doPuppiCompatibilityBTag=getattr(self.cfg_ana,"includeTkMetPuppiCompatibilityBTag",True)
+        doPuppiNotReconstructedPrimary=getattr(self.cfg_ana,"includeTkMetPuppiNotReconstructedPrimary",True)
+        doPuppiOtherDeltaZ=getattr(self.cfg_ana,"includeTkMetPuppiOtherDeltaZ",True)
+
         pfcands = self.handles['cmgCand'].product()
 
         for pfcand in pfcands:
@@ -85,23 +113,70 @@ class METAnalyzer( Analyzer ):
                 if dochs and  pvflag>0:
                     chargedchs.append(pxy)
 
-                if doloose and pvflag>1:
+                ##CHS=loose
+                if doloose and pvflag>=1:
                     chargedPVLoose.append(pxy)
 
-                if dotight and pvflag>2:
+                if dotight and pvflag>=2:
                     chargedPVTight.append(pxy)
+
+                if doNoPV and pvflag >= 0:
+                    chargedNoPV.append(pxy)
+
+                if doPVUsedInFit and pvflag== 3:
+                    chargedPVUsedInFit.append(pxy)
+
+                #adding pvAssociationQuality stuff
+                pvAssflag = pfcand.pvAssociationQuality()
+
+                if doUsedInFitTight and pvAssflag == 7 :
+                    chargedUsedInFitTight.append(pxy)
+
+                if doUsedInFitLoose and pvAssflag == 6 :
+                    chargedUsedInFitLoose.append(pxy)
+
+                if doCompatibilityDz and pvAssflag == 5 :
+                    chargedCompatibilityDz.append(pxy)
+
+                if doCompatibilityBTag and pvAssflag == 4 :
+                    chargedCompatibilityBTag.append(pxy)
+
+                if doNotReconstructedPrimary and pvAssflag == 0:
+                    chargedNotReconstructedPrimary.append(pxy)
+
+                if doOtherDeltaZ and pvAssflag == 1 :
+                    chargedOtherDeltaZ.append(pxy)
+
 
         def sumXY(pxys):
             px, py = sum(x[0] for x in pxys), sum(x[1] for x in pxys)
             return ROOT.reco.Particle.LorentzVector(-px, -py, 0, hypot(px,py))
+
         setattr(event, "tkMet"+self.cfg_ana.collectionPostFix, sumXY(charged))
         setattr(event, "tkMetPVchs"+self.cfg_ana.collectionPostFix, sumXY(chargedchs))
         setattr(event, "tkMetPVLoose"+self.cfg_ana.collectionPostFix, sumXY(chargedPVLoose))
         setattr(event, "tkMetPVTight"+self.cfg_ana.collectionPostFix, sumXY(chargedPVTight))
+        setattr(event, "tkMetPVUsedInFit"+self.cfg_ana.collectionPostFix, sumXY(chargedPVUsedInFit))
+        setattr(event, "tkMetNoPV"+self.cfg_ana.collectionPostFix, sumXY(chargedNoPV))
+        setattr(event, "tkMetUsedInFitTight"+self.cfg_ana.collectionPostFix, sumXY(chargedUsedInFitTight))
+        setattr(event, "tkMetUsedInFitLoose"+self.cfg_ana.collectionPostFix, sumXY(chargedUsedInFitLoose))
+        setattr(event, "tkMetCompatibilityDz"+self.cfg_ana.collectionPostFix, sumXY(chargedCompatibilityDz))
+        setattr(event, "tkMetCompatibilityBTag"+self.cfg_ana.collectionPostFix, sumXY(chargedCompatibilityBTag))
+        setattr(event, "tkMetNotReconstructedPrimary"+self.cfg_ana.collectionPostFix, sumXY(chargedNotReconstructedPrimary))
+        setattr(event, "tkMetOtherDeltaZ"+self.cfg_ana.collectionPostFix, sumXY(chargedOtherDeltaZ))
         getattr(event,"tkMet"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in charged])
         getattr(event,"tkMetPVchs"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedchs])
         getattr(event,"tkMetPVLoose"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedPVLoose])
         getattr(event,"tkMetPVTight"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedPVTight])
+        getattr(event,"tkMetPVUsedInFit"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedPVUsedInFit])
+        getattr(event,"tkMetNoPV"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedNoPV])
+        getattr(event,"tkMetUsedInFitTight"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedUsedInFitTight])
+        getattr(event,"tkMetUsedInFitLoose"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedUsedInFitLoose])
+        getattr(event,"tkMetCompatibilityDz"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedCompatibilityDz])
+        getattr(event,"tkMetCompatibilityBTag"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedCompatibilityBTag])
+        getattr(event,"tkMetNotReconstructedPrimary"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedNotReconstructedPrimary])
+        getattr(event,"tkMetOtherDeltaZ"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedOtherDeltaZ])
+
 
         if  hasattr(event,'zll_p4'):
             self.adduParaPerp(getattr(event,"tkMet"+self.cfg_ana.collectionPostFix), event.zll_p4,"_zll")
@@ -292,9 +367,19 @@ setattr(METAnalyzer,"defaultConfig", cfg.Analyzer(
     old74XMiniAODs = False, # need to set to True to get proper Raw MET on plain 74X MC produced with CMSSW <= 7_4_12
     makeShiftedMETs = True,
     doTkMet = False,
+    ### more on tkMET
     includeTkMetCHS = True,
     includeTkMetPVLoose = True,
     includeTkMetPVTight = True,
+    includeTkMetNoPV = False,
+    includeTkMetPVUsedInFit = False,
+    includeTkMetUsedInFitTight = False,
+    includeTkMetUsedInFitLoose = False,
+    includeTkMetCompatibilityDz = False,
+    includeTkMetCompatibilityBTag = False,
+    includeTkMetNotReconstructedPrimary = False,
+    includeTkMetOtherDeltaZ = False,
+    ###
     doMetNoPU = False, # Not existing in MiniAOD at the moment
     doMetNoMu = False,  
     doMetNoEle = False,  
