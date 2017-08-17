@@ -111,12 +111,6 @@ class METAnalyzer( Analyzer ):
         chargedPVTight = []
         chargedNoPV = []
         chargedPVUsedInFit = []
-        chargedUsedInFitTight = []
-        chargedUsedInFitLoose = []
-        chargedCompatibilityDz = []
-        chargedCompatibilityBTag = []
-        chargedNotReconstructedPrimary = []
-        chargedOtherDeltaZ = []
         dochs=getattr(self.cfg_ana,"includeTkMetCHS",False)
         dotight=getattr(self.cfg_ana,"includeTkMetPVTight",False)
         doloose=getattr(self.cfg_ana,"includeTkMetPVLoose",False)
@@ -163,24 +157,12 @@ class METAnalyzer( Analyzer ):
         setattr(event, "tkMetPVTight"+self.cfg_ana.collectionPostFix, sumXY(chargedPVTight))
         setattr(event, "tkMetPVUsedInFit"+self.cfg_ana.collectionPostFix, sumXY(chargedPVUsedInFit))
         setattr(event, "tkMetNoPV"+self.cfg_ana.collectionPostFix, sumXY(chargedNoPV))
-        setattr(event, "tkMetUsedInFitTight"+self.cfg_ana.collectionPostFix, sumXY(chargedUsedInFitTight))
-        setattr(event, "tkMetUsedInFitLoose"+self.cfg_ana.collectionPostFix, sumXY(chargedUsedInFitLoose))
-        setattr(event, "tkMetCompatibilityDz"+self.cfg_ana.collectionPostFix, sumXY(chargedCompatibilityDz))
-        setattr(event, "tkMetCompatibilityBTag"+self.cfg_ana.collectionPostFix, sumXY(chargedCompatibilityBTag))
-        setattr(event, "tkMetNotReconstructedPrimary"+self.cfg_ana.collectionPostFix, sumXY(chargedNotReconstructedPrimary))
-        setattr(event, "tkMetOtherDeltaZ"+self.cfg_ana.collectionPostFix, sumXY(chargedOtherDeltaZ))
         getattr(event,"tkMet"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in charged])
         getattr(event,"tkMetPVchs"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedchs])
         getattr(event,"tkMetPVLoose"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedPVLoose])
         getattr(event,"tkMetPVTight"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedPVTight])
         getattr(event,"tkMetPVUsedInFit"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedPVUsedInFit])
         getattr(event,"tkMetNoPV"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedNoPV])
-        getattr(event,"tkMetUsedInFitTight"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedUsedInFitTight])
-        getattr(event,"tkMetUsedInFitLoose"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedUsedInFitLoose])
-        getattr(event,"tkMetCompatibilityDz"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedCompatibilityDz])
-        getattr(event,"tkMetCompatibilityBTag"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedCompatibilityBTag])
-        getattr(event,"tkMetNotReconstructedPrimary"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedNotReconstructedPrimary])
-        getattr(event,"tkMetOtherDeltaZ"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedOtherDeltaZ])
 
 
         if  hasattr(event,'zll_p4'):
