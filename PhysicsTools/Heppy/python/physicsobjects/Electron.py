@@ -70,8 +70,8 @@ class Electron( Lepton ):
             'dxy' : abs(self.dxy()),
             'dz' : abs(self.dz()),
             'chi2' : self.normalizedGsfChi2(),
-            'ECALPFIsoEA' : self.hltPFIso('ECALPFIsoEA')/self.pt(),
-            'HCALPFIsoEA' : self.hltPFIso('HCALPFIsoEA')/self.pt(),
+            'ECALPFIsoEA' : self.hltPFIso('ECALPFIsoEA')/self.pt() if self.rhoHLT != None in wp else None,
+            'HCALPFIsoEA' : self.hltPFIso('HCALPFIsoEA')/self.pt() if self.rhoHLT != None in wp else None,
             'trkIso' : self.dr03TkSumPt()/self.pt(),
         }
         WP = {
@@ -356,15 +356,16 @@ class Electron( Lepton ):
                 elif wp == "POG80": 
                     # for pt < 10 the performance is suboptimal, 
                     #see https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2 for updates on this category
-                    if   eta < 0.8  : return self.mvaRun2(name+'GP') > 0.941;
-                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.899;
-                    else            : return self.mvaRun2(name+'GP') > 0.758;
+                    if   eta < 0.8  : return self.mvaRun2(name+'GP') > 0.940962684155;
+                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.899208843708;
+                    else            : return self.mvaRun2(name+'GP') > 0.758484721184;
+
                 elif wp == "POG90":
                     # for pt < 10 the performance is suboptimal, 
                     #see https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2 for updates on this category
-                    if eta < 0.8: return self.mvaRun2(name+'GP') > 0.837
-                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.715
-                    else: return self.mvaRun2(name+'GP') > 0.357
+                    if eta < 0.8: return self.mvaRun2(name+'GP') > 0.836695742607
+                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.715337944031
+                    else: return self.mvaRun2(name+'GP') > 0.356799721718
                 elif wp=="VLoose":
                     smooth_cut = True
                     _vlow = [0.46,-0.03,0.06]
