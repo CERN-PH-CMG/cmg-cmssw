@@ -200,6 +200,7 @@ class LeptonAnalyzer( Analyzer ):
         if self.doIsoAnnulus:
             for lep in event.inclusiveLeptons:
                 self.attachIsoAnnulus04(lep)
+                self.attachIsoAnnealusMiniIso(lep)
 
         if self.doIsolationScan:
             for lep in event.inclusiveLeptons:
@@ -553,6 +554,18 @@ class LeptonAnalyzer( Analyzer ):
 
         mu.absIsoAn04 = mu.absIsoAnCharged + mu.absIsoAnNeutral
         mu.relIsoAn04 = mu.absIsoAn04/mu.pt()
+
+    def attachIsoAnnealusMiniIso(self, mu):  # annulus isolation with miniIso (outer cone based on 0.4, inner on 0.2) and delta beta PU correction
+        mu.miniIsoRin  = 10.0/min(max(mu.pt(), 50),200)
+        mu.miniIsoRout = 20.0/min(max(mu.pt(), 50),200)
+        mu.absIsoAnCharged = self.IsolationComputer.chargedAbsIso      (mu.physObj, mu.miniIsoRout, mu.miniIsoRin, 0.0, self.IsolationComputer.selfVetoNone)
+        mu.absIsoAnPho     = self.IsolationComputer.photonAbsIsoRaw    (mu.physObj, mu.miniIsoRout, mu.miniIsoRin, 0.0, self.IsolationComputer.selfVetoNone) 
+        mu.absIsoAnNHad    = self.IsolationComputer.neutralHadAbsIsoRaw(mu.physObj, mu.miniIsoRout, mu.miniIsoRin, 0.0, self.IsolationComputer.selfVetoNone) 
+        mu.absIsoAnPU      = self.IsolationComputer.puAbsIso           (mu.physObj, mu.miniIsoRout, mu.miniIsoRin, 0.0, self.IsolationComputer.selfVetoNone)
+        mu.absIsoAnNeutral = max(0.0, mu.absIsoAnPho + mu.absIsoAnNHad - 0.5*mu.absIsoAnPU)
+
+        mu.absIsoAnM = mu.absIsoAnCharged + mu.absIsoAnNeutral
+        mu.relIsoAnM = mu.absIsoAnM/mu.pt()
 
 
     def attachIsolationScan(self, mu):
