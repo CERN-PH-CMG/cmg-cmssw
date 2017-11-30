@@ -18,11 +18,11 @@ class Lepton( PhysicsObject):
         return self.chargedHadronIso()+max(0.,photonIso+self.neutralHadronIso()-offset)            
 
     def relIsoFromEA(self, area='04'):
-        return self.absIsoFromEA(area)/self.pt()
+        return self.absIsoFromEA(area)/self.pt() if self.pt()>0 else -999
 
     def relIso(self, dBetaFactor=0, allCharged=0):
         '''Relative isolation with default cone size of 0.4.'''
-        rel = self.absIsoR(dBetaFactor=dBetaFactor, allCharged=allCharged)/self.pt()
+        rel = self.absIsoR(dBetaFactor=dBetaFactor, allCharged=allCharged)/self.pt() if self.pt()>0 else -999
         return rel
 
     def absIsoR(self, R=0.4, dBetaFactor=0, allCharged=False):
@@ -37,7 +37,7 @@ class Lepton( PhysicsObject):
         return charged + max(corNeutralIso, 0.)
 
     def relIsoR(self, R=0.4, dBetaFactor=0, allCharged=False):
-        return self.absIsoR(R, dBetaFactor, allCharged)/self.pt()
+        return self.absIsoR(R, dBetaFactor, allCharged)/self.pt() if self.pt()>0 else -999
 
     def lostInner(self):
         if hasattr(self.innerTrack(),"trackerExpectedHitsInner") :
