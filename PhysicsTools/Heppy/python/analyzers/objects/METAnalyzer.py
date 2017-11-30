@@ -123,8 +123,8 @@ class METAnalyzer( Analyzer ):
             setattr(event,coll+'_Count'+self.cfg_ana.collectionPostFix, len(p4coll))
 
         #add leading particles
-        setattr(event,'leadCharged'+self.cfg_ana.collectionPostFix,leadCharged)
-        setattr(event,'leadNeutral'+self.cfg_ana.collectionPostFix,leadNeutral)
+        setattr(event,'leadCharged'+self.cfg_ana.collectionPostFix,leadCharged if leadCharged else ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.))
+        setattr(event,'leadNeutral'+self.cfg_ana.collectionPostFix,leadNeutral if leadNeutral else ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.))
 
         if  hasattr(event,'zll_p4'):
             self.adduParaPerp(getattr(event,"tkMet"+self.cfg_ana.collectionPostFix), event.zll_p4,"_zll")
