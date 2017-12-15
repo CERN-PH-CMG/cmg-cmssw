@@ -53,7 +53,7 @@ def miniAodFiles():
  
     else:
         raise ValueError('no mini AOD file defined for release '+cmsswRelease())
-    eosfiles = [''.join(['root://eoscms//eos/cms', lfn]) for lfn in files]
+    eosfiles = [''.join(['root://cms-xrd-global.cern.ch/', lfn]) for lfn in files]
     return eosfiles
 
 
