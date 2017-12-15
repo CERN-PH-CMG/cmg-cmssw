@@ -50,6 +50,11 @@ def miniAodFiles():
             '/store/relval/CMSSW_9_2_4/RelValTTbar_13/MINIAODSIM/PU25ns_92X_upgrade2017_realistic_v2-v1/00000/A6E29287-535C-E711-B579-0CC47A4D7668.root',
             '/store/relval/CMSSW_9_2_4/RelValTTbar_13/MINIAODSIM/PU25ns_92X_upgrade2017_realistic_v2-v1/00000/B6BE639D-535C-E711-8689-0CC47A4D7606.root',
             ]
+    elif (big,medium)==(9,4):
+        files=[
+            '/store/relval/CMSSW_9_4_0/RelValTTbar_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v10-v1/10000/6A3683FD-A7CA-E711-AC02-0CC47A7C361E.root',
+            '/store/relval/CMSSW_9_4_0/RelValTTbar_13/MINIAODSIM/PU25ns_94X_mc2017_realistic_v10-v1/10000/BAE308FD-A7CA-E711-8DC4-0CC47A4C8E16.root',
+            ]
  
     else:
         raise ValueError('no mini AOD file defined for release '+cmsswRelease())
