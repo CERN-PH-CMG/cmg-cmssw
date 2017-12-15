@@ -65,43 +65,66 @@ class METAnalyzer( Analyzer ):
         charged = []
         chargedchs = []
         chargedPVLoose = []
+        chargedPUPVLoose = []
         chargedPVTight = []
+        nt = []
+        ntcentral = []
+        doneutrals=getattr(self.cfg_ana,"includeNTMet",True)       
         dochs=getattr(self.cfg_ana,"includeTkMetCHS",True)       
         dotight=getattr(self.cfg_ana,"includeTkMetPVTight",True)       
         doloose=getattr(self.cfg_ana,"includeTkMetPVLoose",True)       
         pfcands = self.handles['cmgCand'].product()
-
+        leadCharged,leadNeutral=None,None
+        
         for pfcand in pfcands:
 
-## ===> require the Track Candidate charge and with a  minimum dz 
-            if (pfcand.charge()!=0):
+            p = pfcand.p4()
+            isCentral=True if abs(p.eta())<2.4 else False
+            
+            ## ===> require the Track Candidate charge and with a  minimum dz 
+            if (pfcand.charge()==0):                 
+                nt.append(p)
+                if isCentral : 
+                    ntcentral.append(p)
+                    leadNeutral=p if not leadNeutral or leadNeutral.pt()<p.pt() else leadNeutral
+                continue
 
-                pvflag = pfcand.fromPV()
-                pxy = pfcand.px(), pfcand.py()
+            pvflag = pfcand.fromPV()
 
-                if abs(pfcand.dz())<=self.cfg_ana.dzMax:
-                    charged.append(pxy)
+            if abs(pfcand.dz())<=self.cfg_ana.dzMax:
+                charged.append(p)
+                
+            if pvflag>0:
+                chargedchs.append(p)
 
-                if dochs and  pvflag>0:
-                    chargedchs.append(pxy)
+            if pvflag>1:
+                chargedPVLoose.append(p)
+                leadCharged=p if not leadCharged or leadCharged.pt()<p.pt() else leadCharged
+            else:
+                chargedPUPVLoose.append(p)
 
-                if doloose and pvflag>1:
-                    chargedPVLoose.append(pxy)
+            if pvflag>2:
+                chargedPVTight.append(p)
 
-                if dotight and pvflag>2:
-                    chargedPVTight.append(pxy)
+        def sumP4(p4s):
+            p4=ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.)
+            for p in p4s: p4 -= p
+            return p4
+        for coll,p4coll,doit in [('tkMet',          charged,          True),
+                                 ('tkMetPVchs',     chargedchs,       dochs),
+                                 ('tkMetPVLoose',   chargedPVLoose,   doloose),
+                                 ('tkMetPUPVLoose', chargedPUPVLoose, doloose),
+                                 ('tkMetPVTight',   chargedPVTight,   dotight),
+                                 ('ntMet',          nt,               doneutrals),
+                                 ('ntCentralMet',   ntcentral,        doneutrals),]:
+            if not doit: continue
+            setattr(event,coll+self.cfg_ana.collectionPostFix, sumP4(p4coll))
+            getattr(event,coll+self.cfg_ana.collectionPostFix).sumEt = sum(x.pt() for x in p4coll)
+            setattr(event,coll+'_Count'+self.cfg_ana.collectionPostFix, len(p4coll))
 
-        def sumXY(pxys):
-            px, py = sum(x[0] for x in pxys), sum(x[1] for x in pxys)
-            return ROOT.reco.Particle.LorentzVector(-px, -py, 0, hypot(px,py))
-        setattr(event, "tkMet"+self.cfg_ana.collectionPostFix, sumXY(charged))
-        setattr(event, "tkMetPVchs"+self.cfg_ana.collectionPostFix, sumXY(chargedchs))
-        setattr(event, "tkMetPVLoose"+self.cfg_ana.collectionPostFix, sumXY(chargedPVLoose))
-        setattr(event, "tkMetPVTight"+self.cfg_ana.collectionPostFix, sumXY(chargedPVTight))
-        getattr(event,"tkMet"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in charged])
-        getattr(event,"tkMetPVchs"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedchs])
-        getattr(event,"tkMetPVLoose"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedPVLoose])
-        getattr(event,"tkMetPVTight"+self.cfg_ana.collectionPostFix).sumEt = sum([hypot(x[0],x[1]) for x in chargedPVTight])
+        #add leading particles
+        setattr(event,'leadCharged'+self.cfg_ana.collectionPostFix,leadCharged if leadCharged else ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.))
+        setattr(event,'leadNeutral'+self.cfg_ana.collectionPostFix,leadNeutral if leadNeutral else ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.))
 
         if  hasattr(event,'zll_p4'):
             self.adduParaPerp(getattr(event,"tkMet"+self.cfg_ana.collectionPostFix), event.zll_p4,"_zll")
@@ -111,9 +134,20 @@ class METAnalyzer( Analyzer ):
 
 
     def makeGenTkMet(self, event):
-        genCharged = [ (x.px(),x.py()) for x in self.mchandles['packedGen'].product() if x.charge() != 0 and abs(x.eta()) < 2.4 ]
-        px, py = sum(x[0] for x in genCharged), sum(x[1] for x in genCharged)
-        setattr(event,"tkGenMet"+self.cfg_ana.collectionPostFix, ROOT.reco.Particle.LorentzVector(-px , -py, 0, hypot(px,py)))
+        genCharged,genChargedInc=[],[]
+        for x in self.mchandles['packedGen'].product():
+            if x.charge() == 0: continue
+            if x.status() != 1: continue
+            if abs(x.eta()) < 2.4 : genCharged.append( x.p4() )
+            if abs(x.eta()) < 5   : genChargedInc.append( x.p4() )
+        def sumP4(p4s):
+            p4=ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.)
+            for p in p4s: p4 -= p
+            return p4
+        for coll,p4coll in [('tkGenMet',genCharged),
+                             ('tkGenMetInc',genChargedInc)]:
+            setattr(event,coll+self.cfg_ana.collectionPostFix, sumP4(p4coll))
+            getattr(event,coll+self.cfg_ana.collectionPostFix).sumEt = sum(x.pt() for x in p4coll)
 
     def makeMETNoMu(self, event):
         self.metNoMu = copy.deepcopy(self.met)
