@@ -70,8 +70,8 @@ class Electron( Lepton ):
             'dxy' : abs(self.dxy()),
             'dz' : abs(self.dz()),
             'chi2' : self.normalizedGsfChi2(),
-            'ECALPFIsoEA' : self.hltPFIso('ECALPFIsoEA')/self.pt() if self.rhoHLT != None in wp else None,
-            'HCALPFIsoEA' : self.hltPFIso('HCALPFIsoEA')/self.pt() if self.rhoHLT != None in wp else None,
+            'ECALPFIsoEA' : self.hltPFIso('ECALPFIsoEA')/self.pt() if "HLT" in wp else None,
+            'HCALPFIsoEA' : self.hltPFIso('HCALPFIsoEA')/self.pt() if "HLT" in wp else None,
             'trkIso' : self.dr03TkSumPt()/self.pt(),
         }
         WP = {
