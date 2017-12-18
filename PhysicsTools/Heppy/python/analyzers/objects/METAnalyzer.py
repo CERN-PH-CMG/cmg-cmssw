@@ -119,11 +119,17 @@ class METAnalyzer( Analyzer ):
         doloose=getattr(self.cfg_ana,"includeTkMetPVLoose",False)
         doPVUsedInFit=getattr(self.cfg_ana,"includeTkMetPVUsedInFit",False)
         doNoPV=getattr(self.cfg_ana,"includeTkMetNoPV",False)
+        useLeptonPV=getattr(self.cfg_ana,"useLeptonPV",False)
         doneutrals=getattr(self.cfg_ana,"includeNTMet",True)       
 
         pfcands = self.handles['cmgCand'].product()
         leadCharged,leadNeutral=None,None
         
+        #set primary vertex to the leading pT lepton  
+        ipv=0
+        if useLeptonPV and event.selectedLeptons.size()>0:
+            ipv=event.selectedLeptons[0].vertexRef().index()
+
         for pfcand in pfcands:
 
             p = pfcand.p4()
@@ -137,7 +143,7 @@ class METAnalyzer( Analyzer ):
                     leadNeutral=p if not leadNeutral or leadNeutral.pt()<p.pt() else leadNeutral
                 continue
 
-            pvflag = pfcand.fromPV()
+            pvflag = pfcand.fromPV(ipv)
 
             if abs(pfcand.dz())<=self.cfg_ana.dzMax:
                 charged.append(p)
@@ -145,10 +151,22 @@ class METAnalyzer( Analyzer ):
             if pvflag>0:
                 chargedchs.append(p)
 
+            #close to PV and not in the fit of another PV
             if pvflag>1:
                 chargedPVLoose.append(p)
-                leadCharged=p if not leadCharged or leadCharged.pt()<p.pt() else leadCharged
-            else:
+
+                #clean wrt to selected leptons from the same PV 
+                veto=False
+                for l in event.selectedLeptons:
+                    if l.fromPV(ipv)<=1 : continue
+                    if deltaR(l.p4(),p)>0.05 : continue
+                    veto=True
+                    break
+                if not veto:
+                    leadCharged=p if not leadCharged or leadCharged.pt()<p.pt() else leadCharged
+
+            #close or used in the fit of another PV
+            if pvflag<=1:
                 chargedPUPVLoose.append(p)
 
             if pvflag>2:
