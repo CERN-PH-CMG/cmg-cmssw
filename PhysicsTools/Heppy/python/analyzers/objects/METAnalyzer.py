@@ -127,8 +127,12 @@ class METAnalyzer( Analyzer ):
         
         #set primary vertex to the leading pT lepton  
         ipv=0
-        if useLeptonPV and event.selectedLeptons.size()>0:
-            ipv=event.selectedLeptons[0].vertexRef().index()
+        if useLeptonPV and len(event.selectedLeptons)>0:
+            lpv=event.selectedLeptons[0].associatedVertex
+            for ivtx in xrange(0,len(event.vertices)):
+                if event.vertices[ivtx].position()!=lpv.position(): continue
+                ipv=ivtx
+                break
 
         for pfcand in pfcands:
 
@@ -158,7 +162,7 @@ class METAnalyzer( Analyzer ):
                 #clean wrt to selected leptons from the same PV 
                 veto=False
                 for l in event.selectedLeptons:
-                    if l.fromPV(ipv)<=1 : continue
+                    if l.associatedVertex.position()!=pfcand.vertex() : continue
                     if deltaR(l.p4(),p)>0.05 : continue
                     veto=True
                     break
