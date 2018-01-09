@@ -110,15 +110,18 @@ class METAnalyzer( Analyzer ):
         chargedPVLoose = []
         chargedPUPVLoose = []
         chargedPVTight = []
+        chargedNoPV = []
+        chargedPVUsedInFit = []
         nt = []
         ntcentral = []
-        doneutrals=getattr(self.cfg_ana,"includeNTMet",True)       
         dochs=getattr(self.cfg_ana,"includeTkMetCHS",False)
         dotight=getattr(self.cfg_ana,"includeTkMetPVTight",False)
         doloose=getattr(self.cfg_ana,"includeTkMetPVLoose",False)
         doPVUsedInFit=getattr(self.cfg_ana,"includeTkMetPVUsedInFit",False)
         doNoPV=getattr(self.cfg_ana,"includeTkMetNoPV",False)
         useLeptonPV=getattr(self.cfg_ana,"useLeptonPV",False)
+        doneutrals=getattr(self.cfg_ana,"includeNTMet",True)       
+
         pfcands = self.handles['cmgCand'].product()
         leadCharged,leadNeutral=None,None
         
@@ -173,17 +176,24 @@ class METAnalyzer( Analyzer ):
             if pvflag>2:
                 chargedPVTight.append(p)
 
+            if doNoPV and pvflag >= 0:
+                chargedNoPV.append(p)
+            if doPVUsedInFit and pvflag >= 3:
+                chargedPVUsedInFit.append(p)
+
         def sumP4(p4s):
             p4=ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.)
             for p in p4s: p4 -= p
             return p4
-        for coll,p4coll,doit in [('tkMet',          charged,          True),
-                                 ('tkMetPVchs',     chargedchs,       dochs),
-                                 ('tkMetPVLoose',   chargedPVLoose,   doloose),
-                                 ('tkMetPUPVLoose', chargedPUPVLoose, doloose),
-                                 ('tkMetPVTight',   chargedPVTight,   dotight),
-                                 ('ntMet',          nt,               doneutrals),
-                                 ('ntCentralMet',   ntcentral,        doneutrals),]:
+        for coll,p4coll,doit in [('tkMet',            charged,            True),
+                                 ('tkMetPVchs',       chargedchs,         dochs),
+                                 ('tkMetPVLoose',     chargedPVLoose,     doloose),
+                                 ('tkMetPUPVLoose',   chargedPUPVLoose,   doloose),
+                                 ('tkMetPVUsedInFit', chargedPVUsedInFit, doPVUsedInFit),
+                                 ('tkMetNoPV',        chargedNoPV,        doNoPV),
+                                 ('tkMetPVTight',     chargedPVTight,     dotight),
+                                 ('ntMet',            nt,                 doneutrals),
+                                 ('ntCentralMet',     ntcentral,          doneutrals),]:
             if not doit: continue
             setattr(event,coll+self.cfg_ana.collectionPostFix, sumP4(p4coll))
             getattr(event,coll+self.cfg_ana.collectionPostFix).sumEt = sum(x.pt() for x in p4coll)
