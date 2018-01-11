@@ -75,9 +75,38 @@ exit $?
     return script
 
 def batchScriptCERN( jobDir, remoteDir=''):
-    '''prepare the LSF version of the batch script, to run on LSF'''
+   script = """#!/bin/bash  
+if [ -f cmgdataset.tar.gz ]; then
+  tar xzf cmgdataset.tar.gz
+fi
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+export SCRAM_ARCH={scram_arch}
+scramv1 project -n cmssw CMSSW {cmssw_version}
+cd cmssw
+tar xzf ../src.tar.gz
+cd src
+eval `scramv1 runtime -sh`
+scram b
+cd $_CONDOR_JOB_IWD
+mkdir -p chunk
+cd chunk
+tar xzf ../chunk.tar.gz
+export HOSTNAME
+export HOME=$_CONDOR_JOB_IWD
+export USER=""
+python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck
+cd Loop
+tar -czf out.tar.gz *
+mv out.tar.gz $_CONDOR_JOB_IWD
+""".format(scram_arch = os.environ['SCRAM_ARCH'],
+           cmssw_version = os.environ['CMSSW_VERSION']
+           )
+   return script
 
-    dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
+def batchScriptCERNLSF( jobDir, remoteDir=''):
+   '''prepare the LSF version of the batch script, to run on LSF'''
+   
+   dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
 rm Loop/cmsswPreProcessing.root
 cp -r Loop/* $LS_SUBCWD
 if [ $? -ne 0 ]; then
@@ -297,31 +326,33 @@ class MyBatchManager( BatchManager ):
     '''Batch manager specific to cmsRun processes.''' 
 
     def PrepareJobUser(self, jobDir, value ):
-        '''Prepare one job. This function is called by the base class.'''
-        print(value)
-        print(components[value])
+       '''Prepare one job. This function is called by the base class.'''
+       print(value)
+       print(components[value])
 
-        #prepare the batch script
-        scriptFileName = jobDir+'/batchScript.sh'
-        scriptFile = open(scriptFileName,'w')
-        storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
-        mode = self.RunningMode(options.batch)
-        if mode == 'LXPLUS':
-            scriptFile.write( batchScriptCERN( jobDir, storeDir ) ) 
-        elif mode == 'PSI':
-            scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) # storeDir not implemented at the moment
-        elif mode == 'LOCAL':
-            scriptFile.write( batchScriptLocal( storeDir, value) )  # watch out arguments are swapped (although not used)
-        elif mode == 'PISA' :
-            scriptFile.write( batchScriptPISA( storeDir, value) ) 	
-        elif mode == 'PADOVA' :
-            scriptFile.write( batchScriptPADOVA( value, jobDir) )        
-        elif mode == 'IC':
-            scriptFile.write( batchScriptIC(jobDir) )
-        scriptFile.close()
-        os.system('chmod +x %s' % scriptFileName)
-
-        shutil.copyfile(cfgFileName, jobDir+'/pycfg.py')
+       #prepare the batch script
+       scriptFileName = jobDir+'/batchScript.sh'
+       scriptFile = open(scriptFileName,'w')
+       storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
+       mode = self.RunningMode(options.batch)
+       if mode == 'LXPLUS-LSF':
+           scriptFile.write( batchScriptCERNLSF( jobDir, storeDir ) )
+       elif mode == 'LXPLUS':
+           scriptFile.write( batchScriptCERN( jobDir, storeDir ) )
+       elif mode == 'PSI':
+           scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) # storeDir not implemented at the moment
+       elif mode == 'LOCAL':
+           scriptFile.write( batchScriptLocal( storeDir, value) )  # watch out arguments are swapped (although not used)
+       elif mode == 'PISA' :
+           scriptFile.write( batchScriptPISA( storeDir, value) )
+       elif mode == 'PADOVA' :
+           scriptFile.write( batchScriptPADOVA( value, jobDir) )        
+       elif mode == 'IC':
+           scriptFile.write( batchScriptIC(jobDir) )
+       scriptFile.close()
+       os.system('chmod +x %s' % scriptFileName)
+       
+       shutil.copyfile(cfgFileName, jobDir+'/pycfg.py')
 #      jobConfig = copy.deepcopy(config)
 #      jobConfig.components = [ components[value] ]
         cfgFile = open(jobDir+'/config.pck','w')

@@ -44,8 +44,9 @@ class BatchManager:
                                 dest="negate", default=False,
                                 help="create jobs, but does not submit the jobs.")
         self.parser_.add_option("-b", "--batch", dest="batch",
-                                help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
-                                default="bsub -q 8nh < ./batchScript.sh")
+                                help="batch command. default is: 'run_condor.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
+                                default='run_condor.sh batchScript.sh')
+                                #default="bsub -q 8nh < ./batchScript.sh")
         self.parser_.add_option( "--option",
                                 dest="extraOptions",
                                 type="string",
@@ -243,13 +244,14 @@ class BatchManager:
 
     def RunningMode(self, batch):
 
-        '''Return "LXPUS", "PSI", "NAF", "LOCAL", or None,
+        '''Return "LXPLUS", "PSI", "NAF", "LOCAL", or None,
 
-        "LXPLUS" : batch command is bsub, and logged on lxplus
-        "PSI"    : batch command is qsub, and logged to t3uiXX
-        "NAF"    : batch command is qsub, and logged on naf
-        "IC"     : batch command is qsub, and logged on hep.ph.ic.ac.uk
-        "LOCAL"  : batch command is nohup.
+        "LXPLUS-LSF" : batch command is bsub, and logged on lxplus
+        "LXPLUS"     : batch command is condor, and logged on lxplus
+        "PSI"        : batch command is qsub, and logged to t3uiXX
+        "NAF"        : batch command is qsub, and logged on naf
+        "IC"         : batch command is qsub, and logged on hep.ph.ic.ac.uk
+        "LOCAL"      : batch command is nohup.
 
         In all other cases, a CmsBatchException is raised
         '''
@@ -259,6 +261,7 @@ class BatchManager:
         onLxplus = hostName.startswith('lxplus')
         onPSI    = hostName.startswith('t3ui')
         onNAF =  hostName.startswith('naf')
+        onIC =  ('ic.ac.uk' in hostName)
 
         batchCmd = batch.split()[0]
 
@@ -268,6 +271,13 @@ class BatchManager:
                 raise ValueError( err )
             else:
                 print('running on LSF : %s from %s' % (batchCmd, hostName))
+                return 'LXPLUS-LSF'
+        elif batchCmd == "run_condor.sh":
+            if not onLxplus:
+                err = 'Cannot run %s on %s' % (batchCmd, hostName)
+                raise ValueError( err )
+            else:
+                print('running on CONDOR : %s from %s' % (batchCmd, hostName))
                 return 'LXPLUS'
 
         elif batchCmd == "qsub":
@@ -287,6 +297,7 @@ class BatchManager:
         elif batchCmd == 'nohup' or batchCmd == './batchScript.sh':
             print('running locally : %s on %s' % (batchCmd, hostName))
             return 'LOCAL'
+
         else:
             err = 'unknown batch command: X%sX' % batchCmd
             raise ValueError( err )
