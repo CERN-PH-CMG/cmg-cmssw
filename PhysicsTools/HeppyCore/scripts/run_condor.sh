@@ -25,8 +25,6 @@ tar -czf chunk.tar.gz *
 transfer_input_files=${transfer_input_files},chunk.tar.gz
 
 scriptName=${1:-./batchScript.sh}
-echo "Summin"
-echo $X509_USER_PROXY
 
 cat > ./job_desc.cfg <<EOF
 Universe = vanilla
