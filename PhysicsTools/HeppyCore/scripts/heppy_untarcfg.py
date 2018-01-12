@@ -14,18 +14,15 @@ def _UnTar(tars,dry_run):
             cwd = os.getcwd()
             directory = os.path.dirname(i)
             os.chdir(directory)
-            if os.path.isfile('treeProducerSusyAlphaT/tree.root'):
-                continue
-            else:
-                tar = tarfile.open(tarsuffix)
-                if dry_run:
-                    for tarinfo in tar:
-                        print "Extracting" , tarinfo.name, "from", tarsuffix
-                        sys.exit(1)
-                tar.extractall()
-                tar.close()
-                os.chdir(cwd)
-                print 'Extracted in %s directory'  %directory
+            tar = tarfile.open(tarsuffix)
+            if dry_run:
+                for tarinfo in tar:
+                    print "Extracting" , tarinfo.name, "from", tarsuffix
+                    sys.exit(1)
+            tar.extractall()
+            tar.close()
+            os.chdir(cwd)
+            print 'Extracted in %s directory'  %directory
     except TypeError:
         print 'Unable to extract tar'
 
