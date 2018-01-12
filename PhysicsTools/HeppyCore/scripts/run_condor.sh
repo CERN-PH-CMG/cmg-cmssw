@@ -30,12 +30,12 @@ cat > ./job_desc.cfg <<EOF
 Universe = vanilla
 Executable = ${scriptName}
 use_x509userproxy = true
-Log        = condor_job_\$(Process).log
-Output     = condor_job_\$(Process).out
-Error      = condor_job_\$(Process).error
+Log        = condor_job_\$(ProcId).log
+Output     = condor_job_\$(ProcId).out
+Error      = condor_job_\$(ProcId).error
 should_transfer_files   = YES 
 when_to_transfer_output = ON_EXIT
-transfer_input_files=${transfer_input_files}
+transfer_input_files = ${transfer_input_files}
 request_memory = 2000
 queue 1
 EOF
