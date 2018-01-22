@@ -48,17 +48,20 @@ class IsoTrackAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(IsoTrackAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
         self.IsoTrackIsolationComputer = heppy.IsolationComputer()
-
+        
         self.doIsoAnnulus = getattr(cfg_ana, 'doIsoAnnulus', False)
-
+        self.useLegacy2016 = getattr(cfg_ana, 'useLegacy2016', False)
 
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
     #----------------------------------------
     def declareHandles(self):
         super(IsoTrackAnalyzer, self).declareHandles()
-        self.handles['met'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' )
-        self.handles['packedCandidates'] = AutoHandle( 'packedPFCandidates', 'std::vector<pat::PackedCandidate>')
+        if self.useLegacy2016:
+            self.handles['met'] = AutoHandle( 'slimmedMETs', 'std::vector<pat::MET>' )
+            self.handles['packedCandidates'] = AutoHandle( 'packedPFCandidates', 'std::vector<pat::PackedCandidate>')
+        else:
+            self.handles['isolatedTracks'] = AutoHandle( 'isolatedTracks', 'vector<pat::IsolatedTrack>')
 
     def beginLoop(self, setup):
         super(IsoTrackAnalyzer,self).beginLoop(setup)
@@ -72,6 +75,20 @@ class IsoTrackAnalyzer( Analyzer ):
     # MAKE LIST
     #------------------
     def makeIsoTrack(self, event):
+
+        
+        event.selectedIsoTrack = []
+
+        alltrack = self.handles['isolatedTracks'].product()
+        for track in alltrack:
+		track.absIso = track.pfIsolationDR03().chargedHadronIso()
+		event.selectedIsoTrack.append(track)
+
+        event.selectedIsoTrack.sort(key = lambda l : l.pt(), reverse = True)
+        self.counters.counter('events').inc('all events')
+        if(len(event.selectedIsoTrack)): self.counters.counter('events').inc('has >=1 selected Iso Track')
+
+    def makeIsoTrackLegacy(self, event):
 
         event.selectedIsoTrack = []
         event.selectedIsoCleanTrack = []
@@ -144,89 +161,10 @@ class IsoTrackAnalyzer( Analyzer ):
                                 else: 
                                     event.selectedIsoCleanTrack.append(track)
 
-
-
-##        alltrack = map( IsoTrack, charged )
-
-##        for track in alltrack:
-##
-##            foundNonIsoTrack = False
-##
-#### ===> require Track Candidate above some pt and charged
-##            if ( (abs(track.pdgId())!=11) and (abs(track.pdgId())!=13) and (track.pt() < self.cfg_ana.ptMin) ): continue
-##            if ( track.pt() < self.cfg_ana.ptMinEMU ): continue
-##
-##
-#### ===> require is not the leading lepton and opposite to the leading lepton 
-##            if( (self.cfg_ana.doSecondVeto) and len(event.selectedLeptons)>0) : 
-##               if( deltaR(event.selectedLeptons[0].eta(), event.selectedLeptons[0].phi(), track.eta(), track.phi()) <0.01) : continue
-##               if ( (abs(track.pdgId())!=11) and (abs(track.pdgId())!=13) and (track.charge()*event.selectedLeptons[0].charge()) ): continue
-##
-#### ===> Redundant:: require the Track Candidate with a  minimum dz
-##            track.associatedVertex = event.goodVertices[0]
-##
-#### ===> compute the isolation and find the most isolated track
-##
-##            othertracks = [ p for p in charged if( deltaR(p.eta(), p.phi(), track.eta(), track.phi()) < self.cfg_ana.isoDR and p.pt()>self.cfg_ana.ptPartMin ) ]
-##            #othertracks = alltrack
-##
-##            isoSum=0
-##            for part in othertracks:
-##                #### ===> skip pfcands with a pt min (this should be 0)
-##                #if part.pt()<self.cfg_ana.ptPartMin : continue
-##                #### ===> skip pfcands outside the cone (this should be 0.3)
-##                #if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
-##                isoSum += part.pt()
-##                ### break the loop to save time
-##                if(isoSum > (self.cfg_ana.maxAbsIso + track.pt())):
-##                    foundNonIsoTrack = True
-##                    break
-##
-##            if foundNonIsoTrack: continue
-##
-##               ## reset
-##               #isoSum=0
-##               #for part in othertracks :
-##               #### ===> skip pfcands with a pt min (this should be 0)
-##               #    if part.pt()<self.cfg_ana.ptPartMin : continue
-##               #### ===> skip pfcands outside the cone (this should be 0.3)
-##               #    if deltaR(part.eta(), part.phi(), track.eta(), track.phi()) > self.cfg_ana.isoDR : continue
-##               #    isoSum += part.pt()
-##
-##            #    ###            isoSum = isoSum/track.pt()  ## <--- this is for relIso
-##
-##            ### ===> the sum should not contain the track candidate
-##
-##            track.absIso = isoSum - track.pt()
-##
-##            #### store a preIso track
-##            #event.preIsoTrack.append(track)
-##            
-###            if (isoSum < minIsoSum ) :
-##            if(track.absIso < min(0.2*track.pt(), self.cfg_ana.maxAbsIso)): 
-##                event.selectedIsoTrack.append(track)
-##
-##                if self.cfg_ana.doPrune:
-##                    myMet = self.handles['met'].product()[0]
-##                    mtwIsoTrack = mtw(track, myMet)
-##                    if mtwIsoTrack < 100:
-##                        if abs(track.pdgId()) == 11 or abs(track.pdgId()) == 13:
-##                            if track.pt()>5 and track.absIso/track.pt()<0.2:
-##
-##                                myLeptons = [ l for l in event.selectedLeptons if l.pt() > 10 ] 
-##                                nearestSelectedLeptons = makeNearestLeptons(myLeptons,track, event)
-##                                if len(nearestSelectedLeptons) > 0:
-##                                    for lep in nearestSelectedLeptons:
-##                                        if deltaR(lep.eta(), lep.phi(), track.eta(), track.phi()) > 0.1:
-##                                            event.selectedIsoCleanTrack.append(track)
-##                                else: 
-##                                    event.selectedIsoCleanTrack.append(track)
-
         event.selectedIsoTrack.sort(key = lambda l : l.pt(), reverse = True)
         event.selectedIsoCleanTrack.sort(key = lambda l : l.pt(), reverse = True)
 
         self.counters.counter('events').inc('all events')
-        #if(len(event.preIsoTrack)): self.counters.counter('events').inc('has >=1 selected Track') 
         if(len(event.selectedIsoTrack)): self.counters.counter('events').inc('has >=1 selected Iso Track')
 
     
@@ -280,7 +218,10 @@ class IsoTrackAnalyzer( Analyzer ):
             return True
 
         self.readCollections( event.input )
-        self.makeIsoTrack(event)
+        if self.useLegacy2016:
+            self.makeIsoTrackLegacy(event)
+        else:
+            self.makeIsoTrack(event)
 
         if len(event.selectedIsoTrack)==0 : return True
 
@@ -314,10 +255,14 @@ class IsoTrackAnalyzer( Analyzer ):
 
 setattr(IsoTrackAnalyzer,"defaultConfig",cfg.Analyzer(
     class_object=IsoTrackAnalyzer,
+    useLegacy2016=False,
+    #####
     setOff=True,
     #####
-    candidates='packedPFCandidates',
-    candidatesTypes='std::vector<pat::PackedCandidate>',
+    #candidatesLegacy2016='packedPFCandidates',
+    #candidatesTypesLegacy2016='std::vector<pat::PackedCandidate>',
+    #candidates='isolatedTracks',
+    #candidatesTypes='std::vector<pat::IsolatedTrack>',
     ptMin = 5, # for pion 
     ptMinEMU = 5, # for EMU
     dzMax = 0.1,
