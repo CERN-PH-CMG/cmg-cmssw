@@ -83,6 +83,9 @@ class JetReCalibrator:
         """Return the raw 4-vector, after subtracting the muons (if requested),
            or None if the jet fails the EMF cut."""
         p4 = jet.p4() * jet.rawFactor()
+        if not jet.hasPFSpecific():
+            # return raw 4-vector if there are no PF details (e.g. AK8 jet below threshold)
+            return p4
         emf = ( jet.physObj.neutralEmEnergy() + jet.physObj.chargedEmEnergy() )/p4.E()
         if emf > self.type1METParams['skipEMfractionThreshold']:
             return None
