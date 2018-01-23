@@ -97,6 +97,8 @@ class Jet(PhysicsObject):
 
 
     def jetID(self,name=""):
+        if not self.hasPFSpecific():
+            return False
         if not self.isPFJet():
             raise RuntimeError("jetID implemented only for PF Jets")
         eta = abs(self.eta());
