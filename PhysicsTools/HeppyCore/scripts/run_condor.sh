@@ -5,7 +5,7 @@ updir=$(dirname $(pwd))
 if [ ! -f ${updir}/src.tar.gz ]; then
     tmp_in_dir=`mktemp -d 2>/dev/null || mktemp -d -t 'tmp'`
     pushd $CMSSW_BASE
-    tar --exclude=.git -czf ${tmp_in_dir}/src.tar.gz src
+    tar --exclude=.git -czf ${tmp_in_dir}/src.tar.gz src lib bin python
     mv ${tmp_in_dir}/src.tar.gz ${updir}
     rmdir ${tmp_in_dir}
     popd
