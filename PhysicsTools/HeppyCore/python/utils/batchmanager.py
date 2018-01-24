@@ -276,16 +276,16 @@ class BatchManager:
                 err = 'Cannot run %s on %s' % (batchCmd, hostName)
                 raise ValueError( err )
             else:
-                print 'running on CONDOR : %s from %s' % (batchCmd, hostName)
-                return 'LXPLUS'
+                print 'running on CONDOR (using condor file transfer): %s from %s' % (batchCmd, hostName)
+                return 'LXPLUS-CONDOR-TRANSFER'
 
         elif batchCmd == "run_condor_simple.sh":
             if not onLxplus:
                 err = 'Cannot run %s on %s' % (batchCmd, hostName)
                 raise ValueError( err )
             else:
-                print 'running on CONDOR (simplified version) : %s from %s' % (batchCmd, hostName)
-                return 'LXPLUS-SIMPLE'
+                print 'running on CONDOR (simple shared-filesystem version) : %s from %s' % (batchCmd, hostName)
+                return 'LXPLUS-CONDOR-SIMPLE'
 
         elif batchCmd == "qsub":
             if onPSI:
