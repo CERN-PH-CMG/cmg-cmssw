@@ -279,6 +279,14 @@ class BatchManager:
                 print 'running on CONDOR : %s from %s' % (batchCmd, hostName)
                 return 'LXPLUS'
 
+        elif batchCmd == "run_condor_simple.sh":
+            if not onLxplus:
+                err = 'Cannot run %s on %s' % (batchCmd, hostName)
+                raise ValueError( err )
+            else:
+                print 'running on CONDOR (simplified version) : %s from %s' % (batchCmd, hostName)
+                return 'LXPLUS-SIMPLE'
+
         elif batchCmd == "qsub":
             if onPSI:
                 print 'running on SGE : %s from %s' % (batchCmd, hostName)
