@@ -336,7 +336,7 @@ class MyBatchManager( BatchManager ):
        scriptFile = open(scriptFileName,'w')
        storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
        mode = self.RunningMode(options.batch)
-       if mode in ('LXPLUS-LSF', 'LXPLUS-SIMPLE', 'LXPLUS-CONDOR-TRANSFER'):
+       if mode in ('LXPLUS-LSF', 'LXPLUS-CONDOR-SIMPLE', 'LXPLUS-CONDOR-TRANSFER'):
            scriptFile.write( batchScriptCERN( mode, jobDir, storeDir ) )
        elif mode == 'PSI':
            scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) # storeDir not implemented at the moment
@@ -348,6 +348,7 @@ class MyBatchManager( BatchManager ):
            scriptFile.write( batchScriptPADOVA( value, jobDir) )        
        elif mode == 'IC':
            scriptFile.write( batchScriptIC(jobDir) )
+       else: raise RuntimeError("Unsupported mode %s" % mode)
        scriptFile.close()
        os.system('chmod +x %s' % scriptFileName)
        

@@ -43,9 +43,17 @@ class BatchManager:
                                 dest="negate", default=False,
                                 help="create jobs, but does not submit the jobs.")
         self.parser_.add_option("-b", "--batch", dest="batch",
-                                help="batch command. default is: 'run_condor.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
-                                default='run_condor.sh batchScript.sh')
-                                #default="bsub -q 8nh < ./batchScript.sh")
+                                help="""batch command to submit job. 
+                                    ==> LSF submission to a queue, e.g. 8nh:
+                                          'bsub -q 8nh < ./batchScript.sh'
+                                    ==> HTCondor submission using AFS to transfer files
+                                    ==> with max 240 minutes of wall clock runtime:
+                                          'run_condor_simple.sh -t 240 ./batchScript.sh' 
+                                    ==> Same but with HTCondor internal file transfer:
+                                          'run_condor.sh -t 240 ./batchScript.sh' 
+
+                                    The default is '%default'.""",
+                                default="bsub -q 8nh < ./batchScript.sh")
         self.parser_.add_option( "--option",
                                 dest="extraOptions",
                                 type="string",
