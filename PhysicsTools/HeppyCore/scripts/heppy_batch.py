@@ -101,6 +101,99 @@ mv out.tar.gz $_CONDOR_JOB_IWD
            )
    return script
 
+def batchScriptCERNSimple( jobDir, remoteDir=''):
+   '''prepare the LSF version of the batch script, to run on LSF'''
+   
+   dirCopy = """echo '==== sending the logs back ===='  # will send also root files if copy failed
+echo
+rm Loop/cmsswPreProcessing.root
+cp -r Loop/* $LS_SUBCWD
+if [ $? -ne 0 ]; then
+   echo 'ERROR: problem copying job directory back'
+else
+   echo 'job directory copy succeeded'
+fi"""
+
+   if remoteDir=='':
+      cpCmd=dirCopy
+   elif  remoteDir.startswith("root://eoscms.cern.ch//eos/cms/store/"):
+       cpCmd="""echo '==== sending root files to remote dir ===='
+echo
+rm Loop/cmsswPreProcessing.root
+export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # 
+for f in Loop/*/tree*.root
+do
+   ff=`echo $f | cut -d/ -f2`
+   ff="${{ff}}_`basename $f | cut -d . -f 1`"
+   echo $f
+   echo $ff
+   export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+   source $VO_CMS_SW_DIR/cmsset_default.sh
+   for try in `seq 1 3`; do
+      echo "Stageout try $try"
+      echo "eos mkdir {srm}"
+      eos mkdir {srm}
+      echo "eos cp `pwd`/$f {srm}/${{ff}}_{idx}.root"
+      eos cp `pwd`/$f {srm}/${{ff}}_{idx}.root
+      if [ $? -ne 0 ]; then
+         echo "ERROR: remote copy failed for file $ff"
+         continue
+      fi
+      echo "remote copy succeeded"
+      remsize=$(eos find --size {srm}/${{ff}}_{idx}.root | cut -d= -f3) 
+      locsize=$(cat `pwd`/$f | wc -c)
+      ok=$(($remsize==$locsize))
+      if [ $ok -ne 1 ]; then
+         echo "Problem with copy (file sizes don't match), will retry in 30s"
+         sleep 30
+         continue
+      fi
+      echo "everything ok"
+      rm $f
+      echo root://eoscms.cern.ch/{srm}/${{ff}}_{idx}.root > $f.url
+      break
+   done
+done
+cp -r Loop/* $LS_SUBCWD
+if [ $? -ne 0 ]; then
+   echo 'ERROR: problem copying job directory back'
+else
+   echo 'job directory copy succeeded'
+fi
+""".format(
+          idx = jobDir[jobDir.find("_Chunk")+6:].strip("/") if '_Chunk' in jobDir else 'all',
+          srm = (""+remoteDir+jobDir[ jobDir.rfind("/") : (jobDir.find("_Chunk") if '_Chunk' in jobDir else len(jobDir)) ]).replace("root://eoscms.cern.ch/","")
+          )
+   else:
+       print "chosen location not supported yet: ", remoteDir
+       print 'path must start with /store/'
+       sys.exit(1)
+
+   script = """#!/bin/bash
+echo '==== environment (before) ===='
+echo
+env | sort
+pushd $CMSSW_BASE/src
+eval $(scram runtime -sh)
+popd
+echo
+echo '==== environment (after) ===='
+echo
+env | sort
+echo
+echo '==== copying job dir to worker ===='
+echo
+cp -rvf $LS_SUBCWD/* .
+echo
+echo '==== running ===='
+python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck --options=options.json
+echo
+{copy}
+""".format(copy=cpCmd)
+
+   return script
+
+
 def batchScriptCERNLSF( jobDir, remoteDir=''):
    '''prepare the LSF version of the batch script, to run on LSF'''
    
@@ -335,6 +428,8 @@ class MyBatchManager( BatchManager ):
        mode = self.RunningMode(options.batch)
        if mode == 'LXPLUS-LSF':
            scriptFile.write( batchScriptCERNLSF( jobDir, storeDir ) )
+       elif mode == 'LXPLUS-SIMPLE':
+           scriptFile.write( batchScriptCERNSimple( jobDir, storeDir ) )
        elif mode == 'LXPLUS':
            scriptFile.write( batchScriptCERN( jobDir, storeDir ) )
        elif mode == 'PSI':
