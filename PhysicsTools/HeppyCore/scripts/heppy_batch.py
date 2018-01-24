@@ -85,7 +85,6 @@ cd cmssw
 tar xzf ../src.tar.gz
 cd src
 eval `scramv1 runtime -sh`
-scram b
 cd $_CONDOR_JOB_IWD
 mkdir -p chunk
 cd chunk
