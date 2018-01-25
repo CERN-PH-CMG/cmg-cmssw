@@ -178,10 +178,6 @@ echo '==== environment (after) ===='
 echo
 env | sort
 echo
-echo '==== copying job dir to worker ===='
-echo
-cp -rvf $LS_SUBCWD/* .
-echo
 echo '==== running ===='
 python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck --options=options.json
 echo
