@@ -79,9 +79,10 @@ class LeptonAnalyzer( Analyzer ):
         self.eleEffectiveArea = getattr(cfg_ana, 'ele_effectiveAreas', "Spring15_25ns_v1")
         self.muEffectiveArea  = getattr(cfg_ana, 'mu_effectiveAreas',  "Spring15_25ns_v1")
         # MiniIsolation
+        self.IsolationComputer = None
         self.doMiniIsolation = getattr(cfg_ana, 'doMiniIsolation', False)
-        if self.doMiniIsolation:
-            self.miniIsolationPUCorr = self.cfg_ana.miniIsolationPUCorr
+        self.miniIsolationPUCorr = self.cfg_ana.miniIsolationPUCorr if self.doMiniIsolation else None
+        if self.doMiniIsolation == True:
             self.miniIsolationVetoLeptons = self.cfg_ana.miniIsolationVetoLeptons
             if self.miniIsolationVetoLeptons not in [ None, 'any', 'inclusive' ]:
                 raise RuntimeError("miniIsolationVetoLeptons should be None, or 'any' (all reco leptons), or 'inclusive' (all inclusive leptons)")
@@ -92,12 +93,12 @@ class LeptonAnalyzer( Analyzer ):
 
         self.doIsoAnnulus = getattr(cfg_ana, 'doIsoAnnulus', False)
         if self.doIsoAnnulus:
-            if not self.doMiniIsolation:
+            if not self.IsolationComputer:
                 self.IsolationComputer = heppy.IsolationComputer()
             
         self.doIsolationScan = getattr(cfg_ana, 'doIsolationScan', False)
         if self.doIsolationScan:
-            if self.doMiniIsolation:
+            if self.IsolationComputer:
                 assert (self.miniIsolationPUCorr!="weights")
                 assert (self.miniIsolationVetoLeptons==None)
             else:
@@ -106,7 +107,7 @@ class LeptonAnalyzer( Analyzer ):
 
         self.vertexChoice = getattr(cfg_ana, 'vertexChoice', 'goodVertices')
         self.doMatchToPhotons = getattr(cfg_ana, 'do_mc_match_photons', False)
-        self.doDirectionalIsolation = getattr(cfg_ana, 'doDirectionalIsolation', []) if self.doMiniIsolation else []
+        self.doDirectionalIsolation = getattr(cfg_ana, 'doDirectionalIsolation', []) if self.doMiniIsolation == True else []
         self.doFixedConeIsoWithMiniIsoVeto = getattr(cfg_ana, 'doFixedConeIsoWithMiniIsoVeto', False)
 
     #----------------------------------------
@@ -127,7 +128,7 @@ class LeptonAnalyzer( Analyzer ):
         self.handles['rhoEle'] = AutoHandle( self.cfg_ana.rhoElectron, 'double')
         self.handles['rhoEleHLT'] = AutoHandle( 'fixedGridRhoFastjetCentralCalo', 'double')
 
-        if self.doMiniIsolation or self.doIsolationScan:
+        if self.IsolationComputer:
             self.handles['packedCandidates'] = AutoHandle( self.cfg_ana.packedCandidates, 'std::vector<pat::PackedCandidate>')
 
         if self.doMatchToPhotons:
@@ -157,9 +158,9 @@ class LeptonAnalyzer( Analyzer ):
         event.selectedElectrons = []
         event.otherLeptons = []
 
-        if self.doMiniIsolation or self.doIsolationScan:
+        if self.IsolationComputer:
             self.IsolationComputer.setPackedCandidates(self.handles['packedCandidates'].product())
-        if self.doMiniIsolation:
+        if self.doMiniIsolation == True:
             if self.miniIsolationVetoLeptons == "any":
                 for lep in self.handles['muons'].product(): 
                     self.IsolationComputer.addVetos(lep)
@@ -189,9 +190,10 @@ class LeptonAnalyzer( Analyzer ):
         event.inclusiveLeptons = inclusiveMuons + inclusiveElectrons
  
         if self.doMiniIsolation:
-            if self.miniIsolationVetoLeptons == "inclusive":
-                for lep in event.inclusiveLeptons: 
-                    self.IsolationComputer.addVetos(lep.physObj)
+            if self.IsolationComputer:
+                if self.miniIsolationVetoLeptons == "inclusive":
+                    for lep in event.inclusiveLeptons: 
+                        self.IsolationComputer.addVetos(lep.physObj)
             for lep in event.inclusiveLeptons:
                 self.attachMiniIsolation(lep)
                 for cone_size in self.doDirectionalIsolation:
@@ -467,7 +469,9 @@ class LeptonAnalyzer( Analyzer ):
         # -- version with increasing cone at low pT, gives slightly better performance for tight cuts and low pt leptons
         # mu.miniIsoR = 10.0/min(max(mu.pt(), 50),200) if mu.pt() > 20 else 4.0/min(max(mu.pt(),10),20) 
         what = "mu" if (abs(mu.pdgId()) == 13) else ("eleB" if mu.isEB() else "eleE")
-        if what == "mu":
+        if self.doMiniIsolation == "precomputed":
+            mu.miniAbsIsoCharged = mu.miniPFIsolation().chargedHadronIso()
+        elif what == "mu":
             mu.miniAbsIsoCharged = self.IsolationComputer.chargedAbsIso(mu.physObj, mu.miniIsoR, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0);
             if self.doFixedConeIsoWithMiniIsoVeto:
                 mu.AbsIsoMIVCharged03 = self.IsolationComputer.chargedAbsIso(mu.physObj, 0.3, {"mu":0.0001,"eleB":0,"eleE":0.015}[what], 0.0);
@@ -488,7 +492,11 @@ class LeptonAnalyzer( Analyzer ):
                 mu.miniAbsIsoNeutral = ( self.IsolationComputer.photonAbsIsoWeighted(    mu.physObj, mu.miniIsoR, 0.08 if what == "eleE" else 0.0, 0.0, self.IsolationComputer.selfVetoNone) + 
                                          self.IsolationComputer.neutralHadAbsIsoWeighted(mu.physObj, mu.miniIsoR, 0.0, 0.0, self.IsolationComputer.selfVetoNone) )
         else:
-            if what == "mu":
+            if self.doMiniIsolation == "precomputed":
+                mu.miniAbsIsoPho = mu.miniPFIsolation().photonIso()
+                mu.miniAbsIsoNHad = mu.miniPFIsolation().neutralHadronIso()
+                mu.miniAbsIsoNeutral = mu.miniAbsIsoPho + mu.miniAbsIsoNHad  
+            elif what == "mu":
                 mu.miniAbsIsoNeutral = self.IsolationComputer.neutralAbsIsoRaw(mu.physObj, mu.miniIsoR, 0.01, 0.5);
             else:
                 mu.miniAbsIsoPho  = self.IsolationComputer.photonAbsIsoRaw(    mu.physObj, mu.miniIsoR, 0.08 if what == "eleE" else 0.0, 0.0, self.IsolationComputer.selfVetoNone) 
@@ -501,7 +509,9 @@ class LeptonAnalyzer( Analyzer ):
             if puCorr == "rhoArea":
                 mu.miniAbsIsoNeutral = max(0.0, mu.miniAbsIsoNeutral - mu.rho * mu.EffectiveArea03 * (mu.miniIsoR/0.3)**2)
             elif puCorr == "deltaBeta":
-                if what == "mu":
+                if self.doMiniIsolation == "precomputed":
+                    mu.miniAbsIsoPU = mu.miniPFIsolation().puChargedHadronIso()
+                elif what == "mu":
                     mu.miniAbsIsoPU = self.IsolationComputer.puAbsIso(mu.physObj, mu.miniIsoR, 0.01, 0.5);
                 else:
                     mu.miniAbsIsoPU = self.IsolationComputer.puAbsIso(mu.physObj, mu.miniIsoR, 0.015 if what == "eleE" else 0.0, 0.0,self.IsolationComputer.selfVetoNone);
