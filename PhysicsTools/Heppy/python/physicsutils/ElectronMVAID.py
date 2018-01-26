@@ -39,6 +39,24 @@ class ElectronMVAID_Spring16:
             self._init = True
         return self.estimator.mvaValue(ele,event)
 
+class ElectronMVAID_Fall17:
+    def __init__(self,name,tag,flavor,*xmls):
+        self.name = name
+        self.tag = tag
+        self.flavor = flavor
+        self.sxmls = ROOT.vector(ROOT.string)()
+        for x in xmls: self.sxmls.push_back(x)
+        self._init = False
+    def __call__(self,ele,event,vtx,rho,debug=False):
+        if not self._init:
+            ROOT.gSystem.Load("libRecoEgammaElectronIdentification")
+            if self.flavor=='noIso': self.estimator = ROOT.ElectronMVAEstimatorRun2Fall17(self.tag,self.name,False)
+            elif self.flavor=='Iso': self.estimator = ROOT.ElectronMVAEstimatorRun2Fall17(self.tag,self.name,True)
+            else: raise RuntimeError, 'Undefined flavor of ElectronMVAID_Fall17'
+            self.estimator.init(self.sxmls)
+            self._init = True
+        return self.estimator.mvaValue(ele,event)
+
 
 
 ElectronMVAID_Trig = ElectronMVAID("BDT", "Trig", 
@@ -109,6 +127,22 @@ ElectronMVAID_Spring16GP = ElectronMVAID_Spring16("ElectronMVAEstimatorRun2Sprin
     "RecoEgamma/ElectronIdentification/data/Spring16_GeneralPurpose_V1/electronID_mva_Spring16_GeneralPurpose_V1_EB2_10.weights.xml",
     "RecoEgamma/ElectronIdentification/data/Spring16_GeneralPurpose_V1/electronID_mva_Spring16_GeneralPurpose_V1_EE_10.weights.xml",
 )
+ElectronMVAID_Fall17noIso = ElectronMVAID_Fall17("ElectronMVAEstimatorRun2Fall17","V1","noIso",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EB1_5_2017_puinfo_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EB2_5_2017_puinfo_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EE_5_2017_puinfo_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EB1_10_2017_puinfo_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EB2_10_2017_puinfo_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EE_10_2017_puinfo_BDT.weights.xml"
+)
+ElectronMVAID_Fall17Iso = ElectronMVAID_Fall17("ElectronMVAEstimatorRun2Fall17","V1","Iso",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EB1_5_2017_puinfo_iso_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EB2_5_2017_puinfo_iso_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EE_5_2017_puinfo_iso_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EB1_10_2017_puinfo_iso_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EB2_10_2017_puinfo_iso_BDT.weights.xml",
+    "RecoEgamma/ElectronIdentification/data/Fall17/EIDmva_EE_10_2017_puinfo_iso_BDT.weights.xml"
+)
 
 ElectronMVAID_ByName = {
     'Trig':ElectronMVAID_Trig,
@@ -121,4 +155,6 @@ ElectronMVAID_ByName = {
     'NonTrigPhys14':ElectronMVAID_NonTrigPhys14,
     'Spring16HZZ':ElectronMVAID_Spring16HZZ,
     'Spring16GP':ElectronMVAID_Spring16GP,
+    'Fall17noIso':ElectronMVAID_Fall17noIso,
+    'Fall17Iso':ElectronMVAID_Fall17Iso,
 }
