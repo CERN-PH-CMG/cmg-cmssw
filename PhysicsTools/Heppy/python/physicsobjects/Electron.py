@@ -45,6 +45,12 @@ class Electron( Lepton ):
         elif id == "MVA_ID_NonTrig_Spring16_VLoose":   return self.mvaIDRun2("Spring16","VLoose")
         elif id == "MVA_ID_NonTrig_Spring16_VLooseIdEmu":   return self.mvaIDRun2("Spring16","VLooseIdEmu")
         elif id == "MVA_ID_NonTrig_Spring16_Tight":    return self.mvaIDRun2("Spring16","Tight")
+        elif id == "MVA_ID_nonIso_Fall17_Loose":       return self.mvaIDRun2("Fall17noIso","Loose")
+        elif id == "MVA_ID_nonIso_Fall17_wp90":        return self.mvaIDRun2("Fall17noIso","wp90")
+        elif id == "MVA_ID_nonIso_Fall17_wp80":        return self.mvaIDRun2("Fall17noIso","wp80")
+        elif id == "MVA_ID_Iso_Fall17_Loose":       return self.mvaIDRun2("Fall17Iso","Loose")
+        elif id == "MVA_ID_Iso_Fall17_wp90":        return self.mvaIDRun2("Fall17Iso","wp90")
+        elif id == "MVA_ID_Iso_Fall17_wp80":        return self.mvaIDRun2("Fall17Iso","wp80")
         elif id.startswith("POG_Cuts_ID_"):
                 return self.cutBasedId(id.replace("POG_Cuts_ID_","POG_"))
         for ID in self.electronIDs():
@@ -230,7 +236,7 @@ class Electron( Lepton ):
                 self._mvaRun2[name] =  self.physObj.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values")
                 return self._mvaRun2[name]
             if name not in ElectronMVAID_ByName: raise RuntimeError, "Unknown electron run2 mva id %s (known ones are: %s)\n" % (name, ElectronMVAID_ByName.keys())
-            if name in ("Spring16HZZ","Spring16GP"):
+            if name in ("Spring16HZZ","Spring16GP","Fall17noIso","Fall17Iso"):
                 if self.event == None: raise RuntimeError, "You need to set electron.event before calling any new MVA"
                 self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.event, self.associatedVertex, self.rho, debug)
             else:
@@ -391,6 +397,133 @@ class Electron( Lepton ):
                     c = (a-b)/10
                     cut = min(a,max(b,a-c*(self.pt()-15))) # warning: the _high WP must be looser than the _low one
                     return (val>cut)
+
+            elif name == "Fall17noIso":
+                if wp == 'Loose':
+                    if self.pt() <= 10:
+                        if   eta < 0.8  : return self.mvaRun2(name) > -0.13285867293779202
+                        elif eta < 1.479: return self.mvaRun2(name) > -0.31765300958836074
+                        else            : return self.mvaRun2(name) > -0.0799205914718861
+                    else:
+                        if   eta < 0.8  : return self.mvaRun2(name) > -0.856871961305474
+                        elif eta < 1.479: return self.mvaRun2(name) > -0.8107642141584835
+                        else            : return self.mvaRun2(name) > -0.7179265933023059
+                elif wp == 'wp90':
+                    if self.pt()<=10 and eta<0.8:
+                        c = 0.9165112826974601
+                        tau = 2.7381703555094217
+                        A = 1.03549199648109
+                    elif self.pt()>10 and eta<0.8:
+                        c = 0.9616542816132922
+                        tau = 8.757943837889817
+                        A = 3.1390200321591206
+                    elif self.pt()<=10 and eta<1.479:
+                        c = 0.8655738322220173
+                        tau = 2.4027944652597073
+                        A = 0.7975615613282494
+                    elif self.pt()>10 and eta<1.479:
+                        c = 0.9319258011430132
+                        tau = 8.846057432565809
+                        A = 3.5985063793347787
+                    elif self.pt()<=10:
+                        c = -3016.035055227131
+                        tau = -52140.61856333602
+                        A = -3016.3029387236506
+                    elif self.pt()>10:
+                        c = 0.8899260780999244
+                        tau = 10.124234115859881
+                        A = 4.352791250718547
+                    return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
+                elif wp == 'wp80':
+                    if self.pt()<=10 and eta<0.8:
+                        c = 0.9530240956555949
+                        tau = 2.7591425841003647
+                        A = 0.4669644718545271
+                    elif self.pt()>10 and eta<0.8:
+                        c = 0.9825268564943458
+                        tau = 8.702601455860762
+                        A = 1.1974861596609097
+                    elif self.pt()<=10 and eta<1.479:
+                        c = 0.9336564763961019
+                        tau = 2.709276284272272
+                        A = 0.33512286599215946
+                    elif self.pt()>10 and eta<1.479:
+                        c = 0.9727509457929913
+                        tau = 8.179525631018565
+                        A = 1.7111755094657688
+                    elif self.pt()<=10:
+                        c = 0.9313133688365339
+                        tau = 1.5821934800715558
+                        A = 3.8889462619659265
+                    elif self.pt()>10:
+                        c = 0.9562619539540145
+                        tau = 8.109845366281608
+                        A = 3.013927699126942
+                    return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
+
+            elif name == "Fall17Iso":
+                if wp == 'Loose':
+                    if self.pt() <= 10:
+                        if   eta < 0.8  : return self.mvaRun2(name) > -0.09564086146419018
+                        elif eta < 1.479: return self.mvaRun2(name) > -0.28229916981926795
+                        else            : return self.mvaRun2(name) > -0.05466682296962322
+                    else:
+                        if   eta < 0.8  : return self.mvaRun2(name) > -0.833466688584422
+                        elif eta < 1.479: return self.mvaRun2(name) > -0.7677000247570116
+                        else            : return self.mvaRun2(name) > -0.6917305995653829
+                elif wp == 'wp90':
+                    if self.pt()<=10 and eta<0.8:
+                        c = 0.9387070396095831
+                        tau = 2.6525585228167636
+                        A = 0.8222647164151365
+                    elif self.pt()>10 and eta<0.8:
+                        c = 0.9717674837607253
+                        tau = 8.912850985100356
+                        A = 1.9712414940437244
+                    elif self.pt()<=10 and eta<1.479:
+                        c = 0.8948802925677235
+                        tau = 2.7645670358783523
+                        A = 0.4123381218697539
+                    elif self.pt()>10 and eta<1.479:
+                        c = 0.9458745023265976
+                        tau = 8.83104420392795
+                        A = 2.40849932040698
+                    elif self.pt()<=10:
+                        c = -1830.8583661119892
+                        tau = -36578.11055382301
+                        A = -1831.2083578116517
+                    elif self.pt()>10:
+                        c = 0.8979112012086751
+                        tau = 9.814082144168015
+                        A = 4.171581694893849
+                    return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
+                elif wp == 'wp80':
+                    if self.pt()<=10 and eta<0.8:
+                        c = 0.9725509559754997
+                        tau = 2.976593261509491
+                        A = 0.2653858736397496
+                    elif self.pt()>10 and eta<0.8:
+                        c = 0.9896562087723659
+                        tau = 10.342490511998674
+                        A = 0.40204156417414094
+                    elif self.pt()<=10 and eta<1.479:
+                        c = 0.9508038141601247
+                        tau = 2.6633500558725713
+                        A = 0.2355820499260076
+                    elif self.pt()>10 and eta<1.479:
+                        c = 0.9819232656533827
+                        tau = 9.05548836482051
+                        A = 0.772674931169389
+                    elif self.pt()<=10:
+                        c = 0.9365037167596238
+                        tau = 1.5765442323949856
+                        A = 3.067015289215309
+                    elif self.pt()>10:
+                        c = 0.9625098201744635
+                        tau = 8.42589315557279
+                        A = 2.2916152615134173
+                    return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
+
             else: raise RuntimeError, "Ele MVA ID type not found"
 
     def dEtaInSeed(self):
