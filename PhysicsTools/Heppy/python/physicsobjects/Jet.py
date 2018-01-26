@@ -314,8 +314,15 @@ class Jet(PhysicsObject):
 
         if a+b-delta > 0: jet.axis2 = -math.log(math.sqrt(0.5*(a+b-delta)))
         else: jet.axis2 = -1.                                              
-        return jet	
+        return jet
 
+       if a+b-delta > 0: jet.axis2 = -math.log(math.sqrt(0.5*(a+b-delta)))
+       else: jet.axis2 = -1.                                              
+       if a+b+delta > 0: jet.axis1 = -math.log(math.sqrt(0.5*(a+b+delta)))
+       else: jet.axis1 = -1.
+
+       return jet
+   
 
 
 class GenJet( PhysicsObject):
