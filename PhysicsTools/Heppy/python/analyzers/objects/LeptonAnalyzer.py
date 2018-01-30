@@ -303,6 +303,14 @@ class LeptonAnalyzer( Analyzer ):
               elif aeta < 2.200: mu.EffectiveArea03 = 0.0433
               else:              mu.EffectiveArea03 = 0.0577
               mu.EffectiveArea04 = 0 # not computed
+          elif self.muEffectiveArea == "Fall17":
+              aeta = abs(mu.eta())
+              if   aeta < 0.800: mu.EffectiveArea03 = 0.0566
+              elif aeta < 1.300: mu.EffectiveArea03 = 0.0562
+              elif aeta < 2.000: mu.EffectiveArea03 = 0.0363
+              elif aeta < 2.200: mu.EffectiveArea03 = 0.0119
+              else:              mu.EffectiveArea03 = 0.0064
+              mu.EffectiveArea04 = 0 # not computed
           else: raise RuntimeError,  "Unsupported value for mu_effectiveAreas: can only use Data2012 (rho: ?) and Phys14_25ns_v1 or Spring15_25ns_v1 (rho: fixedGridRhoFastjetAll)"
         # Attach the vertex to them, for dxy/dz calculation
         goodVertices = getattr(event, self.vertexChoice)
