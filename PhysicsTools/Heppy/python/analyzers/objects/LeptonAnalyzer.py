@@ -303,6 +303,14 @@ class LeptonAnalyzer( Analyzer ):
               elif aeta < 2.200: mu.EffectiveArea03 = 0.0433
               else:              mu.EffectiveArea03 = 0.0577
               mu.EffectiveArea04 = 0 # not computed
+          elif self.muEffectiveArea == "Fall17":
+              aeta = abs(mu.eta())
+              if   aeta < 0.800: mu.EffectiveArea03 = 0.0566
+              elif aeta < 1.300: mu.EffectiveArea03 = 0.0562
+              elif aeta < 2.000: mu.EffectiveArea03 = 0.0363
+              elif aeta < 2.200: mu.EffectiveArea03 = 0.0119
+              else:              mu.EffectiveArea03 = 0.0064
+              mu.EffectiveArea04 = mu.EffectiveArea03*16./9. # not computed, scaled from dR=0.3
           else: raise RuntimeError,  "Unsupported value for mu_effectiveAreas: can only use Data2012 (rho: ?) and Phys14_25ns_v1 or Spring15_25ns_v1 (rho: fixedGridRhoFastjetAll)"
         # Attach the vertex to them, for dxy/dz calculation
         goodVertices = getattr(event, self.vertexChoice)
@@ -413,6 +421,18 @@ class LeptonAnalyzer( Analyzer ):
               else:              ele.EffectiveArea03 = 0.2393
               # warning: EAs not computed for cone DR=0.4 yet. Do not correct
               ele.EffectiveArea04 = 0.0
+          elif self.eleEffectiveArea == "Fall17":
+              SCEta = abs(ele.superCluster().eta())
+              ## from RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt
+              if   SCEta < 1.000: ele.EffectiveArea03 = 0.1566
+              elif SCEta < 1.479: ele.EffectiveArea03 = 0.1626
+              elif SCEta < 2.000: ele.EffectiveArea03 = 0.1073
+              elif SCEta < 2.200: ele.EffectiveArea03 = 0.0854
+              elif SCEta < 2.300: ele.EffectiveArea03 = 0.1051
+              elif SCEta < 2.400: ele.EffectiveArea03 = 0.1204
+              else:               ele.EffectiveArea03 = 0.1524
+              # warning: EAs not computed for cone DR=0.4, use the values for DR=0.3 scaled by 16/9 instead
+              ele.EffectiveArea04 = ele.EffectiveArea03*16./9.
           else: raise RuntimeError,  "Unsupported value for ele_effectiveAreas: can only use Data2012 (rho: ?), Phys14_v1 and Spring15_v1 (rho: fixedGridRhoFastjetAll)"
 
         # Electron scale calibrations
