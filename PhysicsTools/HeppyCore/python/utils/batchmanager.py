@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from optparse import OptionParser
+from collections import defaultdict
 
 import sys
 import os
@@ -42,6 +43,9 @@ class BatchManager:
         self.parser_.add_option("-n", "--negate", action="store_true",
                                 dest="negate", default=False,
                                 help="create jobs, but does not submit the jobs.")
+        self.parser_.add_option("-B", "--bulk", action="store_true",
+                                dest="bulk", default=False,
+                                help="Do bulk submission (works only for run_condor_simple.sh at the moment).")
         self.parser_.add_option("-b", "--batch", dest="batch",
                                 help="""batch command to submit job. 
                                     ==> LSF submission to a queue, e.g. 8nh:
@@ -188,8 +192,29 @@ class BatchManager:
             print '*NOT* SUBMITTING JOBS - exit '
             return
         print 'SUBMITTING JOBS ======== '
+        root = os.getcwd()
+        if self.options_.bulk:
+            if self.mode == "LXPLUS-CONDOR-SIMPLE": 
+                bulkcmd = self.options_.batch.replace("run_condor_simple.sh","run_condor_simple.sh --bulk %s ")
+            else:
+                raise RuntimeError("Bulk submission currently implemented only for run_condor_simple.sh")
+            bulks = defaultdict(int); nobulk = []
+            for jobDir in self.listOfJobs_:
+                m = re.match(r"(.*)_Chunk\d+$", jobDir)
+                if m: bulks[m.group(1)] += 1;
+                else: nobulk.append(jobDir)
+            for jobDir, njobs in bulks.iteritems():
+                pardir, sample = os.path.dirname(jobDir), os.path.basename(jobDir)
+                print 'Bulk submission for %s (%d chunks)' % (sample, njobs)
+                os.chdir( pardir )
+                print "  executing: ", ( bulkcmd % sample )
+                os.system( bulkcmd % sample )
+                os.chdir(root)
+                print '  waiting %s seconds...' % waitingTimeInSec
+                time.sleep( waitingTimeInSec )
+                print '  done.'
+            self.listOfJobs_ = nobulk
         for jobDir  in self.listOfJobs_:
-            root = os.getcwd()
             # run it
             print 'processing ', jobDir
             os.chdir( jobDir )

@@ -332,6 +332,7 @@ class MyBatchManager( BatchManager ):
        scriptFile = open(scriptFileName,'w')
        storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
        mode = self.RunningMode(options.batch)
+       self.mode = mode
        if mode in ('LXPLUS-LSF', 'LXPLUS-CONDOR-SIMPLE', 'LXPLUS-CONDOR-TRANSFER'):
            scriptFile.write( batchScriptCERN( mode, jobDir, storeDir ) )
        elif mode == 'PSI':
