@@ -5,6 +5,11 @@ if [[ "$1" == "--help" || "$1" == "-h"  || "$1" == "-?" ]]; then
     exit 1;
 fi
 
+bulk=""
+if [[ "$1" == "--bulk" ]]; then
+    bulk=$2; shift; shift;
+fi
+
 flavour=""
 if [[ "$1" == "-f" && "$2" != "" ]]; then
     flavour=$2;
@@ -21,25 +26,37 @@ if [[ "$1" == "-t" && "$2" != "" ]]; then
 fi
 
 here=$(pwd)
+if [[ "$bulk" != "" ]]; then
+    jobdesc="jobs_desc_${bulk}.cfg"
+    prefix="\$(Chunk)/";
+    here="$here/\$(Chunk)"
+else
+    jobdesc="job_desc.cfg"
+    prefix=""
+fi;
 
 scriptName=${1:-./batchScript.sh}
 
-cat > ./job_desc.cfg <<EOF
+cat > $jobdesc <<EOF
 Universe = vanilla
-Executable = ${scriptName}
-use_x509userproxy = true
-Log        = condor_job_\$(ProcId).log
-Output     = condor_job_\$(ProcId).out
-Error      = condor_job_\$(ProcId).error
+Executable = ${prefix}${scriptName}
+use_x509userproxy = \$ENV(X509_USER_PROXY)
+Log        = ${prefix}condor_job_\$(ProcId).log
+Output     = ${prefix}condor_job_\$(ProcId).out
+Error      = ${prefix}condor_job_\$(ProcId).error
 getenv      = True
 environment = "LS_SUBCWD=${here}"
 request_memory = 2000
 EOF
 
-[[ "${flavour}" != "" ]] && echo "+JobFlavour = \"${flavour}\"" >> ./job_desc.cfg
-[[ "${maxruntime}" != "" ]] && echo "+MaxRuntime = ${maxruntime}" >> ./job_desc.cfg
+[[ "${flavour}" != "" ]] && echo "+JobFlavour = \"${flavour}\"" >> $jobdesc
+[[ "${maxruntime}" != "" ]] && echo "+MaxRuntime = ${maxruntime}" >> $jobdesc
 
-echo "queue 1" >> ./job_desc.cfg
+if [[ "$bulk" != "" ]]; then
+    echo "queue Chunk matching dirs ${bulk}_Chunk*" >> $jobdesc
+else
+    echo "queue 1" >> $jobdesc
+fi;
 
 # Submit job
-/usr/bin/condor_submit job_desc.cfg
+/usr/bin/condor_submit $jobdesc

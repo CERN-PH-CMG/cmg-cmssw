@@ -50,7 +50,7 @@ transfer_input_files=${transfer_input_files},chunk.tar.gz
 cat > ./job_desc.cfg <<EOF
 Universe = vanilla
 Executable = ${scriptName}
-use_x509userproxy = true
+use_x509userproxy = \$ENV(X509_USER_PROXY)
 Log        = condor_job_\$(ProcId).log
 Output     = condor_job_\$(ProcId).out
 Error      = condor_job_\$(ProcId).error
