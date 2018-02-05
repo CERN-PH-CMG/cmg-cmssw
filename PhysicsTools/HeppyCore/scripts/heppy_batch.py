@@ -103,12 +103,14 @@ pushd $CMSSW_BASE/src
 eval $(scram runtime -sh)
 popd
 echo
+mkdir job
+cd job
 echo '==== copying job dir to worker ===='
 echo
 cp -rvf $LS_SUBCWD/* .
 """
        dirCopy = """
-cp -r Loop/* $LS_SUBCWD
+cp -rv Loop/* $LS_SUBCWD
 if [ $? -ne 0 ]; then
    echo 'ERROR: problem copying job directory back'
 else
@@ -332,6 +334,7 @@ class MyBatchManager( BatchManager ):
        scriptFile = open(scriptFileName,'w')
        storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
        mode = self.RunningMode(options.batch)
+       self.mode = mode
        if mode in ('LXPLUS-LSF', 'LXPLUS-CONDOR-SIMPLE', 'LXPLUS-CONDOR-TRANSFER'):
            scriptFile.write( batchScriptCERN( mode, jobDir, storeDir ) )
        elif mode == 'PSI':
