@@ -120,7 +120,8 @@ class Tree(object):
         if isinstance(self.vars[varName], numpy.ndarray):
             self.vars[varName][0]=value
             if varName in self.zippers:
-                self.zippers[varName](self.vars[varName])
+                zipper, buff = self.zippers[varName]
+                zipper.zip(1, buff)
         else:
             self.fillers[varName](self.vars[varName],value)
 
@@ -130,7 +131,8 @@ class Tree(object):
             for (i,v) in enumerate(values):
                 a[i]=v
             if varName in self.zippers:
-                self.zippers[varName](a)
+                zipper, buff = self.zippers[varName]
+                zipper.zip(len(values), buff)
         else:
             if isinstance(a, ROOT.TObject) and a.ClassName() == "TClonesArray":
                 a.ExpandCreateFast(len(values))
