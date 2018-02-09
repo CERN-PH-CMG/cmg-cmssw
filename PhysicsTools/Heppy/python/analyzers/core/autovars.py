@@ -35,6 +35,15 @@ class NTupleVariable:
     def fillBranch(self,treeNumpy,object,isMC):
         if self.mcOnly and not isMC: return
         treeNumpy.fill(self.name, self(object))
+    def setPrecision(self,precision):
+        if self.type != float: raise RuntimeError("Precision can only be specified for float branches")
+        if precision > 0:
+            if self.zipper != None: print "Warning: setting precision on branch %s which already has a non-null zipper" % self.name
+            import ROOT
+            self.zipper = ROOT.heppy.FloatZipper(precision)
+        elif precision == -1:
+            self.zipper = None
+        else: raise RuntimeError("Precision = 0 makes no sense")
     def __repr__(self):
         return "<NTupleVariable[%s]>" % self.name
 
