@@ -13,6 +13,7 @@ class Tree(object):
         self.defaultFloatType = defaultFloatType
         self.defaultIntType = defaultIntType
         self.fillers = {}
+        self.zippers = {}
 
     def setDefaultFloatType(self, defaultFloatType):
         self.defaultFloatType = defaultFloatType
@@ -29,7 +30,7 @@ class Tree(object):
                 type = int
             self.var(name, type)            
     
-    def branch_(self, selfmap, varName, type, len, postfix="", storageType="default", title=None):
+    def branch_(self, selfmap, varName, type, len, postfix="", storageType="default", title=None, zipper = None):
         """Backend function used to create scalar and vector branches. 
            Users should call "var" and "vector", not this function directly."""
         if storageType == "default": 
@@ -62,10 +63,12 @@ class Tree(object):
             raise RuntimeError('Unknown type %s for branch %s' % (type, varName))
         if title:
             self.tree.GetBranch(varName).SetTitle(title)
+        if zipper:
+            self.zippers[varName] = (zipper,selfmap[varName])
 
-    def var(self, varName,type=float, default=-99, title=None, storageType="default", filler=None ):
+    def var(self, varName,type=float, default=-99, title=None, storageType="default", filler=None, zipper=None ):
         if type in [int, float]:
-            self.branch_(self.vars, varName, type, 1, title=title, storageType=storageType)
+            self.branch_(self.vars, varName, type, 1, title=title, storageType=storageType, zipper=zipper)
             self.defaults[varName] = default
         elif __builtins__['type'](type) == str:
             # create a value, looking up the type from ROOT and calling the default constructor
@@ -81,14 +84,14 @@ class Tree(object):
             raise RuntimeError('Unknown type %s for branch %s: it is not int, float or a string' % (type, varName))
         self.defaults[varName] = default
 
-    def vector(self, varName, lenvar, maxlen=None, type=float, default=-99, title=None, storageType="default", filler=None ):
+    def vector(self, varName, lenvar, maxlen=None, type=float, default=-99, title=None, storageType="default", filler=None, zipper=None ):
         """either lenvar is a string, and maxlen an int (variable size array), or lenvar is an int and maxlen is not specified (fixed array)"""
         if type in [int, float]:
             if __builtins__['type'](lenvar) == int:  # need the __builtins__ since 'type' is a variable here :-/
-                self.branch_(self.vecvars, varName, type, lenvar, postfix="[%d]" % lenvar, title=title, storageType=storageType)
+                self.branch_(self.vecvars, varName, type, lenvar, postfix="[%d]" % lenvar, title=title, storageType=storageType, zipper=zipper)
             else:
                 if maxlen == None: RuntimeError, 'You must specify a maxlen if making a dynamic array';
-                self.branch_(self.vecvars, varName, type, maxlen, postfix="[%s]" % lenvar, title=title, storageType=storageType)
+                self.branch_(self.vecvars, varName, type, maxlen, postfix="[%s]" % lenvar, title=title, storageType=storageType, zipper=zipper)
         elif __builtins__['type'](type) == str:
             self.vecvars[varName] = ROOT.TClonesArray(type,(lenvar if __builtins__['type'](lenvar) == int else maxlen))
             if type in [ "TLorentzVector" ]: # custom streamer classes
@@ -116,6 +119,9 @@ class Tree(object):
     def fill(self, varName, value ):
         if isinstance(self.vars[varName], numpy.ndarray):
             self.vars[varName][0]=value
+            if varName in self.zippers:
+                zipper, buff = self.zippers[varName]
+                zipper.zip(1, buff)
         else:
             self.fillers[varName](self.vars[varName],value)
 
@@ -124,6 +130,9 @@ class Tree(object):
         if isinstance(a, numpy.ndarray):
             for (i,v) in enumerate(values):
                 a[i]=v
+            if varName in self.zippers:
+                zipper, buff = self.zippers[varName]
+                zipper.zip(len(values), buff)
         else:
             if isinstance(a, ROOT.TObject) and a.ClassName() == "TClonesArray":
                 a.ExpandCreateFast(len(values))
