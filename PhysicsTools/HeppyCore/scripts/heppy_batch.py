@@ -86,6 +86,8 @@ tar xzf ../src.tar.gz
 cd src
 eval $(scram runtime -sh)
 cd $_CONDOR_JOB_IWD
+mkdir -p cache
+export TMPDIR=$PWD/cache
 mkdir -p chunk
 cd chunk
 tar xzf ../chunk.tar.gz
@@ -104,7 +106,8 @@ pushd $CMSSW_BASE/src
 eval $(scram runtime -sh)
 popd
 echo
-mkdir tmp && export TMPDIR=$PWD/tmp
+mkdir cache
+export TMPDIR=$PWD/cache
 mkdir job
 cd job
 echo '==== copying job dir to worker ===='
