@@ -216,6 +216,17 @@ jetTypeExtra = NTupleObjectType("jetExtra",  baseObjectTypes = [ jetType ], vari
     NTupleVariable("partonMotherId", lambda x : getattr(x,'partonMotherId', 0), int,     mcOnly=True, help="parton flavour (manually matching to status 23 particles)"),
     NTupleVariable("nLeptons",   lambda x : len(x.leptons) if  hasattr(x,'leptons') else  0 , float, mcOnly=False,help="Number of associated leptons"),
 ])
+jetTypeID = NTupleObjectType("jetID", baseObjectTypes=[jetType], variables=[
+    NTupleVariable("rawEnergy", lambda x: x.rawEnergy(), float, mcOnly=False, help="energy before JECs"),
+    NTupleVariable("chf", lambda x: x.chargedHadronEnergy()/x.rawEnergy(), float, mcOnly=False, help="charged hadron fraction"),
+    NTupleVariable("nhf", lambda x: x.neutralHadronEnergy()/x.rawEnergy(), float, mcOnly=False, help="neutral hadron fraction"),
+    NTupleVariable("phf", lambda x: x.neutralEmEnergy()/x.rawEnergy(), float, mcOnly=False, help="neutral EM fraction"),
+    NTupleVariable("muf", lambda x: x.muonEnergy()/x.rawEnergy(), float, mcOnly=False, help="muon fraction"),
+    NTupleVariable("elf", lambda x: x.chargedEmEnergy()/x.rawEnergy(), float, mcOnly=False, help="charged EM fraction"),
+    NTupleVariable("chm", lambda x: x.chargedHadronMultiplicity(), int, mcOnly=False, help="charged hadron multiplicity"),
+    NTupleVariable("npr", lambda x: x.chargedMultiplicity() + x.neutralMultiplicity(), int, mcOnly=False, help="number of constituents"),
+    NTupleVariable("npn", lambda x: x.neutralMultiplicity(), int, mcOnly=False, help="neutral hadron multiplicity"),
+])
 
       
 ##------------------------------------------  
