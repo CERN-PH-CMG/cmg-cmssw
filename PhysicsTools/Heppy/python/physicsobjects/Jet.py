@@ -119,13 +119,17 @@ class Jet(PhysicsObject):
             if   self.jetID("PAG_monoID_Loose") and self.jetID("POG_PFID_Tight") : return 4;
             if   self.jetID("POG_PFID_Tight")  : return 3;
             #elif self.jetID("POG_PFID_Medium") : return 2;  commented this line because this working point doesn't exist anymore (as 12/05/15)
-            elif self.jetID("POG_PFID_Loose")  : return 1;
+            # elif self.jetID("POG_PFID_Loose")  : return 1;
             else                               : return 0;
         
         # jetID from here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID#Recommendations_for_13_TeV_data
-        if name == "POG_PFID_Loose":    return ((eta<2.7 and ((npr>1 and phf<0.99 and nhf<0.99) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0)))) or ((eta>2.7 and eta<3.0) and (nhf<0.98 and phf>0.01 and npn>2)) or (eta>3.0 and (phf<0.90 and npn>10)))
-        if name == "POG_PFID_Tight":    return ((eta<2.7 and ((npr>1 and phf<0.90 and nhf<0.90) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0)))) or ((eta>2.7 and eta<3.0) and (nhf<0.98 and  phf>0.01 and npn>2)) or (eta>3.0 and (phf<0.90 and npn>10)))
-        if name == "POG_PFID_TightLepVeto": return ((eta<2.7 and ((npr>1 and phf<0.90 and nhf<0.90 and muf<0.8) and (eta>2.4 or (elf<0.90 and chf>0 and chm>0)))))
+        if name == "POG_PFID_Loose2016":    return ((eta<2.7 and ((npr>1 and phf<0.99 and nhf<0.99) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0)))) or ((eta>2.7 and eta<3.0) and (nhf<0.98 and phf>0.01 and npn>2)) or (eta>3.0 and (phf<0.90 and npn>10)))
+        if name == "POG_PFID_Tight2016":    return ((eta<2.7 and ((npr>1 and phf<0.90 and nhf<0.90) and (eta>2.4 or (elf<0.99 and chf>0 and chm>0)))) or ((eta>2.7 and eta<3.0) and (nhf<0.98 and  phf>0.01 and npn>2)) or (eta>3.0 and (phf<0.90 and npn>10)))
+        if name == "POG_PFID_TightLepVeto2016": return ((eta<2.7 and ((npr>1 and phf<0.90 and nhf<0.90 and muf<0.8) and (eta>2.4 or (elf<0.90 and chf>0 and chm>0)))))
+        # 2017 jetID from https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2017#Preliminary_Recommendations_for
+        if name == "POG_PFID_Tight":    return ((eta<2.7 and ((npr>1 and phf<0.90 and nhf<0.90) and (eta>2.4 or (chf>0 and chm>0)))) or ((eta>2.7 and eta<3.0) and (phf<0.99 and phf>0.02 and npn>2)) or (eta>3.0 and (phf<0.90 and nhf>0.02 and npn>10)))
+        if name == "POG_PFID_TightLepVeto": return ((eta<2.7 and ((npr>1 and phf<0.90 and nhf<0.90 and muf<0.8) and (eta>2.4 or (elf<0.80 and chf>0 and chm>0)))))
+        #
         if name == "VBFHBB_PFID_Loose":  return (npr>1 and phf<0.99 and nhf<0.99);
         if name == "VBFHBB_PFID_Medium": return (npr>1 and phf<0.99 and nhf<0.99) and ((eta<=2.4 and nhf<0.9 and phf<0.9 and elf<0.99 and muf<0.99 and chf>0 and chm>0) or eta>2.4);
         if name == "VBFHBB_PFID_Tight":  return (npr>1 and phf<0.99 and nhf<0.99) and ((eta<=2.4 and nhf<0.9 and phf<0.9 and elf<0.70 and muf<0.70 and chf>0 and chm>0) or eta>2.4);
