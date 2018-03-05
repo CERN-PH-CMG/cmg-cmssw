@@ -25,3 +25,4 @@
 <test name="testUncertainties" command="testUncertainties.py"/>
 <test name="testImports" command="imports.sh"/>
 <test name="testTheano" command="testTheano.sh"/>
+
