@@ -3,6 +3,8 @@ from PhysicsTools.Heppy.physicsutils.ElectronMVAID import *
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 import ROOT
 import sys
+from math import exp
+
 
 class Electron( Lepton ):
 
