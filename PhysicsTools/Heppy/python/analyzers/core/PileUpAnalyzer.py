@@ -6,7 +6,7 @@ from PhysicsTools.HeppyCore.statistics.average import Average
 from PhysicsTools.Heppy.physicsutils.PileUpSummaryInfo import PileUpSummaryInfo
 import PhysicsTools.HeppyCore.framework.config as cfg
 
-from ROOT import TFile, TH1F
+from ROOT import TFile, TH1F, gROOT, gPad
 
 class PileUpAnalyzer( Analyzer ):
     '''Computes pile-up weights for MC from the pile up histograms for MC and data.
@@ -43,11 +43,14 @@ class PileUpAnalyzer( Analyzer ):
         super(PileUpAnalyzer, self).__init__(cfg_ana, cfg_comp, looperName)
 
         self.doHists=True
+        self.currentFile = None
 
         if (hasattr(self.cfg_ana,'makeHists')) and (not self.cfg_ana.makeHists):
             self.doHists=False
 
         self.allVertices = self.cfg_ana.allVertices if (hasattr(self.cfg_ana,'allVertices')) else "_AUTO_"
+
+        self.autoPU = getattr(self.cfg_ana, 'autoPU', False)
 
         if self.cfg_comp.isMC and self.doHists:
             self.rawmcpileup = VertexHistograms('/'.join([self.dirName,
@@ -57,21 +60,36 @@ class PileUpAnalyzer( Analyzer ):
         if self.cfg_comp.isEmbed :
           self.cfg_comp.puFileMC   = None
           self.cfg_comp.puFileData = None
-          
+        
+        if not self.autoPU:
+            self.setupInputs()
+
+    def setupInputs(self, event=None):
         if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
             if not hasattr(self.cfg_comp,"puFileMC") or (self.cfg_comp.puFileMC is None and self.cfg_comp.puFileData is None):
                 self.enable = False
             else:
-                assert( os.path.isfile(os.path.expandvars(self.cfg_comp.puFileMC)) )
                 assert( os.path.isfile(os.path.expandvars(self.cfg_comp.puFileData)) )
-
-                self.mcfile = TFile( self.cfg_comp.puFileMC )
-                self.mchist = self.mcfile.Get('pileup')
-                self.mchist.Scale( 1 / self.mchist.Integral() )
-
                 self.datafile = TFile( self.cfg_comp.puFileData )
                 self.datahist = self.datafile.Get('pileup')
                 self.datahist.Scale( 1 / self.datahist.Integral() )
+
+                if self.autoPU:
+                    gROOT.cd()
+                    self.mchist = self.datahist.Clone('pileup_MC')
+                    self.mchist.Clear()
+                    self.currentFile = event.input.events.object().getTFile().GetName()
+                    print 'PileupAnalyzer: Obtaining input pileup histogram'
+                    event.input.events.object().getTFile().Get("Events").Draw("slimmedAddPileupInfo.getTrueNumInteractions()>>pileup_MC(100, 0, 100)", "slimmedAddPileupInfo.getBunchCrossing()==0")
+                    self.mchist = gPad.GetPrimitive("pileup_MC").Clone() # It's the only method that I get to work
+                else:
+                    assert( os.path.isfile(os.path.expandvars(self.cfg_comp.puFileMC)) )
+
+                    self.mcfile = TFile( self.cfg_comp.puFileMC )
+                    self.mchist = self.mcfile.Get('pileup')
+                
+                self.mchist.Scale( 1 / self.mchist.Integral(0, self.mchist.GetNbinsX() + 1) )
+                
                 # import pdb; pdb.set_trace()
                 if self.mchist.GetNbinsX() != self.datahist.GetNbinsX():
                     raise ValueError('data and mc histograms must have the same number of bins')
@@ -100,6 +118,10 @@ class PileUpAnalyzer( Analyzer ):
 
     def process(self, event):
         self.readCollections( event.input )
+
+        if self.autoPU and self.currentFile != event.input.events.object().getTFile().GetName():
+            self.setupInputs(event)
+
         ## if component is embed return (has no trigger obj)
         if self.cfg_comp.isEmbed :
           return True
