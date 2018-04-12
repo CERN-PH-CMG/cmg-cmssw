@@ -39,7 +39,7 @@ heppy::PATTauDiscriminationByMVAIsolationRun2FWlite::PATTauDiscriminationByMVAIs
     if (mvaName.find("dR0p3") != std::string::npos) {
         chargedIsoPtSums_ = "chargedIsoPtSumdR03";
         neutralIsoPtSums_ = "neutralIsoPtSumdR03";
-        puCorrPtSums_ = "puCorrPtSum";
+        puCorrPtSums_ = "puCorrPtSumdR03";
         footprintCorrection_ = "footprintCorrectiondR03";
         photonPtSumOutsideSignalCone_ = "photonPtSumOutsideSignalConedR03";
     }
