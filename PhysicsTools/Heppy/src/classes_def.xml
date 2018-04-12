@@ -22,5 +22,6 @@
   <!--<class name="heppy::SimpleElectron" transient="true" />-->
   <!--<class name="ElectronEnergyCalibrator" transient="true" />-->
   <!--<class name="heppy::ElectronEPcombinator" transient="true" />-->
+  <class name="heppy::PATTauDiscriminationByMVAIsolationRun2FWlite"  transient="true"/>
 
 </lcgdict>
