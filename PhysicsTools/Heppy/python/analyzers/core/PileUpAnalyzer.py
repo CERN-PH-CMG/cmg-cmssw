@@ -97,20 +97,12 @@ class PileUpAnalyzer( Analyzer ):
             else:
                 self.datafile.cd()
                 self.mchist = self.datahist.Clone('pileup_MC')
-                self.mchist.Clear()
+                self.mchist.Reset()
                 self.currentFile = event.input.events.object().getTFile().GetName()
-                print 'PileupAnalyzer: Obtaining input pileup histogram'
-                event.input.events.object().getTFile().Get("Events").Draw("slimmedAddPileupInfo.getTrueNumInteractions()>>pileup_MC(100, 0, 100)", "slimmedAddPileupInfo.getBunchCrossing()==0")
+                event.input.events.object().getTFile().Get("Events").Draw("slimmedAddPileupInfo.getTrueNumInteractions()>>pileup_MC", "slimmedAddPileupInfo.getBunchCrossing()==0")
                 self.mchist = gPad.GetPrimitive("pileup_MC").Clone() # It's the only method that I get to work
                 self.mchist.Scale( 1 / self.mchist.Integral(0, self.mchist.GetNbinsX() + 1) )
 
-                # import pdb; pdb.set_trace()
-                if self.mchist.GetNbinsX() != self.datahist.GetNbinsX():
-                    raise ValueError('data and mc histograms must have the same number of bins')
-                if self.mchist.GetXaxis().GetXmin() != self.datahist.GetXaxis().GetXmin():
-                    raise ValueError('data and mc histograms must have the same xmin')
-                if self.mchist.GetXaxis().GetXmax() != self.datahist.GetXaxis().GetXmax():
-                    raise ValueError('data and mc histograms must have the same xmax')
 
     def declareHandles(self):
         super(PileUpAnalyzer, self).declareHandles()
