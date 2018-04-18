@@ -6,6 +6,7 @@ from PhysicsTools.NanoAOD.taus_cff import *
 from PhysicsTools.NanoAOD.electrons_cff import *
 from PhysicsTools.NanoAOD.photons_cff import *
 from PhysicsTools.NanoAOD.globals_cff import *
+from PhysicsTools.NanoAOD.ttbarCategorization_cff import *
 from PhysicsTools.NanoAOD.genparticles_cff import *
 from PhysicsTools.NanoAOD.particlelevel_cff import *
 from PhysicsTools.NanoAOD.vertices_cff import *
@@ -13,6 +14,7 @@ from PhysicsTools.NanoAOD.met_cff import *
 from PhysicsTools.NanoAOD.triggerObjects_cff import *
 from PhysicsTools.NanoAOD.isotracks_cff import *
 from PhysicsTools.NanoAOD.NanoAODEDMEventContent_cff import *
+
 
 nanoMetadata = cms.EDProducer("UniqueStringProducer",
     strings = cms.PSet(
@@ -49,27 +51,34 @@ simpleCleanerTable = cms.EDProducer("NanoAODSimpleCrossCleaner",
 genWeightsTable = cms.EDProducer("GenWeightsTableProducer",
     genEvent = cms.InputTag("generator"),
     lheInfo = cms.InputTag("externalLHEProducer"),
-    preferredPDFs = cms.vuint32(91400,260001,262001),
+    preferredPDFs = cms.VPSet( # see https://lhapdf.hepforge.org/pdfsets.html
+        cms.PSet( name = cms.string("PDF4LHC15_nnlo_30_pdfas"), lhaid = cms.uint32(91400) ),
+        cms.PSet( name = cms.string("NNPDF31_nnlo_hessian_pdfas"), lhaid = cms.uint32(306000) ),
+        cms.PSet( name = cms.string("NNPDF30_nlo_as_0118"), lhaid = cms.uint32(260000) ), # for some 92X samples. Note that the nominal weight, 260000, is not included in the LHE ...
+        cms.PSet( name = cms.string("NNPDF30_lo_as_0130"), lhaid = cms.uint32(262000) ), # some MLM 80X samples have only this (e.g. /store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root )
+    ),
     namedWeightIDs = cms.vstring(),
     namedWeightLabels = cms.vstring(),
     lheWeightPrecision = cms.int32(14),
-    maxPdfWeights = cms.uint32(50), # for NNPDF, keep only the first 50 replicas (save space)
+    maxPdfWeights = cms.uint32(150), 
     debug = cms.untracked.bool(False),
 )
 lheInfoTable = cms.EDProducer("LHETablesProducer",
     lheInfo = cms.InputTag("externalLHEProducer"),
+    precision = cms.int32(14),
+    storeLHEParticles = cms.bool(True) 
 )
 
 l1bits=cms.EDProducer("L1TriggerResultsConverter", src=cms.InputTag("gtStage2Digis"), legacyL1=cms.bool(False))
 
 nanoSequence = cms.Sequence(
-        nanoMetadata + muonSequence + jetSequence + tauSequence + electronSequence+photonSequence+vertexSequence+metSequence+
+        nanoMetadata + jetSequence + muonSequence + tauSequence + electronSequence+photonSequence+vertexSequence+metSequence+
         isoTrackSequence + # must be after all the leptons 
         linkedObjects  +
         jetTables + muonTables + tauTables + electronTables + photonTables +  globalTables +vertexTables+ metTables+simpleCleanerTable + triggerObjectTables + isoTrackTables +
 	l1bits)
 
-nanoSequenceMC = cms.Sequence(genParticleSequence + particleLevelSequence + nanoSequence + jetMC + muonMC + electronMC + photonMC + tauMC + metMC + globalTablesMC + genWeightsTable + genParticleTables + particleLevelTables + lheInfoTable)
+nanoSequenceMC = cms.Sequence(genParticleSequence + particleLevelSequence + nanoSequence + jetMC + muonMC + electronMC + photonMC + tauMC + metMC + ttbarCatMCProducers +  globalTablesMC + genWeightsTable + genParticleTables + particleLevelTables + lheInfoTable  + ttbarCategoryTable )
 
 
 def nanoAOD_customizeCommon(process):
@@ -77,45 +86,26 @@ def nanoAOD_customizeCommon(process):
 
 def nanoAOD_customizeData(process):
     process = nanoAOD_customizeCommon(process)
-    process.calibratedPatElectrons.isMC = cms.bool(False)
-    process.calibratedPatPhotons.isMC = cms.bool(False)
+    if hasattr(process,'calibratedPatElectrons80X'):
+        process.calibratedPatElectrons80X.isMC = cms.bool(False)
+        process.calibratedPatPhotons80X.isMC = cms.bool(False)
     return process
 
 def nanoAOD_customizeMC(process):
     process = nanoAOD_customizeCommon(process)
-    process.calibratedPatElectrons.isMC = cms.bool(True)
-    process.calibratedPatPhotons.isMC = cms.bool(True)
+    if hasattr(process,'calibratedPatElectrons80X'):
+        process.calibratedPatElectrons80X.isMC = cms.bool(True)
+        process.calibratedPatPhotons80X.isMC = cms.bool(True)
     return process
 
 ### Era dependent customization
 from Configuration.Eras.Modifier_run2_miniAOD_80XLegacy_cff import run2_miniAOD_80XLegacy
-from RecoJets.JetProducers.QGTagger_cfi import  QGTagger
-qgtagger80x=QGTagger.clone(srcJets="slimmedJets",srcVertexCollection="offlineSlimmedPrimaryVertices")
 _80x_sequence = nanoSequence.copy()
 #remove stuff 
 _80x_sequence.remove(isoTrackTable)
 _80x_sequence.remove(isoTrackSequence)
-#add qgl
-_80x_sequence.insert(1,qgtagger80x)
 
-_80x_sequenceMC = nanoSequenceMC.copy()
-_80x_sequenceMC.remove(genSubJetAK8Table)
-_80x_sequenceMC.remove(genJetFlavourTable)
-_80x_sequenceMC.insert(-1,genJetFlavourAssociation)
-_80x_sequenceMC.insert(-1,genJetFlavourTable)
 run2_miniAOD_80XLegacy.toReplaceWith( nanoSequence, _80x_sequence)
-run2_miniAOD_80XLegacy.toReplaceWith( nanoSequenceMC, _80x_sequenceMC)
 
 	
 
-from Configuration.Eras.Modifier_run2_nanoAOD_92X_cff import run2_nanoAOD_92X
-#remove stuff
-
-_92x_sequence = nanoSequence.copy()
-_92x_sequenceMC = nanoSequenceMC.copy()
-_92x_sequenceMC.remove(genSubJetAK8Table)
-_92x_sequenceMC.remove(genJetFlavourTable)
-_92x_sequenceMC.insert(-1,genJetFlavourAssociation)
-_92x_sequenceMC.insert(-1,genJetFlavourTable)
-run2_nanoAOD_92X.toReplaceWith( nanoSequence, _92x_sequence)
-run2_nanoAOD_92X.toReplaceWith( nanoSequenceMC, _92x_sequenceMC)
