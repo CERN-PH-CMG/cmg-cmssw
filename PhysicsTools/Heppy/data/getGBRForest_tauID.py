@@ -22,7 +22,7 @@ from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '')
 
 process.load('RecoTauTag.Configuration.loadRecoTauTagMVAsFromPrepDB_cfi')
-tauIdDiscrMVA_trainings_run2_2017 = { 'tauIdMVAIsoDBoldDMwLT2017' : "tauIdMVAIsoDBoldDMwLT2017", }
+tauIdDiscrMVA_trainings_run2_2017 = { 'tauIdMVAIsoDBoldDMwLT2017' : "tauIdMVAIsoDBoldDMwLT2017", "tauIdMVAIsoDBoldDMdR0p3wLT2017" : "tauIdMVAIsoDBoldDMdR0p3wLT2017"}
 tauIdDiscrMVA_2017_version = "v2"
 getters = []
 for training, gbrForestName in tauIdDiscrMVA_trainings_run2_2017.items():
