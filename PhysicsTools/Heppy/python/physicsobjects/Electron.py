@@ -499,9 +499,9 @@ class Electron( Lepton ):
                     if self.pt()<10:
                         raise RuntimeError, 'MVA_ID_nonIso_Fall17_SUSYTight electron ID cannot be called for objects with pt below 10 GeV'
                     elif self.pt()<25:
-                        if eta<0.8: _thiscut = 0.2+0.032(self.pt()-10)
-                        elif eta<1.479: _thiscut = 0.1+0.025(self.pt()-10)
-                        else: _thiscut = -0.1+0.028(self.pt()-10)
+                        if eta<0.8: _thiscut = 0.2+0.032*(self.pt()-10)
+                        elif eta<1.479: _thiscut = 0.1+0.025*(self.pt()-10)
+                        else: _thiscut = -0.1+0.028*(self.pt()-10)
                     else:
                         if eta<0.8: _thiscut = 0.68
                         elif eta<1.479: _thiscut = 0.475
