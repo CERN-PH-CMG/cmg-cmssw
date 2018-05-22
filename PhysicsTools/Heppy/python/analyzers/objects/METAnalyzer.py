@@ -240,10 +240,11 @@ class METAnalyzer( Analyzer ):
         #subtract muon momentum and construct met
         px,py = self.metNoMu.px()+mupx, self.metNoMu.py()+mupy
         self.metNoMu.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-        px,py = self.metNoMuNoPU.px()+mupx, self.metNoMuNoPU.py()+mupy
-        self.metNoMuNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
         setattr(event, "metNoMu"+self.cfg_ana.collectionPostFix, self.metNoMu)
-        if self.cfg_ana.doMetNoPU: setattr(event, "metNoMuNoPU"+self.cfg_ana.collectionPostFix, self.metNoMuNoPU)
+        if self.cfg_ana.doMetNoPU:
+            px,py = self.metNoMuNoPU.px()+mupx, self.metNoMuNoPU.py()+mupy
+            self.metNoMuNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+            setattr(event, "metNoMuNoPU"+self.cfg_ana.collectionPostFix, self.metNoMuNoPU)
 
 
     def makeMETNoEle(self, event):
@@ -260,11 +261,12 @@ class METAnalyzer( Analyzer ):
         #subtract electron momentum and construct met
         px,py = self.metNoEle.px()+elepx, self.metNoEle.py()+elepy
         self.metNoEle.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
-
-        px,py = self.metNoEleNoPU.px()+elepx, self.metNoEleNoPU.py()+elepy
-        self.metNoEleNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
         setattr(event, "metNoEle"+self.cfg_ana.collectionPostFix, self.metNoEle)
-        if self.cfg_ana.doMetNoPU: setattr(event, "metNoEleNoPU"+self.cfg_ana.collectionPostFix, self.metNoEleNoPU)
+
+        if self.cfg_ana.doMetNoPU:
+            px,py = self.metNoEleNoPU.px()+elepx, self.metNoEleNoPU.py()+elepy
+            self.metNoEleNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+            setattr(event, "metNoEleNoPU"+self.cfg_ana.collectionPostFix, self.metNoEleNoPU)
 
     def makeMETNoPhoton(self, event):
         self.metNoPhoton = copy.deepcopy(self.met)
