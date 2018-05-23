@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser.add_option("-p", "--nprint",
                       dest="nprint",
                       help="number of events to print at the beginning",
-                      default=5)
+                      default=0)
     parser.add_option("-e", "--iEvent", 
                       dest="iEvent",
                       help="jump to a given event. ignored in multiprocessing.",
