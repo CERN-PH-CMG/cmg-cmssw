@@ -40,7 +40,13 @@ _btagWPs = {
     "CMVAv2L": ("pfCombinedMVAV2BJetTags", -0.715), # for same b-jet efficiency of CSVv2IVFL on ttbar MC, jet pt > 30
     "CMVAv2M": ("pfCombinedMVAV2BJetTags", 0.185),  # for same b-jet efficiency of CSVv2IVFM on ttbar MC, jet pt > 30
     "CMVAv2T": ("pfCombinedMVAV2BJetTags", 0.875),  # for same b-jet efficiency of CSVv2IVFT on ttbar MC, jet pt > 30
-
+###https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation94X
+    "CSVv2IVF94XL": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.5803),
+    "CSVv2IVF94XM": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.8838),
+    "CSVv2IVF94XT": ("pfCombinedInclusiveSecondaryVertexV2BJetTags", 0.9693),
+    "DeepCSVL": ("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb", 0.1522),
+    "DeepCSVM": ("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb", 0.4941),
+    "DeepCSVT": ("pfDeepCSVJetTags:probb + pfDeepCSVJetTags:probbb", 0.8001),
 }
 
 class Jet(PhysicsObject):   
@@ -215,6 +221,8 @@ class Jet(PhysicsObject):
         return 1.0 # Jet does not have any L1 correction
 
     def btag(self,name):
+        if "+" in name:
+            return sum(self.bDiscriminator(x.strip()) for x in name.split())
         ret = self.bDiscriminator(name)
         if ret == -1000 and name.startswith("pf"):
             ret = self.bDiscriminator(name[2].lower()+name[3:])
