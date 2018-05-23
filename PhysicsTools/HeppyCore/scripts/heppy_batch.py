@@ -104,6 +104,7 @@ pushd $CMSSW_BASE/src
 eval $(scram runtime -sh)
 popd
 echo
+mkdir tmp && export TMPDIR=$PWD/tmp
 mkdir job
 cd job
 echo '==== copying job dir to worker ===='
