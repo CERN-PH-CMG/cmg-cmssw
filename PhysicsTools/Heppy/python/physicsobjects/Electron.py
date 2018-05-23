@@ -66,11 +66,17 @@ class Electron( Lepton ):
             wp = wp.replace("_zs","")
         elif showerShapes == "auto":
             showerShapes = "full5x5"
+
+        hOverE_CE, hOverE_Cr = 0, 0
+        if "POG_FALL17_94X_v1" in wp:
+            hOverE_CE = 1.12 if self.physObj.isEB() else 0.5
+            hOverE_Cr = 0.0368 if self.physObj.isEB() else 0.201
+
         vars = {
             'dEtaIn' : abs(self.dEtaInSeed()) if (("POG_SPRING16_25ns_v1" in wp) or ("POG_FALL17_94X_v1" in wp)) else abs(self.physObj.deltaEtaSuperClusterTrackAtVtx()),
             'dPhiIn' : abs(self.physObj.deltaPhiSuperClusterTrackAtVtx()),
             'sigmaIEtaIEta' : self.physObj.full5x5_sigmaIetaIeta() if showerShapes == "full5x5" else self.physObj.sigmaIetaIeta(),
-            'H/E' : self.physObj.hadronicOverEm() - 1.12/(self.physObj.superCluster().energy()) - 0.201*self.rho/(self.physObj.superCluster().energy()) if "POG_FALL17_94X_v1" in wp else self.physObj.hadronicOverEm(),
+            'H/E' : self.physObj.hadronicOverEm() - (hOverE_CE  + hOverE_Cr * self.rho)/(self.physObj.superCluster().energy()),
             #'1/E-1/p' : abs(1.0/self.physObj.ecalEnergy() - self.physObj.eSuperClusterOverP()/self.physObj.ecalEnergy()),
             '1/E-1/p' : abs(1.0/self.physObj.ecalEnergy() - self.physObj.eSuperClusterOverP()/self.physObj.ecalEnergy()) if self.physObj.ecalEnergy()>0. else 9e9,
             'conversionVeto' : self.physObj.passConversionVeto(),
