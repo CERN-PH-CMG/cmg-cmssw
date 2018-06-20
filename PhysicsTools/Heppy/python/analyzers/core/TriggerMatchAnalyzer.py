@@ -9,6 +9,7 @@ import PhysicsTools.HeppyCore.framework.config as cfg
 class TriggerMatchAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(TriggerMatchAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
+        self.triggerCollection = getattr(self.cfg_ana,"triggerCollection","slimmedPatTrigger")
         self.processName = getattr(self.cfg_ana,"processName","PAT")
         self.fallbackName = getattr(self.cfg_ana,"fallbackProcessName","RECO")
         self.unpackPathNames = getattr(self.cfg_ana,"unpackPathNames",True)
@@ -25,8 +26,8 @@ class TriggerMatchAnalyzer( Analyzer ):
     def declareHandles(self):
         super(TriggerMatchAnalyzer, self).declareHandles()
         self.handles['TriggerBits'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
-        fallback = ( 'selectedPatTrigger','', self.fallbackName) if self.fallbackName else None
-        self.handles['TriggerObjects'] = AutoHandle( ('selectedPatTrigger','',self.processName), 'std::vector<pat::TriggerObjectStandAlone>', fallbackLabel=fallback )
+        fallback = ( self.triggerCollection,'', self.fallbackName) if self.fallbackName else None
+        self.handles['TriggerObjects'] = AutoHandle( (self.triggerCollection,'',self.processName), 'std::vector<pat::TriggerObjectStandAlone>', fallbackLabel=fallback )
 
     def beginLoop(self, setup):
         super(TriggerMatchAnalyzer,self).beginLoop(setup)
@@ -35,8 +36,9 @@ class TriggerMatchAnalyzer( Analyzer ):
         self.readCollections( event.input )
         triggerBits = self.handles['TriggerBits'].product()
         allTriggerObjects = self.handles['TriggerObjects'].product()
-        names = event.input.object().triggerNames(triggerBits)
-        for ob in allTriggerObjects: ob.unpackPathNames(names)
+        if self.unpackPathNames:
+            for ob in allTriggerObjects: 
+                ob.unpackNamesAndLabels(event.input.object(), triggerBits)
         triggerObjects = [ob for ob in allTriggerObjects if False not in [sel(ob) for sel in self.trgObjSelectors]]
 
         setattr(event,'trgObjects_'+self.label,triggerObjects)
