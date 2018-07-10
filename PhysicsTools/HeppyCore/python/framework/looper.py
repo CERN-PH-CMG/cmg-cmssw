@@ -137,10 +137,13 @@ class Looper(object):
         # so that analyzers cannot modify the config of other analyzers. 
         # but cannot copy the autofill config.
         self.setup = Setup(config, services)
+        self.logger.info('looper initialized')
 
     def _build(self, cfg):
+        self.logger.info('building {} ...'.format(cfg.name))
         theClass = cfg.class_object
         obj = theClass( cfg, self.cfg_comp, self.outDir )
+        self.logger.info('done')
         return obj
         
     def _prepareOutput(self, name):
@@ -170,6 +173,7 @@ class Looper(object):
         nEvents = self.nEvents
         firstEvent = self.firstEvent
         iEv = firstEvent
+        self.logger.info('deciding on the number of events (can take a long time for a lot of input files...)')
         if nEvents is None or int(nEvents) > len(self.events) :
             nEvents = len(self.events)
         else:
@@ -181,11 +185,15 @@ class Looper(object):
                                                         eventSize=eventSize))
         self.logger.info( str( self.cfg_comp ) )
         for analyzer in self.analyzers:
+            self.logger.info('starting ' + analyzer.name)
             analyzer.beginLoop(self.setup)
+        self.logger.info('beginLoop done')
         try:
+            firstEvent = True
             for iEv in range(firstEvent, firstEvent+eventSize):
-                # if iEv == nEvents:
-                #     break
+                if firstEvent:
+                    self.logger.info('processing first event')
+                self.process( iEv )
                 if iEv%100 ==0:
                     # print 'event', iEv
                     if not hasattr(self,'start_time'):
@@ -195,7 +203,9 @@ class Looper(object):
                     else:
                         print 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time))
 
-                self.process( iEv )
+                if firstEvent:
+                    self.logger.info('done')
+                    firstEvent = False
                 if iEv<self.nPrint:
                     print self.event
                 if self.stopFlag and self.stopFlag.value:
