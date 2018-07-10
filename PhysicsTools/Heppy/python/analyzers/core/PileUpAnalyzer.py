@@ -79,9 +79,18 @@ class PileUpAnalyzer( Analyzer ):
 
                     self.mcfile = TFile( self.cfg_comp.puFileMC )
                     self.mchist = self.mcfile.Get('pileup')
+                    if self.mchist == None: # and not is None!!
+                        # trying the file structure of Artur. 
+                        # the distribution for each dataset is stored in the root file with a key like: 
+                        # #SUSYGluGluToHToTauTau_M-3200_TuneCP5_13TeV-pythia8#RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1#MINIAODSIM
+                        key = self.cfg_comp.dataset.replace("/","#")
+                        self.mchist = self.mcfile.Get(key)
+                        if self.mchist == None: 
+                            raise ValueError('no pile up distribution for dataset {} in file {}'.format(
+                                    self.cfg_comp.dataset,
+                                    self.mcfile.GetName()
+                                    ))
                     self.mchist.Scale( 1 / self.mchist.Integral(0, self.mchist.GetNbinsX() + 1) )
-
-                    # import pdb; pdb.set_trace()
                     if self.mchist.GetNbinsX() != self.datahist.GetNbinsX():
                         raise ValueError('data and mc histograms must have the same number of bins')
                     if self.mchist.GetXaxis().GetXmin() != self.datahist.GetXaxis().GetXmin():
@@ -124,7 +133,6 @@ class PileUpAnalyzer( Analyzer ):
 
     def process(self, event):
         self.readCollections( event.input )
-
         if self.autoPU and self.currentFile != event.input.events.object().getTFile().GetName():
             self.setupEventInputs(event)
 
