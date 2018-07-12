@@ -87,6 +87,7 @@ working_points = dict(
     VLoose = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff90.root',
     VVLoose = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff95.root'
     )
+
 for wp in working_points:
     working_points[wp] = '/'.join([basedir, working_points[wp]])
 
