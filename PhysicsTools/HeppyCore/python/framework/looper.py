@@ -189,9 +189,9 @@ class Looper(object):
             analyzer.beginLoop(self.setup)
         self.logger.info('beginLoop done')
         try:
-            firstEvent = True
+            at_firstEvent = True
             for iEv in range(firstEvent, firstEvent+eventSize):
-                if firstEvent:
+                if at_firstEvent:
                     self.logger.info('processing first event')
                 self.process( iEv )
                 if iEv%100 ==0:
@@ -203,9 +203,9 @@ class Looper(object):
                     else:
                         print 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time))
 
-                if firstEvent:
+                if at_firstEvent:
                     self.logger.info('done')
-                    firstEvent = False
+                    at_firstEvent = False
                 if iEv<self.nPrint:
                     print self.event
                 if self.stopFlag and self.stopFlag.value:
