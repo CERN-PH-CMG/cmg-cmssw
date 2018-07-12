@@ -28,10 +28,12 @@ class Tau(Lepton):
         return -99
 
     def mva_score(self):
+        '''returns the score of the isolation mva'''
         return tau_mvaid.score(self)
 
     def mva_passes(self, working_point):
-        return tau_mvaid.passes(working_point)
+        '''returns True if the tau passes the given working point of the isolation mva'''
+        return tau_mvaid.passes(self, working_point)
 
     def dxy_approx(self, vertex=None):
         '''Returns standard dxy for an arbitrary passed vertex'''

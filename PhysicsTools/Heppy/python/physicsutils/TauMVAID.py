@@ -38,7 +38,7 @@ class TauMVAID(object):
         return wp_graphs
 
     def passes(self, tau, working_point):
-        return score(tau) > threshold(tau.pt(), working_point)
+        return self.score(tau) > self.threshold(tau.pt(), working_point)
 
     def score(self, tau):
         '''returns the mva score for a heppy Tau'''
@@ -67,7 +67,7 @@ working_points = dict(
     Eff60 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff60.root', #Tight 
     Eff70 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff70.root', #Medium
     Eff80 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff80.root', #Loose
-    Eff90 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff90.root', 
+    Eff90 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff90.root', #VLoose
     Eff95 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff95.root'  #VVLoose
     )
 
