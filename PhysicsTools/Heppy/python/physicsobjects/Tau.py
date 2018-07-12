@@ -1,5 +1,7 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
 from PhysicsTools.Heppy.physicsutils.TauDecayModes import tauDecayModes
+from PhysicsTools.Heppy.physicsutils.TauMVAID import tau_mvaid_2017 as tau_mvaid
+
 import math
 
 # Find all tau IDs here: 
