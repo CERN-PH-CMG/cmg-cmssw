@@ -27,3 +27,5 @@ class PhysicsObject(Particle):
         directly available.'''
         return getattr(self.physObj, name)
 
+    def __repr__(self):
+        return str(self)
