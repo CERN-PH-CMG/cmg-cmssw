@@ -36,10 +36,51 @@ for training, gbrForestName in tauIdDiscrMVA_trainings_run2_2017.items():
            label = cms.untracked.string("RecoTauTag_%s%s" % (gbrForestName, tauIdDiscrMVA_2017_version))
         )
     )
-    getters.append( cms.EDAnalyzer("GBRForestGetterFromDB",
-        grbForestName = cms.string("RecoTauTag_%s%s" % (gbrForestName, tauIdDiscrMVA_2017_version)),
-        outputFileName = cms.untracked.string("GBRForest_%s%s.root" % (gbrForestName, tauIdDiscrMVA_2017_version)),
-    ) )
-    setattr(process, "get%s%s" % (gbrForestName, tauIdDiscrMVA_2017_version), getters[-1])
+    getters.append(cms.EDAnalyzer("GBRForestGetterFromDB",
+                                  grbForestName=cms.string("RecoTauTag_%s%s" % (
+                                      gbrForestName, tauIdDiscrMVA_2017_version)),
+                                  outputFileName=cms.untracked.string("GBRForest_%s%s.root" % (
+                                      gbrForestName, tauIdDiscrMVA_2017_version)),
+                                  ))
+    setattr(process, "get%s%s" %
+            (gbrForestName, tauIdDiscrMVA_2017_version), getters[-1])
+
+    for WP in tauIdDiscrMVA_WPs_run2_2017[training]:
+        process.loadRecoTauTagMVAsFromPrepDB.toGet.append(
+            cms.PSet(
+                record=cms.string('PhysicsTGraphPayloadRcd'),
+                tag=cms.string("RecoTauTag_%s%s_WP%s" %
+                               (gbrForestName, tauIdDiscrMVA_2017_version, WP)),
+                label=cms.untracked.string("RecoTauTag_%s%s_WP%s" % (
+                    gbrForestName, tauIdDiscrMVA_2017_version, WP))
+            )
+        )
+        getters.append(cms.EDAnalyzer("TGraphGetterFromDB",
+                                  tGraphName=cms.string("RecoTauTag_%s%s_WP%s" %
+                               (gbrForestName, tauIdDiscrMVA_2017_version, WP)),
+                                  outputFileName=cms.untracked.string("RecoTauTag_%s%sWP%s.root" % (
+                                      gbrForestName, tauIdDiscrMVA_2017_version, WP)),
+                                  ))
+        setattr(process, "get%s%sWP%s" %
+            (gbrForestName, tauIdDiscrMVA_2017_version, WP), getters[-1])
+    mvaoutput_normalization_tag = "RecoTauTag_{}{}_mvaOutput_normalization".format(
+        gbrForestName, 
+        tauIdDiscrMVA_2017_version
+        )
+    process.loadRecoTauTagMVAsFromPrepDB.toGet.append(
+        cms.PSet(
+            record=cms.string('PhysicsTFormulaPayloadRcd'),
+            tag=cms.string(mvaoutput_normalization_tag),
+            label=cms.untracked.string(mvaoutput_normalization_tag)
+            )
+        )    
+    getter = cms.EDAnalyzer(
+        "TFormulaGetterFromDB",
+        tFormulaName=cms.string(mvaoutput_normalization_tag),
+        outputFileName=cms.untracked.string(mvaoutput_normalization_tag+'.root'),
+        )
+    setattr(process, 'get'+mvaoutput_normalization_tag, getter)
+    getters.append(getter)
     
-process.path = cms.Path( sum(getters[1:], getters[0]) )
+
+process.path = cms.Path(sum(getters[1:], getters[0]))
