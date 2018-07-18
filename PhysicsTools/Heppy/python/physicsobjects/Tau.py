@@ -1,5 +1,7 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
 from PhysicsTools.Heppy.physicsutils.TauDecayModes import tauDecayModes
+from PhysicsTools.Heppy.physicsutils.TauMVAID import tau_mvaid_2017 as tau_mvaid
+
 import math
 
 # Find all tau IDs here: 
@@ -24,6 +26,14 @@ class Tau(Lepton):
     def mvaId(self):
         '''For a transparent treatment of electrons, muons and taus. Returns -99'''
         return -99
+
+    def mva_score(self):
+        '''returns the score of the isolation mva'''
+        return tau_mvaid.score(self)
+
+    def mva_passes(self, working_point):
+        '''returns True if the tau passes the given working point of the isolation mva'''
+        return tau_mvaid.passes(self, working_point)
 
     def dxy_approx(self, vertex=None):
         '''Returns standard dxy for an arbitrary passed vertex'''
