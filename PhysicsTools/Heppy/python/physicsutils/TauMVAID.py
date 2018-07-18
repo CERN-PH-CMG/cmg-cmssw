@@ -76,7 +76,7 @@ for wp in working_points:
 
 tau_mvaid_2017 = TauMVAID(
     basedir+'GBRForest_tauIdMVAIsoDBoldDMwLT2017v2.root', 
-    'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2', 'oldDMwLT',
+    'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2', 'DBoldDMwLTwGJ',
     working_points
     )
 
