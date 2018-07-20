@@ -55,7 +55,7 @@ float heppy::PATTauDiscriminationByMVAIsolationRun2FWlite::operator()(const pat:
     // CV: computation of MVA value requires presence of leading charged hadron
     if ( tau.leadChargedHadrCand().isNull() ) return 0.;
 
-    if (reco::tau::mva::fillMVAInputs(mvaInput_, tau, mvaOpt_, chargedIsoPtSums_, neutralIsoPtSums_, puCorrPtSums_, footprintCorrection_, photonPtSumOutsideSignalCone_)) {
+    if (reco::tau::mva::fillMVAInputs(mvaInput_, tau, mvaOpt_, chargedIsoPtSums_, neutralIsoPtSums_, puCorrPtSums_, photonPtSumOutsideSignalCone_, footprintCorrection_)) {
         return mvaReader_->GetClassifier(mvaInput_);
     } 
     return -1.;
