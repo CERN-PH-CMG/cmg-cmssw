@@ -116,30 +116,27 @@ class Muon( Lepton ):
         '''returns the uncertainty on dxz (from gsf track)'''
         return getattr(self,self._trackForDxyDz)().dzError()
 
-    def chargedHadronIsoR(self,R=0.4):
+    def chargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumChargedHadronPt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumChargedHadronPt 
         raise RuntimeError("Muon chargedHadronIso missing for R=%s" % R)
 
-    def neutralHadronIsoR(self,R=0.4):
+    def neutralHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumNeutralHadronEt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumNeutralHadronEt 
         raise RuntimeError("Muon neutralHadronIso missing for R=%s" % R)
 
-    def photonIsoR(self,R=0.4):
+    def photonIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumPhotonEt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumPhotonEt 
         raise RuntimeError("Muon photonIso missing for R=%s" % R)
 
-    def chargedAllIsoR(self,R=0.4):
+    def chargedAllIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumChargedParticlePt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumChargedParticlePt 
         raise RuntimeError("Muon chargedAllIso missing for R=%s" % R)
 
-    def chargedAllIso(self):
-        return self.chargedAllIsoR()
-
-    def puChargedHadronIsoR(self,R=0.4):
+    def puChargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumPUPt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumPUPt 
         raise RuntimeError("Muon chargedHadronIso missing for R=%s" % R)
