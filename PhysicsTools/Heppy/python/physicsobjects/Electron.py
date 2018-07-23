@@ -5,6 +5,25 @@ import ROOT
 import sys
 from math import exp
 
+effective_areas = dict(
+    ea03 = [
+        (1.000, 0.1440),
+        (1.479, 0.1562),
+        (2.000, 0.1032),
+        (2.200, 0.0859),
+        (2.300, 0.1116),
+        (2.400, 0.1321),
+        (2.500, 0.1654)        
+        ]
+)
+
+def get_effective_area(eta, area):
+    eta = abs(eta)
+    ea_defs = effective_areas[area]
+    for etamax, ea in ea_defs: 
+        if eta < etamax:
+            return ea 
+    return ea_defs[-1][1]
 
 class Electron( Lepton ):
 
@@ -24,6 +43,8 @@ class Electron( Lepton ):
         self._mvaTrigV0     = {True:None, False:None}
         self._mvaTrigNoIPV0 = {True:None, False:None}
         self._mvaRun2 = {}
+        self.effarea_03 = get_effective_area(self.physObj.superCluster().eta(),
+                                             'ea03')
 
     def electronID( self, id, vertex=None, rho=None ):
         if id is None or id == "": return True
@@ -612,29 +633,26 @@ class Electron( Lepton ):
         else: isoValue = -999
         return max(0, isoValue - self.rhoHLT*hltEA)
 
-    def chargedHadronIsoR(self,R=0.4):
+    def chargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedHadronPt
         elif R == 0.4: return self.physObj.chargedHadronIso()
         raise RuntimeError("Electron chargedHadronIso missing for R=%s" % R)
 
-    def neutralHadronIsoR(self,R=0.4):
+    def neutralHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumNeutralHadronEt
         elif R == 0.4: return self.physObj.neutralHadronIso()
         raise RuntimeError("Electron neutralHadronIso missing for R=%s" % R)
 
-    def photonIsoR(self,R=0.4):
+    def photonIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumPhotonEt
         elif R == 0.4: return self.physObj.photonIso()
         raise RuntimeError("Electron photonIso missing for R=%s" % R)
 
-    def chargedAllIsoR(self,R=0.4):
+    def chargedAllIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedParticlePt
         raise RuntimeError("Electron chargedAllIso missing for R=%s" % R)
 
-    def chargedAllIso(self):
-        raise RuntimeError("Electron chargedAllIso missing")
-
-    def puChargedHadronIsoR(self,R=0.4):
+    def puChargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumPUPt
         elif R == 0.4: return self.physObj.puChargedHadronIso()
         raise RuntimeError("Electron chargedHadronIso missing for R=%s" % R)
