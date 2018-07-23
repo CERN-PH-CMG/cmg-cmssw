@@ -91,4 +91,5 @@ class Lepton( PhysicsObject):
 
     def __str__(self):
         ptc = super(Lepton, self).__str__()
-        return '{ptc}, iso={iso:5.2f}'.format(ptc=ptc, iso=self.relIso())
+        return '{ptc}, iso={iso:5.2f}'.format(ptc=ptc, 
+                                              iso=self.relIso(0.4, 'dbeta', dbeta_factor=0.5))

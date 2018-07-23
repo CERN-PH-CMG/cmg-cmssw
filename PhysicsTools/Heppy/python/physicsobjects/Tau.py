@@ -15,11 +15,11 @@ class Tau(Lepton):
         self.tau = tau
         super(Tau, self).__init__(tau)
         
-    def relIso(self, dBetaFactor=0, allCharged=0):
+    def relIso(self, cone_size, iso_type, dbeta_factor=None, all_charged=None):
         '''Just making the tau behave as a lepton, with dummy parameters.'''
         return -1
 
-    def relIsoR(self, R=0.3, dBetaFactor=0, allCharged=0):
+    def relIsoR(self, cone_size, iso_type, dbeta_factor=None, all_charged=None):
         '''Just making the tau behave as a lepton, with dummy parameters.'''
         return -1
 
