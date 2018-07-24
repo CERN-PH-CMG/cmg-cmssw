@@ -79,13 +79,13 @@ class TauMVAID(object):
 
 basedir = '$CMSSW_BASE/src/PhysicsTools/Heppy/data/'
 working_points = dict(
-    Eff40 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff40.root', #VVTight
-    Eff50 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff50.root', #VTight
-    Eff60 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff60.root', #Tight 
-    Eff70 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff70.root', #Medium
-    Eff80 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff80.root', #Loose
-    Eff90 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff90.root', #VLoose
-    Eff95 = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff95.root'  #VVLoose
+    VVTight = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff40.root',
+    VTight = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff50.root',
+    Tight = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff60.root', 
+    Medium = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff70.root',
+    Loose = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff80.root',
+    VLoose = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff90.root',
+    VVLoose = 'RecoTauTag_tauIdMVAIsoDBoldDMwLT2017v2WPEff95.root'
     )
 for wp in working_points:
     working_points[wp] = '/'.join([basedir, working_points[wp]])
