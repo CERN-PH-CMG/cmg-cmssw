@@ -63,19 +63,20 @@ class Tau(Lepton):
 
         Uses self.tauID() to evaluate the WPs.
 
-        Will test all WPs from VVTight to VVLoose,
-        if any WP is not available it is skipped.
+        Will test all WPs in ['VVTight', 'VTight',
+        'Tight', 'Medium','Loose', 'VLoose', 'VVLoose'].
+        If any WP is not available it is skipped.
         '''
         WPs = ['VVTight', 'VTight', 'Tight', 'Medium',
                'Loose', 'VLoose', 'VVLoose']
-        testname = name.replace('byIsolation','by{}Isolation')
+        testname = name.replace('byIsolation','by{}Isolation',1)
         n_WP = 0
         for WP in WPs:
             try:
                 if self.tauID(testname.format(WP)):
                     n_WP += 1
             except ValueError:
-                continue
+                continue #WP not found so it is skipped
         return n_WP
 
     def tauID(self, name, verbose=True):
@@ -87,8 +88,6 @@ class Tau(Lepton):
         returns self.countWP(name) that gives a count of 
         the number of passed WPs for this discriminator.
         '''
-        if self.physObj.isTauIDAvailable(name):
-            return self.physObj.tauID(name)
         tauids = {'byVVLooseIsolationMVArun2017v2DBoldDMwLT2017':"VVLoose",
                   'byVLooseIsolationMVArun2017v2DBoldDMwLT2017':"VLoose",
                   'byLooseIsolationMVArun2017v2DBoldDMwLT2017':"Loose",
@@ -100,6 +99,8 @@ class Tau(Lepton):
                 return self.mva_passes(tauids[name])
         elif name == 'byIsolationMVArun2017v2DBoldDMwLTraw2017':
             return self.mva_score()
+        elif self.physObj.isTauIDAvailable(name):
+            return self.physObj.tauID(name)
         elif ('byIsolation' in name) and ('raw' not in name):
             return self.countWP(name)
         else:
