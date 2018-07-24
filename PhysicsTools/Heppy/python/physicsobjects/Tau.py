@@ -12,6 +12,8 @@ class Tau(Lepton):
     def __init__(self, tau):
         self.tau = tau
         super(Tau, self).__init__(tau)
+        self._mvaid_score = None         #where 2017 MVAID score should be stored to not recompute everytime it is needed
+        self._mvaid_normscore = None     #where 2017 MVAID normscore should be stored to not recompute everytime WPs are needed
         
     def relIso(self, dBetaFactor=0, allCharged=0):
         '''Just making the tau behave as a lepton, with dummy parameters.'''
@@ -33,7 +35,7 @@ class Tau(Lepton):
 
     def mva_passes(self, working_point):
         '''returns True if the tau passes the given working point of the isolation mva'''
-        return tau_mvaid.passes(self, working_point)
+        return self._mvaid_normscore > tau_mvaid.threshold(self.pt(), working_point)
 
     def dxy_approx(self, vertex=None):
         '''Returns standard dxy for an arbitrary passed vertex'''
@@ -44,27 +46,68 @@ class Tau(Lepton):
         return ( - (vtx.x()-vertex.position().x()) *  p4.y()
                  + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt()
 
+    def countWP(self,name, allWP=False):
+        '''Returns the number of Working Points 
+        that are passed for given isolation name. 
+        '''
+        WPs = ['VVTight', 'VTight', 'Tight', 'Medium',
+               'Loose', 'VLoose', 'VVLoose', ]
+        testname = 'by{}'+name[2:]
+        n_WP = 0
+        for WP in WPs:
+            
+            # if from heppy-implemented isolation (known list of WPs)
+            if allWP:
+                if not self.tauID(testname.format(WP)):
+                    n_WP += 1 # in this case n_WP is the number of not passed WP
+                else:
+                    return len(WPs) - n_WP #stops counting when reached a passed WP
+
+            # else all WPs will be tested from MINIAOD
+            elif self.physObj.isTauIDAvailable(testname.format(WP)):
+                if self.tauID(testname.format(WP)):
+                    n_WP += 1 # in this case n_WP is the number of passed WP
+
+        return n_WP
+
     def tauID(self, name):
         '''Returns heppy redefined score if fitting one 
         of implemented names, else calls the wrapped tau 
         tauID(name) function.
         '''
-        if name == 'byIsolationMVArun2017v2DBoldDMwLTraw2017':
-            return self.mva_score()
-        elif name == 'byVVLooseIsolationMVArun2017v2DBoldDMwLT2017':
-            return self.mva_passes("Eff95")
-        elif name == 'byVLooseIsolationMVArun2017v2DBoldDMwLT2017':
-            return self.mva_passes("Eff90")
-        elif name == 'byLooseIsolationMVArun2017v2DBoldDMwLT2017':
-            return self.mva_passes("Eff80")
-        elif name == 'byMediumIsolationMVArun2017v2DBoldDMwLT2017':
-            return self.mva_passes("Eff70")
-        elif name == 'byTightIsolationMVArun2017v2DBoldDMwLT2017':
-            return self.mva_passes("Eff60")
-        elif name == 'byVTightIsolationMVArun2017v2DBoldDMwLT2017':
-            return self.mva_passes("Eff50")
-        elif name == 'byVVTightIsolationMVArun2017v2DBoldDMwLT2017':
-            return self.mva_passes("Eff40")
+        if 'IsolationMVArun2017v2DBoldDMwLT' in name:
+            #if raw score
+            if name == 'byIsolationMVArun2017v2DBoldDMwLTraw2017':
+                if self._mvaid_score is None:
+                    self._mvaid_score = self.mva_score()
+                return self._mvaid_score
+
+            #if WPs
+            if self._mvaid_normscore is None:
+                self._mvaid_normscore = self.mva_score(norm=True)
+
+            if name == 'byVVLooseIsolationMVArun2017v2DBoldDMwLT2017':
+                return 1. if self.mva_passes("VVLoose") else 0.
+            elif name == 'byVLooseIsolationMVArun2017v2DBoldDMwLT2017':
+                return 1. if self.mva_passes("VLoose") else 0.
+            elif name == 'byLooseIsolationMVArun2017v2DBoldDMwLT2017':
+                return 1. if self.mva_passes("Loose") else 0.
+            elif name == 'byMediumIsolationMVArun2017v2DBoldDMwLT2017':
+                return 1. if self.mva_passes("Medium") else 0.
+            elif name == 'byTightIsolationMVArun2017v2DBoldDMwLT2017':
+                return 1. if self.mva_passes("Tight") else 0.
+            elif name == 'byVTightIsolationMVArun2017v2DBoldDMwLT2017':
+                return 1. if self.mva_passes("VTight") else 0.
+            elif name == 'byVVTightIsolationMVArun2017v2DBoldDMwLT2017':
+                return 1. if self.mva_passes("VVTight") else 0.
+
+            #if numbering scheme
+            if ('byIsolation' in name) and ('raw' not in name):
+                return self.countWP(name, allWP=True)
+
+        if ('byIsolation' in name) and ('raw' not in name):
+            return self.countWP(name)
+
         return self.physObj.tauID(name)
 
     def dxy(self, vertex=None):
