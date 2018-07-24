@@ -81,10 +81,8 @@ class Tau(Lepton):
         the number of passed WPs for this discriminator.
         '''
         if 'IsolationMVArun2017v2DBoldDMwLT' in name:
-            #if raw score
             if name == 'byIsolationMVArun2017v2DBoldDMwLTraw2017':
                 return self.mva_score()
-            #if WPs
             if name == 'byVVLooseIsolationMVArun2017v2DBoldDMwLT2017':
                 return self.mva_passes("VVLoose")
             if name == 'byVLooseIsolationMVArun2017v2DBoldDMwLT2017':
@@ -99,7 +97,6 @@ class Tau(Lepton):
                 return self.mva_passes("VTight")
             if name == 'byVVTightIsolationMVArun2017v2DBoldDMwLT2017':
                 return self.mva_passes("VVTight")
-            #if numbering scheme
             if ('byIsolation' in name) and ('raw' not in name):
                 return self.countWP(name)
         #using numbering scheme
