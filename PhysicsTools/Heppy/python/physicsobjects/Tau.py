@@ -27,8 +27,10 @@ class Tau(Lepton):
         '''For a transparent treatment of electrons, muons and taus. Returns -99'''
         return -99
 
-    def mva_score(self):
+    def mva_score(self, norm=False):
         '''returns the score of the isolation mva'''
+        if norm:
+            return tau_mvaid.score_norm(self)
         return tau_mvaid.score(self)
 
     def mva_passes(self, working_point):
@@ -43,6 +45,29 @@ class Tau(Lepton):
         p4 = self.p4()
         return ( - (vtx.x()-vertex.position().x()) *  p4.y()
                  + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt()
+
+    def tauID(self, name):
+        '''Returns heppy redefined score if fitting one 
+        of implemented names, else calls the wrapped tau 
+        tauID(name) function.
+        '''
+        if name == 'byIsolationMVArun2017v2DBoldDMwLTraw2017':
+            return self.mva_score()
+        elif name == 'byVVLooseIsolationMVArun2017v2DBoldDMwLT2017':
+            return self.mva_passes("Eff95")
+        elif name == 'byVLooseIsolationMVArun2017v2DBoldDMwLT2017':
+            return self.mva_passes("Eff90")
+        elif name == 'byLooseIsolationMVArun2017v2DBoldDMwLT2017':
+            return self.mva_passes("Eff80")
+        elif name == 'byMediumIsolationMVArun2017v2DBoldDMwLT2017':
+            return self.mva_passes("Eff70")
+        elif name == 'byTightIsolationMVArun2017v2DBoldDMwLT2017':
+            return self.mva_passes("Eff60")
+        elif name == 'byVTightIsolationMVArun2017v2DBoldDMwLT2017':
+            return self.mva_passes("Eff50")
+        elif name == 'byVVTightIsolationMVArun2017v2DBoldDMwLT2017':
+            return self.mva_passes("Eff40")
+        return self.physObj.tauID(name)
 
     def dxy(self, vertex=None):
         '''More precise dxy calculation as pre-calculated in the tau object
