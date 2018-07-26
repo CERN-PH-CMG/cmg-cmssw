@@ -52,14 +52,21 @@ def cleanJetsAndLeptons(jets,leptons,deltaR,arbitration):
 
 
 def shiftJERfactor(JERShift, aeta):
-    factor = 1.079 + JERShift*0.026
-    if   aeta > 3.2: factor = 1.056 + JERShift * 0.191
-    elif aeta > 2.8: factor = 1.395 + JERShift * 0.063
-    elif aeta > 2.3: factor = 1.254 + JERShift * 0.062
-    elif aeta > 1.7: factor = 1.208 + JERShift * 0.046
-    elif aeta > 1.1: factor = 1.121 + JERShift * 0.029
-    elif aeta > 0.5: factor = 1.099 + JERShift * 0.028
-    return factor 
+    # Summer16_25nsV1 (80X, 2016, BCDEFGH, 07Aug ReReco) DATA/MC SFs
+    factor = 1.1595 + JERShift * 0.0645
+    if   aeta > 3.139: factor = 1.1922 + JERShift * 0.1488
+    elif aeta > 2.964: factor = 1.1869 + JERShift * 0.1243
+    elif aeta > 2.853: factor = 1.7788 + JERShift * 0.2008
+    elif aeta > 2.5:   factor = 1.3418 + JERShift * 0.2091
+    elif aeta > 2.322: factor = 1.2963 + JERShift * 0.2371
+    elif aeta > 2.043: factor = 1.1512 + JERShift * 0.1140
+    elif aeta > 1.930: factor = 1.1426 + JERShift * 0.1214
+    elif aeta > 1.740: factor = 1.1000 + JERShift * 0.1079
+    elif aeta > 1.305: factor = 1.1278 + JERShift * 0.0986
+    elif aeta > 1.131: factor = 1.1609 + JERShift * 0.1025
+    elif aeta > 0.783: factor = 1.1464 + JERShift * 0.0632
+    elif aeta > 0.522: factor = 1.1948 + JERShift * 0.0652
+    return factor
 
 
 
@@ -474,17 +481,16 @@ class JetAnalyzer( Analyzer ):
         for jet in jets:
             gen = jet.mcJet 
             if gen != None:
-                genpt, jetpt, aeta = gen.pt(), jet.pt(), abs(jet.eta())
-                # from https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
-                #8 TeV tables
-                factor = shiftJERfactor(self.shiftJER, aeta)
-                ptscale = max(0.0, (jetpt + (factor-1)*(jetpt-genpt))/jetpt)             
-                #print "get with pt %.1f (gen pt %.1f, ptscale = %.3f)" % (jetpt,genpt,ptscale)
-                jet.deltaMetFromJetSmearing = [ -(ptscale-1)*jet.rawFactor()*jet.px(), -(ptscale-1)*jet.rawFactor()*jet.py() ]
-                if ptscale != 0:
-                    jet.setP4(jet.p4()*ptscale)
-                    # leave the uncorrected unchanged for sync
-                    jet.setRawFactor(jet.rawFactor()/ptscale)
+               genpt, jetpt, aeta = gen.pt(), jet.pt(), abs(jet.eta())
+               # from https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+               factor = shiftJERfactor(self.shiftJER, aeta)
+               ptscale = max(0.0, (jetpt + (factor-1)*(jetpt-genpt))/jetpt)             
+               #print "get with pt %.1f (gen pt %.1f, ptscale = %.3f)" % (jetpt,genpt,ptscale)
+               jet.deltaMetFromJetSmearing = [ -(ptscale-1)*jet.rawFactor()*jet.px(), -(ptscale-1)*jet.rawFactor()*jet.py() ]
+               if ptscale != 0:
+                  jet.setP4(jet.p4()*ptscale)
+                  # leave the uncorrected unchanged for sync
+                  jet.setRawFactor(jet.rawFactor()/ptscale)
             #else: print "jet with pt %.1d, eta %.2f is unmatched" % (jet.pt(), jet.eta())
                 if (self.shiftJER==0) and (self.addJERShifts):
                     setattr(jet, "corrJER", ptscale )
