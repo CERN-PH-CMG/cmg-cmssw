@@ -26,8 +26,7 @@ class Tau(Lepton):
         return -99
 
     def dxy_approx(self, vertex=None):
-#        if vertex!=None:
-#            print 'WARNING: ignoring vertex choice for tau dxy_approx'
+        # TEMPORARY FIX: always use dxy/dz from leadChargedHadrCand as in NanoAOD, ignoring vertex
         return self.leadChargedHadrCand().dxy()
         '''Returns standard dxy for an arbitrary passed vertex'''
         if vertex is None:
@@ -43,6 +42,7 @@ class Tau(Lepton):
         Returns standard dxy calculation if the passed vertex differs from the
         one in the tau object.
         '''
+        # TEMPORARY FIX: always use dxy/dz from leadChargedHadrCand as in NanoAOD, ignoring vertex
         return self.leadChargedHadrCand().dxy()
         if vertex is None:
             vertex = self.associatedVertex
@@ -54,8 +54,7 @@ class Tau(Lepton):
             return self.dxy_approx(vertex)
 
     def dz(self, vertex=None):
-#        if vertex!=None:
-#            print 'WARNING: ignoring vertex choice for tau dz'
+        # TEMPORARY FIX: always use dxy/dz from leadChargedHadrCand as in NanoAOD, ignoring vertex
         return self.leadChargedHadrCand().dz()
         if vertex is None:
             vertex = self.associatedVertex
