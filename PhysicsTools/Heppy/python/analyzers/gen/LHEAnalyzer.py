@@ -41,6 +41,7 @@ class LHEAnalyzer( Analyzer ):
         event.lheV_pt = 0
 
         self.readCollections( event.input )
+        if not self.mchandles['LHEweights'].isValid(): return True
         lhehandle = self.mchandles['LHEweights'].product()
         hepeup=lhehandle.hepeup()
         pup=hepeup.PUP
