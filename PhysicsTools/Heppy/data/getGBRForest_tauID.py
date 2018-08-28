@@ -10,7 +10,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1)
+    input=cms.untracked.int32(1)
 )
 
 # Input source
@@ -22,18 +22,35 @@ process.source = cms.Source(
 )
 
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '')
+process.GlobalTag = GlobalTag(
+    process.GlobalTag, 'auto:phase1_2017_realistic', '')
 
 process.load('RecoTauTag.Configuration.loadRecoTauTagMVAsFromPrepDB_cfi')
-tauIdDiscrMVA_trainings_run2_2017 = { 'tauIdMVAIsoDBoldDMwLT2017' : "tauIdMVAIsoDBoldDMwLT2017", }
+tauIdDiscrMVA_trainings_run2_2017 = {
+    'tauIdMVAIsoDBoldDMwLT2017': "tauIdMVAIsoDBoldDMwLT2017", }
 tauIdDiscrMVA_2017_version = "v2"
+
+tauIdDiscrMVA_WPs_run2_2017 = {
+    'tauIdMVAIsoDBoldDMwLT2017': {
+        'Eff95': "DBoldDMwLTEff95",
+        'Eff90': "DBoldDMwLTEff90",
+        'Eff80': "DBoldDMwLTEff80",
+        'Eff70': "DBoldDMwLTEff70",
+        'Eff60': "DBoldDMwLTEff60",
+        'Eff50': "DBoldDMwLTEff50",
+        'Eff40': "DBoldDMwLTEff40"
+    }
+}
+
 getters = []
 for training, gbrForestName in tauIdDiscrMVA_trainings_run2_2017.items():
     process.loadRecoTauTagMVAsFromPrepDB.toGet.append(
         cms.PSet(
-           record = cms.string('GBRWrapperRcd'),
-           tag = cms.string("RecoTauTag_%s%s" % (gbrForestName, tauIdDiscrMVA_2017_version)),
-           label = cms.untracked.string("RecoTauTag_%s%s" % (gbrForestName, tauIdDiscrMVA_2017_version))
+            record=cms.string('GBRWrapperRcd'),
+            tag=cms.string("RecoTauTag_%s%s" %
+                           (gbrForestName, tauIdDiscrMVA_2017_version)),
+            label=cms.untracked.string("RecoTauTag_%s%s" % (
+                gbrForestName, tauIdDiscrMVA_2017_version))
         )
     )
     getters.append(cms.EDAnalyzer("GBRForestGetterFromDB",
