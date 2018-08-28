@@ -85,6 +85,8 @@ tar xzf ../src.tar.gz
 cd src
 eval $(scram runtime -sh)
 cd $_CONDOR_JOB_IWD
+mkdir -p cache
+export TMPDIR=$PWD/cache
 mkdir -p chunk
 cd chunk
 tar xzf ../chunk.tar.gz

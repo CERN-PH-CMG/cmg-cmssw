@@ -10,15 +10,17 @@ class LHEWeightAnalyzer( Analyzer ):
 
        If the WeightsInfo.id is a string, replace it with an integer.
 
-       So far the only allowed string format is "mg_reweight_X",
-       which gets stored as str(10000+int(X))
+       So far the only allowed string formats are "mg_reweight_X",
+       which gets stored as str(10000+int(X)),
+       and "rwgt_X",
+       which gets stored as str(20000+int(X)),
 
        If w.id is an unknown string or anything but a string or int,
        a RuntimeError is raised.
     """
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(LHEWeightAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
-
+        self.savePSweights = getattr(self.cfg_ana,"savePSweights",False)
         self.LHEWeightsNames=[]
 
     def declareHandles(self):
@@ -29,12 +31,15 @@ class LHEWeightAnalyzer( Analyzer ):
                                                   fallbackLabel='source',
                                                   lazy=False )
         if self.cfg_ana.useLumiInfo:
+            self.genLumiHandle = Handle("GenLumiInfoHeader")
+            if self.savePSweights: raise RuntimeError, 'this combination of options in LHEWeightAnalyzer is not supported'
+
+        if self.cfg_ana.useLumiInfo or self.savePSweights:
             self.mchandles['GenInfos'] = AutoHandle('generator',
                                                     'GenEventInfoProduct',
                                                     mayFail=True,
                                                     fallbackLabel='source',
                                                     lazy=False )
-            self.genLumiHandle = Handle("GenLumiInfoHeader")
 
     def beginLoop(self, setup):
         super(LHEWeightAnalyzer,self).beginLoop(setup)
@@ -76,10 +81,19 @@ class LHEWeightAnalyzer( Analyzer ):
                     if w.id.startswith('mg_reweight'):
                         newid = str(10000 + int(w.id.rsplit('_',1)[1]))
                         newweight.id = newid
+                    elif w.id.startswith('rwgt'):
+                        newid = str(20000 + int(w.id.rsplit('_',1)[1]))
+                        newweight.id = newid
 
                     else: raise RuntimeError('Unknown string id in LHE weights')
                     event.LHE_weights.append(newweight)
 
+            if self.savePSweights and self.mchandles['GenInfos'].isValid():
+                for cnt,w in enumerate(self.mchandles['GenInfos'].product().weights()):
+                    newweight = WeightsInfo()
+                    newweight.id = str(30000+cnt)
+                    newweight.wgt = w
+                    event.LHE_weights.append(newweight)
 
         if self.cfg_ana.useLumiInfo and self.mchandles['GenInfos'].isValid() :          
             for cnt,w in enumerate(self.mchandles['GenInfos'].product().weights()[1:10]):
