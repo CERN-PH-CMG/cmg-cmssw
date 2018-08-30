@@ -50,6 +50,9 @@ class Electron( Lepton ):
         elif id == "MVA_ID_nonIso_Fall17_Loose":       return self.mvaIDRun2("Fall17noIso","Loose")
         elif id == "MVA_ID_nonIso_Fall17_wp90":        return self.mvaIDRun2("Fall17noIso","wp90")
         elif id == "MVA_ID_nonIso_Fall17_wp80":        return self.mvaIDRun2("Fall17noIso","wp80")
+        elif id == "MVA_ID_nonIso_Fall17_SUSYVLooseFO":       return self.mvaIDRun2("Fall17noIso","SUSYVLooseFO")
+        elif id == "MVA_ID_nonIso_Fall17_SUSYVLoose":       return self.mvaIDRun2("Fall17noIso","SUSYVLoose")
+        elif id == "MVA_ID_nonIso_Fall17_SUSYTight":       return self.mvaIDRun2("Fall17noIso","SUSYTight")
         elif id == "MVA_ID_Iso_Fall17_Loose":       return self.mvaIDRun2("Fall17Iso","Loose")
         elif id == "MVA_ID_Iso_Fall17_wp90":        return self.mvaIDRun2("Fall17Iso","wp90")
         elif id == "MVA_ID_Iso_Fall17_wp80":        return self.mvaIDRun2("Fall17Iso","wp80")
@@ -481,6 +484,50 @@ class Electron( Lepton ):
                         tau = 8.109845366281608
                         A = 3.013927699126942
                     return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
+                elif wp == 'SUSYVLooseFO':
+                    if self.pt()<5:
+                        raise RuntimeError, 'MVA_ID_nonIso_Fall17_SUSYVLooseFO electron ID cannot be called for objects with pt below 5 GeV'
+                    elif self.pt()<10:
+                        if eta<0.8: _thiscut = -0.135
+                        elif eta<1.479: _thiscut = -0.417
+                        else: _thiscut = -0.470
+                    elif self.pt()<25:
+                        if eta<0.8: _thiscut = (-0.93 + (0.043/15.)*(self.pt()-10.))
+                        elif eta<1.479: _thiscut = (-0.93 + (0.04/15.)*(self.pt()-10.))
+                        else: _thiscut = (-0.942 + (0.032/15.)*(self.pt()-10.))
+                    else:
+                        if eta<0.8: _thiscut = -0.887
+                        elif eta<1.479: _thiscut = -0.89
+                        else: _thiscut = -0.91
+                    return self.mvaRun2(name) > _thiscut
+                elif wp == 'SUSYVLoose':
+                    if self.pt()<5:
+                        raise RuntimeError, 'MVA_ID_nonIso_Fall17_SUSYVLoose electron ID cannot be called for objects with pt below 5 GeV'
+                    elif self.pt()<10:
+                        if eta<0.8: _thiscut = 0.488
+                        elif eta<1.479: _thiscut = -0.045
+                        else: _thiscut = 0.176
+                    elif self.pt()<25:
+                        if eta<0.8: _thiscut = (-0.788 + (0.148/15.)*(self.pt()-10.))
+                        elif eta<1.479: _thiscut = (-0.85 + (0.075/15.)*(self.pt()-10.))
+                        else: _thiscut = (-0.81 + (0.077/15.)*(self.pt()-10.))
+                    else:
+                        if eta<0.8: _thiscut = -0.64
+                        elif eta<1.479: _thiscut = -0.775
+                        else: _thiscut = -0.733
+                    return self.mvaRun2(name) > _thiscut
+                elif wp == 'SUSYTight':
+                    if self.pt()<10:
+                        raise RuntimeError, 'MVA_ID_nonIso_Fall17_SUSYTight electron ID cannot be called for objects with pt below 10 GeV'
+                    elif self.pt()<25:
+                        if eta<0.8: _thiscut = 0.2+0.032*(self.pt()-10)
+                        elif eta<1.479: _thiscut = 0.1+0.025*(self.pt()-10)
+                        else: _thiscut = -0.1+0.028*(self.pt()-10)
+                    else:
+                        if eta<0.8: _thiscut = 0.68
+                        elif eta<1.479: _thiscut = 0.475
+                        else: _thiscut = 0.32
+                    return self.mvaRun2(name) > _thiscut
 
             elif name == "Fall17Iso":
                 if wp == 'Loose':
