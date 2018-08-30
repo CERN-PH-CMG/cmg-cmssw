@@ -58,10 +58,6 @@ class Event(object):
         selected_attrs.pop('setup') #get rid of some bits
         selected_attrs.pop('input')
         
-        # Colin: the following are unused: 
-        matched_attrs = dict() #this applies pattern matching to obtain a subset of selected_attrs
-        print_attrs=dict() #ready for printing
-        
         # Colin: defining stripped_attrs
         stripped_attrs = dict()
         
