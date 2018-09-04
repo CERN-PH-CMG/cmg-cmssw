@@ -5,26 +5,6 @@ import ROOT
 import sys
 from math import exp
 
-effective_areas = dict(
-    ea03 = [
-        (1.000, 0.1440),
-        (1.479, 0.1562),
-        (2.000, 0.1032),
-        (2.200, 0.0859),
-        (2.300, 0.1116),
-        (2.400, 0.1321),
-        (2.500, 0.1654)        
-        ]
-)
-
-def get_effective_area(eta, area):
-    eta = abs(eta)
-    ea_defs = effective_areas[area]
-    for etamax, ea in ea_defs: 
-        if eta < etamax:
-            return ea 
-    return ea_defs[-1][1]
-
 class Electron( Lepton ):
 
     def __init__(self, *args, **kwargs):
@@ -43,8 +23,6 @@ class Electron( Lepton ):
         self._mvaTrigV0     = {True:None, False:None}
         self._mvaTrigNoIPV0 = {True:None, False:None}
         self._mvaRun2 = {}
-        self.effarea_03 = get_effective_area(self.physObj.superCluster().eta(),
-                                             'ea03')
 
     def electronID( self, id, vertex=None, rho=None ):
         if id is None or id == "": return True
