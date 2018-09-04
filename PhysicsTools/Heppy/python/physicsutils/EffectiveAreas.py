@@ -9,6 +9,8 @@
 
 areas = dict(
     Data2012 = {
+        # the value corresponding to the electron key is called an 
+        # "area table" in what follows
         'electron' : { '03' : 
                        [ (1.000, 0.13),
                          (1.479, 0.14),
@@ -83,16 +85,25 @@ areas = dict(
                        }
         },
 
-    
+    scaling_03_04 = 16./9.
     Fall17 = {
+        # https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt
         'electron' : { '03' : 
-                       [ (1.000, 0.1440),
-                         (1.479, 0.1562),
-                         (2.000, 0.1032),
-                         (2.200, 0.0859),
-                         (2.300, 0.1116),
-                         (2.400, 0.1321),
-                         (2.500, 0.1654) ],
+                       [ (1.000, 0.1566),
+                         (1.479, 0.1626),
+                         (2.000, 0.1073),
+                         (2.200, 0.0854),
+                         (2.300, 0.1051),
+                         (2.400, 0.1204),
+                         (2.500, 0.1524) ],
+                       '04' :  # warning: EAs not computed for cone DR=0.4, use the values for DR=0.3 scaled by 16/9 instead
+                       [ (1.000, 0.1566 * scaling_03_04),
+                         (1.479, 0.1626 * scaling_03_04),
+                         (2.000, 0.1073 * scaling_03_04),
+                         (2.200, 0.0854 * scaling_03_04),
+                         (2.300, 0.1051 * scaling_03_04),
+                         (2.400, 0.1204 * scaling_03_04),
+                         (2.500, 0.1524 * scaling_03_04) ]
                        'eta' : lambda x: x.superCluster().eta()
                        }
         },
@@ -127,3 +138,18 @@ def effective_area(lepton, cone_size, table):
         if eta < etamax: 
             return ea
     return table[cone_size][-1][1] # out of range, take last value
+
+def is_ea_table(candidate): 
+    '''return True if candidate is an area table'''
+    if not hasattr(candidate, '__iter__'):
+        return False
+    if not 'eta' in candidate: 
+        return False
+    for key, val in candidate.iteritems():
+        if key == 'eta': 
+            continue
+        else: 
+            for ea in val:
+                if len(ea) != 2: 
+                    return False
+    return True
