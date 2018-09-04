@@ -63,7 +63,9 @@ class TestEffectiveAreas(unittest.TestCase):
                     for ea in eas: 
                         self.assertTrue(len(ea)==2)
                     
-        
+    def test_is_ea_table(self):
+        self.assertTrue( is_ea_table(areas['Fall17']['electron']) ) 
+        self.assertFalse( is_ea_table('03')) 
         
 
 
