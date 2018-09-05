@@ -45,7 +45,6 @@ def runLoopAsync(comp, outDir, configName, options):
 _globalGracefulStopFlag = multiprocessing.Value('i',0)
 def runLoop( comp, outDir, config, options):
     fullName = '/'.join( [outDir, comp.name ] )
-    # import pdb; pdb.set_trace()
     config.components = [comp]
     memcheck = 2 if getattr(options,'memCheck',False) else -1
     loop = Looper( fullName,
