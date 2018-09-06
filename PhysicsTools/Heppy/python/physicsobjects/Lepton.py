@@ -1,5 +1,5 @@
 from PhysicsTools.Heppy.physicsobjects.PhysicsObject import *
-from PhysicsTools.Heppy.physicsutils.EffectiveAreas import is_ea_table
+from PhysicsTools.Heppy.physicsutils.EffectiveAreas import is_ea_table, effective_area
 
 import ROOT
 
@@ -30,7 +30,7 @@ class Lepton( PhysicsObject):
             if area_cone_size is None: 
                 raise ValueError('using EA iso, provide area_cone_size, e.g. "03"')
             else:
-                area = effective_area(area_cone_size, area_table)
+                area = self.effective_area(area_cone_size, area_table)
             corr_neutral = self.rho * area
         elif iso_type == 'dbeta': 
             if area_cone_size or area_table: 
@@ -43,6 +43,8 @@ class Lepton( PhysicsObject):
             iso_puch =  self.puChargedHadronIso(cone_size)
             corr_neutral = dbeta_factor * iso_puch
         elif iso_type == 'raw':
+            if area_cone_size or area_table or dbeta_factor: 
+                raise ValueError('using raw iso, do not specify area_cone_size, area table, or dbeta factor')
             corr_neutral = 0.
         else: 
             raise ValueError('unknown isolation type: '+iso_type)
@@ -50,14 +52,46 @@ class Lepton( PhysicsObject):
 
 
     def relIso(self, cone_size, iso_type, dbeta_factor=None, 
-               area_cone_size=None, area_table=None,
-               all_charged = False):
+               area_cone_size=None, area_table=None, all_charged = False):
         return self.absIso(cone_size, iso_type, 
-                           dbeta_factor, 
-                           area_cone_size, area_table, 
-                           all_charged) / self.pt()
+                           dbeta_factor=dbeta_factor, 
+                           area_cone_size=area_cone_size, 
+                           area_table=area_table, 
+                           all_charged=all_charged) / self.pt()
 
-    def effective_area(area_cone_size, area_table):
+    def effective_area(self, area_cone_size, area_table):
+        '''Return effective area for this lepton. 
+        area_cone_size: should be e.g. '03' or '04'.
+        area_table: defines the table of effective areas. 
+        It can either be a string EffectiveArea+area_cone_size, e.g. EffectiveArea03, 
+        or have be a dict like: 
+        
+         { '03' : 
+              [ (1.000, 0.13),
+              (1.479, 0.14),
+              (2.000, 0.07),
+              (2.200, 0.09),
+              (2.300, 0.11),
+              (2.400, 0.11),
+              (2.500, 0.14) ],
+           '04' : 
+              [ (1.000, 0.208),
+              (1.479, 0.209),
+              (2.000, 0.115),
+              (2.200, 0.143),
+              (2.300, 0.183),
+              (2.400, 0.194),
+              (2.500, 0.261) ],
+           'eta' : lambda x: x.superCluster().eta()
+         }
+        
+        Please see PhysicsTools/Heppy/python/physicsutils/EffectiveAreas.py for 
+        more information.
+
+        If a string is provided, the corresponding attribute must be added to the 
+        Lepton object beforehand: lepton.EffectiveArea03 = <the_area_table>, 
+        or to its class: Electron.EffectiveArea03 = <the_area_table>. 
+        '''
         if area_table and not is_ea_table(area_table):
             raise ValueError('area_table is not an area table')
         if area_table is None: 
@@ -68,7 +102,7 @@ class Lepton( PhysicsObject):
             if area_table is None: 
                 area_table = getattr(self.__class__, ea_attr_name, None)
                 if area_table is None: 
-                    raise ValueError('{} not found. It should be added to the lepton object as an attribute or a class attribute.')
+                    raise ValueError(ea_attr_name + ' not found. It should be added to the lepton object as an attribute or a class attribute.')
         return effective_area(self, area_cone_size, area_table)
 
 
