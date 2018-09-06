@@ -6,6 +6,7 @@
 # else proceed to next pair
 # eta should be either the eta of the supercluster or the eta of the electron,
 # which is specified below
+scaling_03_04 = 16./9.
 
 areas = dict(
     Data2012 = {
@@ -84,8 +85,6 @@ areas = dict(
                        'eta' : lambda x: x.superCluster().eta()
                        }
         },
-
-    scaling_03_04 = 16./9.
     Fall17 = {
         # https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt
         'electron' : { '03' : 
@@ -103,7 +102,7 @@ areas = dict(
                          (2.200, 0.0854 * scaling_03_04),
                          (2.300, 0.1051 * scaling_03_04),
                          (2.400, 0.1204 * scaling_03_04),
-                         (2.500, 0.1524 * scaling_03_04) ]
+                         (2.500, 0.1524 * scaling_03_04) ],
                        'eta' : lambda x: x.superCluster().eta()
                        }
         },
