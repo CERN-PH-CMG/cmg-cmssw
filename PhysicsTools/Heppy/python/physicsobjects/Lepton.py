@@ -15,7 +15,7 @@ class Lepton( PhysicsObject):
         return abs(db/edb) if edb > 0 else 999.
 
     def absIso(self, cone_size, iso_type, dbeta_factor=None, 
-               area_cone_size=None, area_table=None, all_charged = False):
+               area_table=None, all_charged = False):
         iso_ch = None
         if all_charged:
             iso_ch = self.chargedAllIso(cone_size)
@@ -27,14 +27,13 @@ class Lepton( PhysicsObject):
         if iso_type == 'EA':
             if dbeta_factor:  
                 raise ValueError('using EA iso, do not specify dbeta_factor')
-            if area_cone_size is None: 
-                raise ValueError('using EA iso, provide area_cone_size, e.g. "03"')
             else:
+                area_cone_size = str(cone_size).replace('.','')
                 area = self.effective_area(area_cone_size, area_table)
             corr_neutral = self.rho * area
         elif iso_type == 'dbeta': 
-            if area_cone_size or area_table: 
-                raise ValueError('using delta beta iso, do not specify area_cone_size or area table')
+            if area_table: 
+                raise ValueError('using delta beta iso, do not specify area table')
             if dbeta_factor is None: 
                 raise ValueError('using delta beta iso, provide dbeta_factor')
             iso_photon = self.photonIso(cone_size)
@@ -43,19 +42,17 @@ class Lepton( PhysicsObject):
             iso_puch =  self.puChargedHadronIso(cone_size)
             corr_neutral = dbeta_factor * iso_puch
         elif iso_type == 'raw':
-            if area_cone_size or area_table or dbeta_factor: 
-                raise ValueError('using raw iso, do not specify area_cone_size, area table, or dbeta factor')
+            if area_table or dbeta_factor: 
+                raise ValueError('using raw iso, do not specify area table, or dbeta factor')
             corr_neutral = 0.
         else: 
             raise ValueError('unknown isolation type: '+iso_type)
         return iso_ch + max(0., iso_photon + iso_nh - corr_neutral)     
 
-
-    def relIso(self, cone_size, iso_type, dbeta_factor=None, 
-               area_cone_size=None, area_table=None, all_charged = False):
+    def relIso(self, cone_size, iso_type, dbeta_factor=None,
+               area_table=None, all_charged = False):
         return self.absIso(cone_size, iso_type, 
                            dbeta_factor=dbeta_factor, 
-                           area_cone_size=area_cone_size, 
                            area_table=area_table, 
                            all_charged=all_charged) / self.pt()
 
