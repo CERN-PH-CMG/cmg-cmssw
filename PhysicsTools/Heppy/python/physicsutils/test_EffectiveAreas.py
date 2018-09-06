@@ -26,18 +26,20 @@ class TestEffectiveAreas(unittest.TestCase):
 
     def test_1_fall17(self):
         '''test access to fall 17 eas'''
+        scd_value = 0.1626
+        last_value = 0.1524
         ele = FakeLepton(11, 0.9, 1.1)
         ea_table = effective_area_table(ele, 'Fall17')
         ea = effective_area(ele, '03', ea_table)
-        self.assertEqual(ea, 0.1562)
+        self.assertEqual(ea, scd_value)
         # test out of range: 
         ele = FakeLepton(11, 99, 99)
         ea = effective_area(ele, '03', ea_table)
-        self.assertEqual(ea, 0.1654)
+        self.assertEqual(ea, last_value)
         # test negative eta
         ele = FakeLepton(11, -0.9, -1.1)
         ea = effective_area(ele, '03', ea_table)
-        self.assertEqual(ea, 0.1562)
+        self.assertEqual(ea, scd_value)
 
     def test_2_Phys14_25ns_v1(self):
         '''test access to Phys14_25ns_v1 
