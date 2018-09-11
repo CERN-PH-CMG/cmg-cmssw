@@ -23,8 +23,6 @@ class Electron( Lepton ):
         self._mvaTrigV0     = {True:None, False:None}
         self._mvaTrigNoIPV0 = {True:None, False:None}
         self._mvaRun2 = {}
-        self.effarea_03 = get_effective_area(self.physObj.superCluster().eta(),
-                                             'ea03')
 
     def electronID( self, id, vertex=None, rho=None ):
         if id is None or id == "": return True
