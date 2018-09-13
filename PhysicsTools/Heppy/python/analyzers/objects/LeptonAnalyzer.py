@@ -587,7 +587,7 @@ class LeptonAnalyzer( Analyzer ):
         mu.absIsoAn04 = mu.absIsoAnCharged + mu.absIsoAnNeutral
         mu.relIsoAn04 = mu.absIsoAn04/mu.pt()
 
-    def attachIsoAnnealusMiniIso(self, mu):  # annulus isolation with miniIsoR (outer cone based on 0.4, inner on 0.2) and delta beta PU correction
+    def attachIsoAnnealusMiniIso(self, mu):  # annulus isolation with miniIso (outer cone based on 0.4, inner on 0.2) and delta beta PU correction
         mu.miniIsoRin  = 10.0/min(max(mu.pt(), 50),200)
         mu.miniIsoRout = 20.0/min(max(mu.pt(), 50),200)
         mu.absIsoAnCharged = self.IsolationComputer.chargedAbsIso      (mu.physObj, mu.miniIsoRout, mu.miniIsoRin, 0.0, self.IsolationComputer.selfVetoNone)
@@ -802,7 +802,7 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
                                      # Choose None to just use the individual object's PU correction
     miniIsolationVetoLeptons = None, # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     doDirectionalIsolation = [], # calculate directional isolation with leptons (works only with doMiniIsolation, pass list of cone sizes)
-    doFixedConeIsoWithMiniIsoVeto = False, # calculate fixed cone isolations with the same vetoes used for miniIsoR,
+    doFixedConeIsoWithMiniIsoVeto = False, # calculate fixed cone isolations with the same vetoes used for miniIso,
     # Activity Annulus
     doIsoAnnulus = False, # off by default since it requires access to all PFCandidates 
     # do MC matching 
