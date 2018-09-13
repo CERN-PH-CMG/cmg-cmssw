@@ -146,21 +146,21 @@ class Muon( Lepton ):
         '''
         Calculate Isolation, subtract FSR, apply specific PU corrections" 
         '''
-        photonIso = self.photonIsoR(R)
+        photonIso = self.photonIso(R)
         if hasattr(self,'fsrPhotons'):
             for gamma in self.fsrPhotons:
                 dr = deltaR(gamma.eta(), gamma.phi(), self.physObj.eta(), self.physObj.phi())
                 if dr > 0.01 and dr < R:
                     photonIso = max(photonIso-gamma.pt(),0.0)                
         if puCorr == "deltaBeta":
-            offset = dBetaFactor * self.puChargedHadronIsoR(R)
+            offset = dBetaFactor * self.puChargedHadronIso(R)
         elif puCorr == "rhoArea":
             offset = self.rho*getattr(self,"EffectiveArea"+(str(R).replace(".","")))
         elif puCorr in ["none","None",None]:
             offset = 0
         else:
              raise RuntimeError("Unsupported PU correction scheme %s" % puCorr)
-        return self.chargedHadronIsoR(R)+max(0.,photonIso+self.neutralHadronIsoR(R)-offset)            
+        return self.chargedHadronIso(R)+max(0.,photonIso+self.neutralHadronIso(R)-offset)            
 
     def ptErr(self):
         if "_ptErr" in self.__dict__: return self.__dict__['_ptErr']

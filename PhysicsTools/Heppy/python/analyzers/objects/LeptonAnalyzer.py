@@ -452,11 +452,11 @@ class LeptonAnalyzer( Analyzer ):
         # Compute relIso with R=0.3 and R=0.4 cones
         for ele in allelectrons:
             if self.cfg_ana.ele_isoCorr=="rhoArea" :
-                 ele.absIso03 = (ele.chargedHadronIsoR(0.3) + max(ele.neutralHadronIsoR(0.3)+ele.photonIsoR(0.3)-ele.rho*ele.EffectiveArea03,0))
-                 ele.absIso04 = (ele.chargedHadronIsoR(0.4) + max(ele.neutralHadronIsoR(0.4)+ele.photonIsoR(0.4)-ele.rho*ele.EffectiveArea04,0))
+                 ele.absIso03 = (ele.chargedHadronIso(0.3) + max(ele.neutralHadronIso(0.3)+ele.photonIso(0.3)-ele.rho*ele.EffectiveArea03,0))
+                 ele.absIso04 = (ele.chargedHadronIso(0.4) + max(ele.neutralHadronIso(0.4)+ele.photonIso(0.4)-ele.rho*ele.EffectiveArea04,0))
             elif self.cfg_ana.ele_isoCorr=="deltaBeta" :
-                 ele.absIso03 = (ele.chargedHadronIsoR(0.3) + max( ele.neutralHadronIsoR(0.3)+ele.photonIsoR(0.3) - ele.puChargedHadronIsoR(0.3)/2, 0.0))
-                 ele.absIso04 = (ele.chargedHadronIsoR(0.4) + max( ele.neutralHadronIsoR(0.4)+ele.photonIsoR(0.4) - ele.puChargedHadronIsoR(0.4)/2, 0.0))
+                 ele.absIso03 = (ele.chargedHadronIso(0.3) + max( ele.neutralHadronIso(0.3)+ele.photonIso(0.3) - ele.puChargedHadronIso(0.3)/2, 0.0))
+                 ele.absIso04 = (ele.chargedHadronIso(0.4) + max( ele.neutralHadronIso(0.4)+ele.photonIso(0.4) - ele.puChargedHadronIso(0.4)/2, 0.0))
             else :
                  raise RuntimeError("Unsupported ele_isoCorr name '" + str(self.cfg_ana.ele_isoCorr) +  "'! For now only 'rhoArea' and 'deltaBeta' are supported.")
             ele.relIso03 = ele.absIso03/ele.pt()
@@ -587,7 +587,7 @@ class LeptonAnalyzer( Analyzer ):
         mu.absIsoAn04 = mu.absIsoAnCharged + mu.absIsoAnNeutral
         mu.relIsoAn04 = mu.absIsoAn04/mu.pt()
 
-    def attachIsoAnnealusMiniIso(self, mu):  # annulus isolation with miniIso (outer cone based on 0.4, inner on 0.2) and delta beta PU correction
+    def attachIsoAnnealusMiniIso(self, mu):  # annulus isolation with miniIsoR (outer cone based on 0.4, inner on 0.2) and delta beta PU correction
         mu.miniIsoRin  = 10.0/min(max(mu.pt(), 50),200)
         mu.miniIsoRout = 20.0/min(max(mu.pt(), 50),200)
         mu.absIsoAnCharged = self.IsolationComputer.chargedAbsIso      (mu.physObj, mu.miniIsoRout, mu.miniIsoRin, 0.0, self.IsolationComputer.selfVetoNone)
@@ -802,7 +802,7 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
                                      # Choose None to just use the individual object's PU correction
     miniIsolationVetoLeptons = None, # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     doDirectionalIsolation = [], # calculate directional isolation with leptons (works only with doMiniIsolation, pass list of cone sizes)
-    doFixedConeIsoWithMiniIsoVeto = False, # calculate fixed cone isolations with the same vetoes used for miniIso,
+    doFixedConeIsoWithMiniIsoVeto = False, # calculate fixed cone isolations with the same vetoes used for miniIsoR,
     # Activity Annulus
     doIsoAnnulus = False, # off by default since it requires access to all PFCandidates 
     # do MC matching 
