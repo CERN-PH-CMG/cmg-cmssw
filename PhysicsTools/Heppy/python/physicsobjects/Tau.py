@@ -21,10 +21,6 @@ class Tau(Lepton):
         '''Just making the tau behave as a lepton, with dummy parameters.'''
         return self.mva_score()
 
-    def relIsoR(self, cone_size, iso_type, dbeta_factor=None, all_charged=None):
-        '''Just making the tau behave as a lepton, with dummy parameters.'''
-        return self.mva_score()
-
     def mvaId(self):
         '''For a transparent treatment of electrons, muons and taus. Returns -99'''
         return self.mva_score()
