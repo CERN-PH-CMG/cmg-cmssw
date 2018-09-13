@@ -115,22 +115,6 @@ class Lepton( PhysicsObject):
         '''
         return self.relIso(0.4, 'EA', area_cone_size=area_cone_size)
     
-    def absIsoR(self, R=0.4, dbeta_factor=0, all_charged=False):
-        '''Calculate absolute isolation in given cone 
-        with optional delta-beta subtraction.
-        for backward compatibility, should be removed. 
-        '''
-        return self.absIso(R, 'dbeta', dbeta_factor=dbeta_factor,
-                           all_charged = all_charged) 
-    
-    def relIsoR(self, R=0.4, dBetaFactor=0, all_charged=False):
-        '''Calculate relative isolation in given cone 
-        with optional delta-beta subtraction.
-        for backward compatibility, should be removed. 
-        '''
-        return self.relIso(R, 'dbeta', dbeta_factor=dbeta_factor,
-                           all_charged = all_charged) 
-
     def lostInner(self):
         if hasattr(self.innerTrack(),"trackerExpectedHitsInner") :
 		return self.innerTrack().trackerExpectedHitsInner().numberOfLostHits()
