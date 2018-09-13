@@ -5,7 +5,6 @@ import ROOT
 import sys
 from math import exp
 
-
 class Electron( Lepton ):
 
     def __init__(self, *args, **kwargs):
@@ -612,29 +611,26 @@ class Electron( Lepton ):
         else: isoValue = -999
         return max(0, isoValue - self.rhoHLT*hltEA)
 
-    def chargedHadronIsoR(self,R=0.4):
+    def chargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedHadronPt
         elif R == 0.4: return self.physObj.chargedHadronIso()
         raise RuntimeError("Electron chargedHadronIso missing for R=%s" % R)
 
-    def neutralHadronIsoR(self,R=0.4):
+    def neutralHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumNeutralHadronEt
         elif R == 0.4: return self.physObj.neutralHadronIso()
         raise RuntimeError("Electron neutralHadronIso missing for R=%s" % R)
 
-    def photonIsoR(self,R=0.4):
+    def photonIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumPhotonEt
         elif R == 0.4: return self.physObj.photonIso()
         raise RuntimeError("Electron photonIso missing for R=%s" % R)
 
-    def chargedAllIsoR(self,R=0.4):
+    def chargedAllIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumChargedParticlePt
         raise RuntimeError("Electron chargedAllIso missing for R=%s" % R)
 
-    def chargedAllIso(self):
-        raise RuntimeError("Electron chargedAllIso missing")
-
-    def puChargedHadronIsoR(self,R=0.4):
+    def puChargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationVariables().sumPUPt
         elif R == 0.4: return self.physObj.puChargedHadronIso()
         raise RuntimeError("Electron chargedHadronIso missing for R=%s" % R)
@@ -644,21 +640,21 @@ class Electron( Lepton ):
         '''
         Calculate Isolation, subtract FSR, apply specific PU corrections" 
         '''
-        photonIso = self.photonIsoR(R)
+        photonIso = self.photonIso(R)
         if hasattr(self,'fsrPhotons'):
             for gamma in self.fsrPhotons:
                 dr = deltaR(gamma.eta(), gamma.phi(), self.physObj.eta(), self.physObj.phi())
                 if (self.isEB() or dr > 0.08) and dr < R:
                     photonIso = max(photonIso-gamma.pt(),0.0)                
         if puCorr == "deltaBeta":
-            offset = dBetaFactor * self.puChargedHadronIsoR(R)
+            offset = dBetaFactor * self.puChargedHadronIso(R)
         elif puCorr == "rhoArea":
             offset = self.rho*getattr(self,"EffectiveArea"+(str(R).replace(".","")))
         elif puCorr in ["none","None",None]:
             offset = 0
         else:
              raise RuntimeError("Unsupported PU correction scheme %s" % puCorr)
-        return self.chargedHadronIsoR(R)+max(0.,photonIso+self.neutralHadronIsoR(R)-offset)            
+        return self.chargedHadronIso(R)+max(0.,photonIso+self.neutralHadronIso(R)-offset)            
 
 
     def dxy(self, vertex=None):

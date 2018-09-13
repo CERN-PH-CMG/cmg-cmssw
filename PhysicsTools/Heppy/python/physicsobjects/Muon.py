@@ -116,30 +116,27 @@ class Muon( Lepton ):
         '''returns the uncertainty on dxz (from gsf track)'''
         return getattr(self,self._trackForDxyDz)().dzError()
 
-    def chargedHadronIsoR(self,R=0.4):
+    def chargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumChargedHadronPt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumChargedHadronPt 
         raise RuntimeError("Muon chargedHadronIso missing for R=%s" % R)
 
-    def neutralHadronIsoR(self,R=0.4):
+    def neutralHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumNeutralHadronEt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumNeutralHadronEt 
         raise RuntimeError("Muon neutralHadronIso missing for R=%s" % R)
 
-    def photonIsoR(self,R=0.4):
+    def photonIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumPhotonEt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumPhotonEt 
         raise RuntimeError("Muon photonIso missing for R=%s" % R)
 
-    def chargedAllIsoR(self,R=0.4):
+    def chargedAllIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumChargedParticlePt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumChargedParticlePt 
         raise RuntimeError("Muon chargedAllIso missing for R=%s" % R)
 
-    def chargedAllIso(self):
-        return self.chargedAllIsoR()
-
-    def puChargedHadronIsoR(self,R=0.4):
+    def puChargedHadronIso(self,R=0.4):
         if   R == 0.3: return self.physObj.pfIsolationR03().sumPUPt 
         elif R == 0.4: return self.physObj.pfIsolationR04().sumPUPt 
         raise RuntimeError("Muon chargedHadronIso missing for R=%s" % R)
@@ -149,21 +146,21 @@ class Muon( Lepton ):
         '''
         Calculate Isolation, subtract FSR, apply specific PU corrections" 
         '''
-        photonIso = self.photonIsoR(R)
+        photonIso = self.photonIso(R)
         if hasattr(self,'fsrPhotons'):
             for gamma in self.fsrPhotons:
                 dr = deltaR(gamma.eta(), gamma.phi(), self.physObj.eta(), self.physObj.phi())
                 if dr > 0.01 and dr < R:
                     photonIso = max(photonIso-gamma.pt(),0.0)                
         if puCorr == "deltaBeta":
-            offset = dBetaFactor * self.puChargedHadronIsoR(R)
+            offset = dBetaFactor * self.puChargedHadronIso(R)
         elif puCorr == "rhoArea":
             offset = self.rho*getattr(self,"EffectiveArea"+(str(R).replace(".","")))
         elif puCorr in ["none","None",None]:
             offset = 0
         else:
              raise RuntimeError("Unsupported PU correction scheme %s" % puCorr)
-        return self.chargedHadronIsoR(R)+max(0.,photonIso+self.neutralHadronIsoR(R)-offset)            
+        return self.chargedHadronIso(R)+max(0.,photonIso+self.neutralHadronIso(R)-offset)            
 
     def ptErr(self):
         if "_ptErr" in self.__dict__: return self.__dict__['_ptErr']
