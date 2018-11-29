@@ -1,5 +1,5 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
-from RecoEgamma.ElectronIdentification.FWLite import *
+from RecoEgamma.ElectronIdentification.FWLite import electron_mvas, working_points
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 import ROOT
 import sys
@@ -55,6 +55,12 @@ class Electron( Lepton ):
         elif id == "MVA_ID_Iso_Fall17_Loose":       return self.mvaIDRun2("Fall17Iso","Loose")
         elif id == "MVA_ID_Iso_Fall17_wp90":        return self.mvaIDRun2("Fall17Iso","wp90")
         elif id == "MVA_ID_Iso_Fall17_wp80":        return self.mvaIDRun2("Fall17Iso","wp80")
+        elif id == "MVA_ID_nonIso_Fall17_V2_Loose":       return self.mvaIDRun2("Fall17NoIsoV2","Loose")
+        elif id == "MVA_ID_nonIso_Fall17_V2_wp90":        return self.mvaIDRun2("Fall17NoIsoV2","wp90")
+        elif id == "MVA_ID_nonIso_Fall17_V2_wp80":        return self.mvaIDRun2("Fall17NoIsoV2","wp80")
+        elif id == "MVA_ID_Iso_Fall17_V2_Loose":       return self.mvaIDRun2("Fall17IsoV2","Loose")
+        elif id == "MVA_ID_Iso_Fall17_V2_wp90":        return self.mvaIDRun2("Fall17IsoV2","wp90")
+        elif id == "MVA_ID_Iso_Fall17_V2_wp80":        return self.mvaIDRun2("Fall17IsoV2","wp80")
         elif id.startswith("POG_Cuts_ID_"):
                 return self.cutBasedId(id.replace("POG_Cuts_ID_","POG_"))
         for ID in self.electronIDs():
@@ -259,7 +265,7 @@ class Electron( Lepton ):
                 self._mvaRun2[name] =  self.physObj.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values")
                 return self._mvaRun2[name]
             if name in electron_mvas :
-                raw_mva = electron_mvas[name](self.physObj, self.convs, self.beam_spot, [self.rho])[0]
+                raw_mva = electron_mvas[name](self.physObj, self.conversions, self.beamspot, [self.rho])[0]
                 self._mvaRun2[name] = raw_to_normalized(raw_mva)
                 return self._mvaRun2[name]
             else:
@@ -540,131 +546,10 @@ class Electron( Lepton ):
                         A = 2.2916152615134173
                     return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
 
-            elif name == "Fall17NoIsoV2": # !! raw WP
-                if wp == 'Loose':
-                    if self.pt() < 10:
-                        if   eta < 0.8  : return self.mvaRun2(name) > raw_to_normalized(0.894411158628)
-                        elif eta < 1.479: return self.mvaRun2(name) > raw_to_normalized(0.791966464633)
-                        else            : return self.mvaRun2(name) > raw_to_normalized(1.47104857173)
-                    else:
-                        if   eta < 0.8  : return self.mvaRun2(name) > raw_to_normalized(-0.293962958665)
-                        elif eta < 1.479: return self.mvaRun2(name) > raw_to_normalized(-0.250424758584)
-                        else            : return self.mvaRun2(name) > raw_to_normalized(-0.130985179031)
-                elif wp == 'wp90':
-                    if self.pt()<10 and eta<0.8:
-                        c = 2.77072387339
-                        tau = 3.81500912145
-                        A = 8.16304860178
-                    elif self.pt()>=10 and eta<0.8:
-                        c = 5.9175992258
-                        tau = 13.4807294538
-                        A = 9.31966232685
-                    elif self.pt()<10 and eta<1.479:
-                        c = 1.85602317813
-                        tau = 2.18697654938
-                        A = 11.8568936824
-                    elif self.pt()>=10 and eta<1.479:
-                        c = 5.01598837255
-                        tau = 13.1280451502
-                        A = 8.79418193765
-                    elif self.pt()<10:
-                        c = 1.73489307814
-                        tau = 2.0163211971
-                        A = 17.013880078
-                    elif self.pt()>=10:
-                        c = 4.16921343208
-                        tau = 13.2017224621
-                        A = 9.00720913211
-                    return self.mvaRun2(name) > raw_to_normalized(c-A*exp(-self.pt()/tau))
-                elif wp == 'wp80':
-                    if self.pt()<10 and eta<0.8:
-                        c = 3.26449620468
-                        tau = 3.32657149223
-                        A = 8.84669783568
-                    elif self.pt()>=10 and eta<0.8:
-                        c = 7.1336238874
-                        tau = 16.5605268797
-                        A = 8.22531222391
-                    elif self.pt()<10 and eta<1.479:
-                        c = 2.83557838497
-                        tau = 2.15150487651
-                        A = 11.0978016567
-                    elif self.pt()>=10 and eta<1.479:
-                        c = 6.18638275782
-                        tau = 15.2694634284
-                        A = 7.49764565324
-                    elif self.pt()<10:
-                        c = 2.91994945177
-                        tau = 1.69875477522
-                        A = 24.024807824
-                    elif self.pt()>=10:
-                        c = 5.43175865738
-                        tau = 15.4290075949
-                        A = 7.56899692285
-                    return self.mvaRun2(name) > raw_to_normalized(c-A*exp(-self.pt()/tau))
-
-            elif name == "Fall17IsoV2": # !! raw WP
-                if wp == 'Loose':
-                    if self.pt() < 10:
-                        if   eta < 0.8  : return self.mvaRun2(name) > raw_to_normalized(0.700642584415)
-                        elif eta < 1.479: return self.mvaRun2(name) > raw_to_normalized(0.739335420875)
-                        else            : return self.mvaRun2(name) > raw_to_normalized(1.45390456109)
-                    else:
-                        if   eta < 0.8  : return self.mvaRun2(name) > raw_to_normalized(-0.146270871164)
-                        elif eta < 1.479: return self.mvaRun2(name) > raw_to_normalized(-0.0315850882679)
-                        else            : return self.mvaRun2(name) > raw_to_normalized(-0.0321841194737)
-                elif wp == 'wp90':
-                    if self.pt()<10 and eta<0.8:
-                        c = 2.84704783417
-                        tau = 3.32529515837
-                        A = 9.38050947827
-                    elif self.pt()>=10 and eta<0.8:
-                        c = 6.12931925263
-                        tau = 13.281753835
-                        A = 8.71138432196
-                    elif self.pt()<10 and eta<1.479:
-                        c = 2.03833922005
-                        tau = 1.93288758682
-                        A = 15.364588247
-                    elif self.pt()>=10 and eta<1.479:
-                        c = 5.26289004857
-                        tau = 13.2154971491
-                        A = 8.0997882835
-                    elif self.pt()<10:
-                        c = 1.82704158461
-                        tau = 1.89796754399
-                        A = 19.1236071158
-                    elif self.pt()>=10:
-                        c = 4.37338792902
-                        tau = 14.0776094696
-                        A = 8.48513324496
-                    return self.mvaRun2(name) > raw_to_normalized(c-A*exp(-self.pt()/tau))
-                elif wp == 'wp80':
-                    if self.pt()<10 and eta<0.8:
-                        c = 3.53495358797
-                        tau = 3.07272325141
-                        A = 9.94262764352
-                    elif self.pt()>=10 and eta<0.8:
-                        c = 7.35752275071
-                        tau = 15.87907864
-                        A = 7.61288809226
-                    elif self.pt()<10 and eta<1.479:
-                        c = 3.06015605623
-                        tau = 1.95572234114
-                        A = 14.3091184421
-                    elif self.pt()>=10 and eta<1.479:
-                        c = 6.41811074032
-                        tau = 14.730562874
-                        A = 6.96387331587
-                    elif self.pt()<10:
-                        c = 3.02052519639
-                        tau = 1.59784164742
-                        A = 28.719380105
-                    elif self.pt()>=10:
-                        c = 5.64936312428
-                        tau = 16.3664949747
-                        A = 7.19607610311
-                    return self.mvaRun2(name) > raw_to_normalized(c-A*exp(-self.pt()/tau))
+            elif name in electron_mvas.keys(): # direct from Egamma
+                mva, category = electron_mvas[name](self.physObj, self.conversions, self.beamspot, [self.rho])
+                self._mvaRun2[name] = raw_to_normalized(mva) # just to store it as in self.mvaRun2
+                return working_points[name].passed(self.physObj, mva, category, wp)
 
             else: raise RuntimeError, "Ele MVA ID type not found"
 
