@@ -1,5 +1,7 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
 from PhysicsTools.Heppy.physicsutils.TauDecayModes import tauDecayModes
+from PhysicsTools.Heppy.physicsutils.TauMVAID import tau_mvaid_2017 as tau_mvaid
+
 import math
 
 # Find all tau IDs here: 
@@ -12,6 +14,8 @@ class Tau(Lepton):
     def __init__(self, tau):
         self.tau = tau
         super(Tau, self).__init__(tau)
+        self._mvaid_score = None         #where 2017 MVAID score should be stored to not recompute everytime it is needed
+        self._mvaid_normscore = None     #where 2017 MVAID normscore should be stored to not recompute everytime WPs are needed
         
     def relIso(self, dBetaFactor=0, allCharged=0):
         '''Just making the tau behave as a lepton, with dummy parameters.'''
@@ -20,6 +24,24 @@ class Tau(Lepton):
     def mvaId(self):
         '''For a transparent treatment of electrons, muons and taus. Returns -99'''
         return -99
+
+    def mva_score(self, norm=False):
+        '''returns the score of the isolation mva'''
+        if norm:
+            if self._mvaid_normscore is None:
+                self._mvaid_normscore = tau_mvaid.score_norm(self)
+            return self._mvaid_normscore
+        else:
+            if self._mvaid_score is None:
+                self._mvaid_score = tau_mvaid.score(self)
+            return self._mvaid_score
+
+    def mva_passes(self, working_point):
+        '''returns True if the tau passes the given working point of the isolation mva'''
+        if self._mvaid_normscore is None:
+            self.mva_score(norm=True)
+        passes = self._mvaid_normscore > tau_mvaid.threshold(self.pt(), working_point)
+        return 1. if passes else 0. # to match what MINIAOD discriminators return
 
     def dxy_approx(self, vertex=None):
         # TEMPORARY FIX: always use dxy/dz from leadChargedHadrCand as in NanoAOD, ignoring vertex
@@ -31,6 +53,58 @@ class Tau(Lepton):
         p4 = self.p4()
         return ( - (vtx.x()-vertex.position().x()) *  p4.y()
                  + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt()
+
+    def countWP(self,name):
+        '''Returns the number of Working Points 
+        that are passed for given isolation name.
+        
+        For example if a tau only passes VLoose, Loose,
+        and Medium Working Points this will return 3.
+
+        Uses self.tauID() to evaluate the WPs.
+
+        Will test all WPs in ['VVTight', 'VTight',
+        'Tight', 'Medium','Loose', 'VLoose', 'VVLoose'].
+        If any WP is not available it is skipped.
+        '''
+        WPs = ['VVTight', 'VTight', 'Tight', 'Medium',
+               'Loose', 'VLoose', 'VVLoose']
+        testname = name.replace('byIsolation','by{}Isolation',1)
+        n_WP = 0
+        for WP in WPs:
+            try:
+                if self.tauID(testname.format(WP)):
+                    n_WP += 1
+            except ValueError:
+                continue #WP not found so it is skipped
+        return n_WP
+
+    def tauID(self, name, verbose=True):
+        '''Returns heppy redefined score if fitting one 
+        of implemented names, else calls the wrapped tau 
+        tauID(name) function.
+
+        If isolation name doesn't include a WP or "raw",
+        returns self.countWP(name) that gives a count of 
+        the number of passed WPs for this discriminator.
+        '''
+        tauids = {'byVVLooseIsolationMVArun2017v2DBoldDMwLT2017':"VVLoose",
+                  'byVLooseIsolationMVArun2017v2DBoldDMwLT2017':"VLoose",
+                  'byLooseIsolationMVArun2017v2DBoldDMwLT2017':"Loose",
+                  'byMediumIsolationMVArun2017v2DBoldDMwLT2017':"Medium",
+                  'byTightIsolationMVArun2017v2DBoldDMwLT2017':"Tight",
+                  'byVTightIsolationMVArun2017v2DBoldDMwLT2017':"VTight",
+                  'byVVTightIsolationMVArun2017v2DBoldDMwLT2017':"VVTight"}
+        if name in tauids:
+                return self.mva_passes(tauids[name])
+        elif name == 'byIsolationMVArun2017v2DBoldDMwLTraw2017':
+            return self.mva_score()
+        elif self.physObj.isTauIDAvailable(name):
+            return self.physObj.tauID(name)
+        elif ('byIsolation' in name) and ('raw' not in name):
+            return self.countWP(name)
+        else:
+            raise ValueError('name {} not available'.format(name))
 
     def dxy(self, vertex=None):
         '''More precise dxy calculation as pre-calculated in the tau object
