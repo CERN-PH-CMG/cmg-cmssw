@@ -54,10 +54,6 @@ class Electron( Lepton ):
         # Use also to stop looking for the id if it is found.
         ID_done = id is None or id == ""
 
-        # Adapt id name ## needed?
-        if id.startswith("POG_Cuts_ID_"):
-            id = id.replace("POG_Cuts_ID_","POG_") 
-
         # First, try to get directly from miniAOD
         # Only gives if passed or not
         miniAODids = [miniAODid[0] for miniAODid in self.electronIDs()]
@@ -76,7 +72,12 @@ class Electron( Lepton ):
         if ID_done :
             return category, score_raw, passed
         else :
-            raise RuntimeError("Electron id " + id + " not yet implemented in Electron.py, availables are: \n\n   from miniAOD:\n {miniAODids} \n\n   from FWLite:\n {Egamma} ".format(miniAODids=miniAODids, Egamma = electronID_Egamma_dict.keys()))
+            raise RuntimeError(
+                "Electron id " + id \
+                + " not yet implemented in Electron.py, availables are:" \
+                + "\n\n from miniAOD:\n {}".format(miniAODids) \
+                + "\n\n from FWLite:\n {}".format(electronID_Egamma_dict.keys())
+                )
 
     def dEtaInSeed(self):
         if self.physObj.superCluster().isNonnull() and self.physObj.superCluster().seed().isNonnull(): return self.physObj.deltaEtaSuperClusterTrackAtVtx() - self.physObj.superCluster().eta() + self.physObj.superCluster().seed().eta()
