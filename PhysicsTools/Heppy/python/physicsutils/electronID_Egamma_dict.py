@@ -11,3 +11,10 @@ electronID_Egamma_dict = {
   "mvaEleID-Spring16-GeneralPurpose-V1-wp90" : ("Spring16GPV1" , "wp90"),
   "mvaEleID-Spring16-GeneralPurpose-V1-wp80" : ("Spring16GPV1" , "wp80"),
 }
+
+electronID_Egamma_dict_names = {
+  "mvaEleID-Fall17-noIso-V2"           : "Fall17NoIsoV2",
+  "mvaEleID-Fall17-iso-V2"             : "Fall17IsoV2",
+  "mvaEleID-Spring16-HZZ-V1"           : "Spring16HZZV1",
+  "mvaEleID-Spring16-GeneralPurpose-V1": "Spring16GPV1",
+}
