@@ -1,6 +1,6 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
 from RecoEgamma.ElectronIdentification.FWLite import electron_mvas, working_points
-from PhysicsTools.Heppy.physicsutils.electronID_Egamma_dict import electronID_Egamma_dict, electronID_Egamma_dict_names
+from PhysicsTools.Heppy.physicsutils.electronID_Egamma_dict import wps_dict, methods_dict
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 import ROOT
 import sys
@@ -58,10 +58,10 @@ class Electron( Lepton ):
             miniAODids = [miniAODid[0] for miniAODid in self.electronIDs()]
             if id in miniAODids :
                 passed = self.electronIDs()[miniAODids.index(id)][1]
-            elif id in electronID_Egamma_dict.keys() :
+            elif id in wps_dict.keys() :
                 if name not in self._mvaid_score or name not in self._mvaid_category :
                     score_raw, category = self._mva_score_and_category(name)
-                FWLitename, FWLitewp = electronID_Egamma_dict[id]
+                FWLitename, FWLitewp = wps_dict[id]
                 passed = working_points[FWLitename].passed(
                     self.physObj,
                     self._mvaid_score[name],
@@ -73,7 +73,7 @@ class Electron( Lepton ):
                     "Electron id " + id \
                         + " not yet implemented in Electron.py, availables are:" \
                         + "\n\n from miniAOD:\n {}".format(miniAODids) \
-                        + "\n\n from FWLite:\n {}".format(electronID_Egamma_dict.keys())
+                        + "\n\n from FWLite:\n {}".format(wps_dict.keys())
                     )
             self._mvaid_passed[id] = 1. if passed else 0.
         return self._mvaid_passed[id]
@@ -105,8 +105,8 @@ class Electron( Lepton ):
 
     def _mva_score_and_category(self, name):
         '''Returns the mva score and the electron category for the given mva'''
-        if name in electronID_Egamma_dict_names.keys() :
-            FWLitename = electronID_Egamma_dict_names[name]
+        if name in methods_dict.keys() :
+            FWLitename = methods_dict[name]
             score_raw, category = electron_mvas[FWLitename](
                 self.physObj,
                 self.conversions,
@@ -121,7 +121,7 @@ class Electron( Lepton ):
             raise RuntimeError(
                 "Electron mva " + name \
                 + " not available in FWLite,\n" \
-                + "availables are:\n {}".format(electronID_Egamma_dict_names.keys())
+                + "availables are:\n {}".format(methods_dict.keys())
                 )
 
     def dEtaInSeed(self):

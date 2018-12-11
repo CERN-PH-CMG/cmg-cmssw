@@ -1,6 +1,6 @@
 # Used to translate miniAOD names to FWLite
 
-electronID_Egamma_dict = {
+wps_dict = {
   "mvaEleID-Fall17-noIso-V2-Loose"           : ("Fall17NoIsoV2", "wpLoose"),
   "mvaEleID-Fall17-noIso-V2-wp90"            : ("Fall17NoIsoV2", "wp90"),
   "mvaEleID-Fall17-noIso-V2-wp80"            : ("Fall17NoIsoV2", "wp80"),
@@ -12,7 +12,7 @@ electronID_Egamma_dict = {
   "mvaEleID-Spring16-GeneralPurpose-V1-wp80" : ("Spring16GPV1" , "wp80"),
 }
 
-electronID_Egamma_dict_names = {
+methods_dict = {
   "mvaEleID-Fall17-noIso-V2"           : "Fall17NoIsoV2",
   "mvaEleID-Fall17-iso-V2"             : "Fall17IsoV2",
   "mvaEleID-Spring16-HZZ-V1"           : "Spring16HZZV1",
