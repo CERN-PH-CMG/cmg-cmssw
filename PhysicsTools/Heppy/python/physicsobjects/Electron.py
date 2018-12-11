@@ -32,9 +32,8 @@ class Electron( Lepton ):
         '''takes an mva name and returns the category of the electron,
         only available using FWLite and Egamma code.'''
         if name not in self._mvaid_category :
-            # Get it with FWLite and Egamma code
-            score_raw = self.mva_from_Egamma(name)
-            return self._mvaid_category[name]
+            category = self._mva_score_and_category(name)[1]
+        return self._mvaid_category[name]
 
     def mvaId(self, name):
         '''For a transparent treatment of electrons, muons and taus.'''
@@ -45,35 +44,38 @@ class Electron( Lepton ):
         only available using FWLite and Egamma code.'''
         if norm :
             if name not in self._mvaid_normscore :
-                score_raw = self.mva_from_Egamma(name)
+                score_raw = self._mva_score_and_category(name)[0]
             return self._mvaid_normscore[name]
         else:
             if name not in self._mvaid_score :
-                score_raw = self.mva_from_Egamma(name)
+                score_raw = self._mva_score_and_category(name)[0]
             return self._mvaid_score[name]
 
     def mva_passes(self, name, wp):
         '''returns True if the electron passes the given working point of the mva'''
         id = name + '-' + wp
         if id not in self._mvaid_passed :
-            try :
-                # Get it from miniAOD
-                passed = self.mva_passes_from_miniAOD(name, wp)
-            except RuntimeError:
-                pass
-        if id not in self._mvaid_passed :
-            try :
-                # Get it with FWLite and Egamma code
-                passed = self.mva_passes_from_Egamma(name, wp)
-
-            except RuntimeError:
-                miniAODids = [miniAODid[0] for miniAODid in self.electronIDs()]
+            miniAODids = [miniAODid[0] for miniAODid in self.electronIDs()]
+            if id in miniAODids :
+                passed = self.electronIDs()[miniAODids.index(id)][1]
+            elif id in electronID_Egamma_dict.keys() :
+                if name not in self._mvaid_score or name not in self._mvaid_category :
+                    score_raw, category = self._mva_score_and_category(name)
+                FWLitename, FWLitewp = electronID_Egamma_dict[id]
+                passed = working_points[FWLitename].passed(
+                    self.physObj,
+                    self._mvaid_score[name],
+                    self._mvaid_category[name],
+                    FWLitewp
+                    )
+            else:
                 raise RuntimeError(
                     "Electron id " + id \
                         + " not yet implemented in Electron.py, availables are:" \
                         + "\n\n from miniAOD:\n {}".format(miniAODids) \
                         + "\n\n from FWLite:\n {}".format(electronID_Egamma_dict.keys())
                     )
+            self._mvaid_passed[id] = 1. if passed else 0.
         return self._mvaid_passed[id]
 
     def countWP(self,name):
@@ -87,7 +89,6 @@ class Electron( Lepton ):
         If any WP is not available it is skipped.
         '''
         WPs = ['wp90', 'wp80', 'Loose']
-
         n_WP = 0
         for WP in WPs:
             try:
@@ -102,48 +103,8 @@ class Electron( Lepton ):
         in the case of electrons this is only equivalent to mva_passes.'''
         return self.mva_passes(name, wp)
 
-    def mva_passes_from_miniAOD(self, name, wp):
-        '''returns True if the electron passes the given working point of the mva,
-        information taken directly from miniAOD.'''
-        id = name + '-' + wp
-        miniAODids = [miniAODid[0] for miniAODid in self.electronIDs()]
-        if id in miniAODids :
-            passed = self.electronIDs()[miniAODids.index(id)][1]
-            self._mvaid_passed[id] = 1. if passed else 0.
-            return self._mvaid_passed[id]
-        else :
-            raise RuntimeError(
-                "Electron id " + id \
-                + " not available in miniAOD,\n" \
-                + "availables are:\n {}".format(miniAODids)
-                )
-
-    def mva_passes_from_Egamma(self, name, wp):
-        '''returns True if the electron passes the given working point of the mva,
-        computed with FWLite'''
-        if name not in self._mvaid_score or name not in self._mvaid_category :
-            score_raw = self.mva_from_Egamma(name)
-
-        id = name + '-' + wp
-        if id in electronID_Egamma_dict.keys() :
-            FWLitename, FWLitewp = electronID_Egamma_dict[id]
-            passed = working_points[FWLitename].passed(
-                self.physObj,
-                self._mvaid_score[name],
-                self._mvaid_category[name],
-                FWLitewp
-                )
-            self._mvaid_passed[id] = 1. if passed else 0.
-            return self._mvaid_passed[id]
-        else:
-            raise RuntimeError(
-                "Electron id " + id \
-                + " not available in FWLite,\n" \
-                + "availables are:\n {}".format(electronID_Egamma_dict.keys())
-                )
-
-    def mva_from_Egamma(self, name):
-        '''Computes the mva score and the electron category for the given mva'''
+    def _mva_score_and_category(self, name):
+        '''Returns the mva score and the electron category for the given mva'''
         if name in electronID_Egamma_dict_names.keys() :
             FWLitename = electronID_Egamma_dict_names[name]
             score_raw, category = electron_mvas[FWLitename](
@@ -155,7 +116,7 @@ class Electron( Lepton ):
             self._mvaid_category[name] = category
             self._mvaid_score[name] = score_raw
             self._mvaid_normscore[name] = raw_to_normalized(score_raw)
-            return self._mvaid_score[name]
+            return self._mvaid_score[name], self._mvaid_category[name]
         else:
             raise RuntimeError(
                 "Electron mva " + name \
