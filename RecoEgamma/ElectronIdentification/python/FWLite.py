@@ -2,9 +2,65 @@ import ROOT
 import ctypes
 import pprint
 from numpy import exp
+import sys
+
+from PhysicsTools.Heppy.physicsutils.EffectiveAreas import effective_area_table, effective_area, areas
 
 # Python wrappers around the Electron MVAs.
 # Usage example in RecoEgamma/ElectronIdentification/test
+
+class ElectronCutBasedID(object):
+    """ Electron cut based ID wrapper class.
+    """
+    def __init__(self, name, tag, working_points):
+        self.name = name 
+        self.tag = tag
+        self.working_points = working_points
+
+    def passed(self, ele, rho, wp):
+        '''return true if ele passes wp
+        see https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Offline_selection_criteria_for_V'''
+        if ele.isEB():
+            WP = self.working_points[wp][0]
+        else:
+            WP = self.working_points[wp][1]
+        isoInputs = self.working_points[wp][2]
+
+        full5x5_sigmaIetaIeta = ele.full5x5_sigmaIetaIeta()
+
+        if ele.superCluster().isNonnull() and ele.superCluster().seed().isNonnull():
+            dEtaInSeed = ele.deltaEtaSuperClusterTrackAtVtx() - ele.superCluster().eta() + ele.superCluster().seed().eta()
+        else:
+            dEtaInSeed = sys.float_info.max
+
+        dPhiIn = ele.deltaPhiSuperClusterTrackAtVtx()
+
+        H_on_E = ele.hadronicOverEm()
+        H_on_E_cut = WP.hOverECut_C0 + WP.hOverECut_CE / ele.energy() + WP.hOverECut_Cr * rho / ele.energy()
+
+        pfIso = ele.pfIsolationVariables()
+        chad = pfIso.sumChargedHadronPt
+        nhad = pfIso.sumNeutralHadronEt
+        pho  = pfIso.sumPhotonEt
+        area_key = [key for key in areas.keys() if key in WP.idName][0]
+        ea_table = effective_area_table(ele, area_key)
+        eA  = effective_area(ele, '03', ea_table)
+        iso  = chad + max([0.0, nhad + pho - rho*eA])
+        relIsoWithEA = iso/ele.pt()
+        relIsoWithEA_cut = WP.relCombIsolationWithEACut_C0+WP.relCombIsolationWithEACut_Cpt/ele.pt()
+            
+        missingHits = ele.gsfTrack().hitPattern().numberOfLostHits(ROOT.reco.HitPattern.MISSING_INNER_HITS)
+
+        if full5x5_sigmaIetaIeta < WP.full5x5_sigmaIEtaIEtaCut and \
+                abs(dEtaInSeed) < WP.dEtaInSeedCut and \
+                abs(dPhiIn) < WP.dPhiInCut and \
+                H_on_E < H_on_E_cut and \
+                relIsoWithEA < relIsoWithEA_cut and \
+                abs(1./ele.energy() - 1./ele.pt()) < WP.absEInverseMinusPInverseCut and \
+                missingHits <= WP.missingHitsCut and \
+                ele.passConversionVeto() :
+                return True
+        return False
 
 class ElectronMVAID:
     """ Electron MVA wrapper class.
@@ -110,6 +166,9 @@ from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V
 from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V2_cff \
         import workingPoints as Fall17_noIso_V2_workingPoints
 
+from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff \
+        import workingPoints as Fall17_94X_V2_workingPoints
+
 # Dictionary with the relecant e/gmma MVAs
 
 electron_mvas = {
@@ -134,3 +193,8 @@ working_points = {
                                     mvaSpring16GP_V1_workingPoints, logistic_transform=True),
 
     }
+
+electron_cut_based_IDs = {
+    "Fall1794XV2"   : ElectronCutBasedID("ElectronMVAEstimatorRun2","Fall1794XV2",
+                                    Fall17_94X_V2_workingPoints),
+}

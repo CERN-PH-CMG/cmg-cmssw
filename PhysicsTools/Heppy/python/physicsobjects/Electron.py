@@ -1,5 +1,5 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
-from RecoEgamma.ElectronIdentification.FWLite import electron_mvas, working_points
+from RecoEgamma.ElectronIdentification.FWLite import electron_mvas, working_points, electron_cut_based_IDs
 from PhysicsTools.Heppy.physicsutils.electronID_Egamma_dict import wps_dict, methods_dict
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 import ROOT
@@ -31,6 +31,8 @@ class Electron( Lepton ):
     def mva_category(self, name):
         '''takes an mva name and returns the category of the electron,
         only available using FWLite and Egamma code.'''
+        if 'cutBased' in name :
+            return None
         if name not in self._mvaid_category :
             category = self._mva_score_and_category(name)[1]
         return self._mvaid_category[name]
@@ -42,6 +44,8 @@ class Electron( Lepton ):
     def mva_score(self, name, norm=False):
         '''returns the score of the given mva,
         only available using FWLite and Egamma code.'''
+        if 'cutBased' in name :
+            return None
         if norm :
             if name not in self._mvaid_normscore :
                 score_raw = self._mva_score_and_category(name)[0]
@@ -59,15 +63,22 @@ class Electron( Lepton ):
             if id in miniAODids :
                 passed = self.electronIDs()[miniAODids.index(id)][1]
             elif id in wps_dict.keys() :
-                if name not in self._mvaid_score or name not in self._mvaid_category :
-                    score_raw, category = self._mva_score_and_category(name)
                 FWLitename, FWLitewp = wps_dict[id]
-                passed = working_points[FWLitename].passed(
-                    self.physObj,
-                    self._mvaid_score[name],
-                    self._mvaid_category[name],
-                    FWLitewp
-                    )
+                if 'cutBased' in name :
+                    passed = electron_cut_based_IDs[FWLitename].passed(
+                        self.physObj,
+                        self.rho,
+                        FWLitewp
+                        )
+                else :
+                    if name not in self._mvaid_score or name not in self._mvaid_category :
+                        score_raw, category = self._mva_score_and_category(name)
+                    passed = working_points[FWLitename].passed(
+                        self.physObj,
+                        self._mvaid_score[name],
+                        self._mvaid_category[name],
+                        FWLitewp
+                        )
             else:
                 raise RuntimeError(
                     "Electron id " + id \

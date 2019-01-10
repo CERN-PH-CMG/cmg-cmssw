@@ -115,9 +115,9 @@ def effective_area_table(lepton, era):
     era = see EffectiveAreas.py.
     '''
     leptype = None
-    if abs(lepton.pdgid())==11:
+    if abs(lepton.pdgId())==11:
         leptype = 'electron'
-    elif abs(lepton.pdgid())==13:
+    elif abs(lepton.pdgId())==13:
         leptype = 'muon'
     else:
         raise ValueError( 
