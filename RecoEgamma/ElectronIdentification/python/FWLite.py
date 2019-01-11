@@ -36,7 +36,7 @@ class ElectronCutBasedID(object):
         dPhiIn = ele.deltaPhiSuperClusterTrackAtVtx()
 
         H_on_E = ele.hadronicOverEm()
-        H_on_E_cut = WP.hOverECut_C0 + WP.hOverECut_CE / ele.energy() + WP.hOverECut_Cr * rho / ele.energy()
+        H_on_E_cut = WP.hOverECut_C0 + WP.hOverECut_CE / ele.superCluster().energy() + WP.hOverECut_Cr * rho / ele.superCluster().energy()
 
         pfIso = ele.pfIsolationVariables()
         chad = pfIso.sumChargedHadronPt
@@ -48,6 +48,10 @@ class ElectronCutBasedID(object):
         iso  = chad + max([0.0, nhad + pho - rho*eA])
         relIsoWithEA = iso/ele.pt()
         relIsoWithEA_cut = WP.relCombIsolationWithEACut_C0+WP.relCombIsolationWithEACut_Cpt/ele.pt()
+
+        ecal_energy_inverse = 1.0/ele.ecalEnergy()
+        eSCoverP = ele.eSuperClusterOverP()
+        absEInverseMinusPInverse = abs(1.0 - eSCoverP)*ecal_energy_inverse
             
         missingHits = ele.gsfTrack().hitPattern().numberOfLostHits(ROOT.reco.HitPattern.MISSING_INNER_HITS)
 
@@ -56,7 +60,7 @@ class ElectronCutBasedID(object):
                 abs(dPhiIn) < WP.dPhiInCut and \
                 H_on_E < H_on_E_cut and \
                 relIsoWithEA < relIsoWithEA_cut and \
-                abs(1./ele.energy() - 1./ele.pt()) < WP.absEInverseMinusPInverseCut and \
+                absEInverseMinusPInverse < WP.absEInverseMinusPInverseCut and \
                 missingHits <= WP.missingHitsCut and \
                 ele.passConversionVeto() :
                 return True
