@@ -177,6 +177,12 @@ from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_
 from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff \
         import isoInputs as cutBasedElectronID_Fall17_94X_V2_isoInputs
 
+cutBasedElectronID_Fall17_94X_V2_wps = dict(
+    veto = (cutBasedElectronID_Fall17_94X_V2_WP_Veto_EB,
+            cutBasedElectronID_Fall17_94X_V2_WP_Veto_EE,
+            cutBasedElectronID_Fall17_94X_V2_isoInputs),
+)
+
 # Dictionary with the relecant e/gmma MVAs
 
 electron_mvas = {
@@ -204,7 +210,5 @@ working_points = {
 
 electron_cut_based_IDs = {
     "Fall1794XV2"   : ElectronCutBasedID("ElectronMVAEstimatorRun2","Fall1794XV2",
-                                    [cutBasedElectronID_Fall17_94X_V2_WP_Veto_EB,
-                                     cutBasedElectronID_Fall17_94X_V2_WP_Veto_EE,
-                                     cutBasedElectronID_Fall17_94X_V2_isoInputs]),
+                                         cutBasedElectronID_Fall17_94X_V2_wps),
 }
