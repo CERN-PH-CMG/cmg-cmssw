@@ -86,7 +86,7 @@ areas = dict(
                        }
         },
     Fall17 = {
-        # https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
+        # https://github.com/cms-sw/cmssw/blob/master/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
         'electron' : { '03' : 
                        [ (1.000, 0.1440),
                          (1.479, 0.1562),
