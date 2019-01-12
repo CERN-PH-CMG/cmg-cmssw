@@ -292,6 +292,7 @@ class BatchManager:
         hostName = os.environ['HOSTNAME']
 
         onLxplus = hostName.startswith('lxplus')
+        onLPC    = hostName.startswith('cmslpc')
         onPSI    = hostName.startswith('t3ui')
         onNAF =  hostName.startswith('naf')
         onIC =  ('ic.ac.uk' in hostName)
@@ -306,12 +307,21 @@ class BatchManager:
                 print('running on LSF : %s from %s' % (batchCmd, hostName))
                 return 'LXPLUS-LSF'
         elif batchCmd == "run_condor.sh":
-            if not onLxplus:
+            if not (onLxplus):
+                err = 'Cannot run %s on %s' % (batchCmd, hostName)
+                raise ValueError( err )
+            else:
+                print 'running on CONDOR (using condor file transfer): %s from %s' % (batchCmd, hostName)
+                return 'LXPLUS-CONDOR-TRANSFER'
+
+        elif batchCmd == "run_condor_lpc.sh":
+            if not (onLPC):
                 err = 'Cannot run %s on %s' % (batchCmd, hostName)
                 raise ValueError( err )
             else:
                 print('running on CONDOR (using condor file transfer): %s from %s' % (batchCmd, hostName))
                 return 'LXPLUS-CONDOR-TRANSFER'
+
 
         elif batchCmd == "run_condor_simple.sh":
             if not onLxplus:
