@@ -10,7 +10,8 @@ from PhysicsTools.Heppy.physicsutils.EffectiveAreas import effective_area_table,
 # Usage example in RecoEgamma/ElectronIdentification/test
 
 class ElectronCutBasedID(object):
-    """ Electron cut based ID wrapper class.
+    """ Electron cut based ID wrapper class. Allows testing cut based ID working points
+    with python.
     """
     def __init__(self, name, tag, working_points):
         self.name = name 
@@ -18,8 +19,23 @@ class ElectronCutBasedID(object):
         self.working_points = working_points
 
     def passed(self, ele, rho, wp):
-        '''return true if ele passes wp
-        see https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Offline_selection_criteria_for_V'''
+        '''return true if the electron passes the cut based ID working point.
+        see https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Offline_selection_criteria_for_V
+        
+        ele: a reco::GsfElectron
+        rho: energy density in the event
+        wp: working point to test
+
+        example: 
+        
+            event.getByLabel(('slimmedElectrons'),                 ele_handle)
+            event.getByLabel(('fixedGridRhoFastjetAll'),           rho_handle)
+            
+            electrons = ele_handle.product()
+            rho       = rho_handle.product()
+
+            is_veto = passed(electron[0], rho,'cutBasedElectronID-Fall17-94X-V2-veto')
+        '''
         if ele.isEB():
             WP = self.working_points[wp][0]
         else:
@@ -28,15 +44,14 @@ class ElectronCutBasedID(object):
 
         full5x5_sigmaIetaIeta = ele.full5x5_sigmaIetaIeta()
 
+        dEtaInSeed = sys.float_info.max
         if ele.superCluster().isNonnull() and ele.superCluster().seed().isNonnull():
             dEtaInSeed = ele.deltaEtaSuperClusterTrackAtVtx() - ele.superCluster().eta() + ele.superCluster().seed().eta()
-        else:
-            dEtaInSeed = sys.float_info.max
 
         dPhiIn = ele.deltaPhiSuperClusterTrackAtVtx()
 
-        H_on_E = ele.hadronicOverEm()
-        H_on_E_cut = WP.hOverECut_C0 + WP.hOverECut_CE / ele.superCluster().energy() + WP.hOverECut_Cr * rho / ele.superCluster().energy()
+        h_over_e = ele.hadronicOverEm()
+        h_over_e_cut = WP.hOverECut_C0 + WP.hOverECut_CE / ele.superCluster().energy() + WP.hOverECut_Cr * rho / ele.superCluster().energy()
 
         pfIso = ele.pfIsolationVariables()
         chad = pfIso.sumChargedHadronPt
@@ -58,7 +73,7 @@ class ElectronCutBasedID(object):
         if full5x5_sigmaIetaIeta < WP.full5x5_sigmaIEtaIEtaCut and \
                 abs(dEtaInSeed) < WP.dEtaInSeedCut and \
                 abs(dPhiIn) < WP.dPhiInCut and \
-                H_on_E < H_on_E_cut and \
+                h_over_e < h_over_e_cut and \
                 relIsoWithEA < relIsoWithEA_cut and \
                 absEInverseMinusPInverse < WP.absEInverseMinusPInverseCut and \
                 missingHits <= WP.missingHitsCut and \

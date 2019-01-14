@@ -55,8 +55,8 @@ class Electron( Lepton ):
                 score_raw = self._mva_score_and_category(name)[0]
             return self._mvaid_score[name]
 
-    def mva_passes(self, name, wp):
-        '''returns True if the electron passes the given working point of the mva'''
+    def id_passes(self, name, wp):
+        '''returns True if the electron passes the given working point of the identification'''
         id = name + '-' + wp
         if id not in self._mvaid_passed :
             miniAODids = [miniAODid[0] for miniAODid in self.electronIDs()]
