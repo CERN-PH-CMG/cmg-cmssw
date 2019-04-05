@@ -148,8 +148,8 @@ class JetReCalibrator:
                 for group, sources in self.groupForUncertaintySources.iteritems():
                     shift_up = self.getCorrection(jet,rho,delta+1.0,sources=sources)
                     shift_down = self.getCorrection(jet,rho,delta-1.0,sources=sources)
-                    setattr(jet, "corr_"+group+"_JECup", shift_up)
-                    setattr(jet, "corr_"+group+"_JECdown", shift_down)
+                    setattr(jet, "corr_"+group+"_JEC_up", shift_up)
+                    setattr(jet, "corr_"+group+"_JEC_down", shift_down)
         if corr <= 0:
             return False
         newpt = jet.pt()*raw*corr
