@@ -34,7 +34,7 @@ class ElectronMVAID_Spring16:
             ROOT.gSystem.Load("libRecoEgammaElectronIdentification")
             if self.flavor=='HZZ': self.estimator = ROOT.ElectronMVAEstimatorRun2Spring16HZZ(self.tag) 
             elif self.flavor=='GeneralPurpose': self.estimator = ROOT.ElectronMVAEstimatorRun2Spring16GeneralPurpose(self.tag)
-            else: raise RuntimeError, 'Undefined flavor of ElectronMVAID_Spring16'
+            else: raise RuntimeError('Undefined flavor of ElectronMVAID_Spring16')
             self.estimator.init(self.sxmls)
             self._init = True
         return self.estimator.mvaValue(ele,event)
@@ -52,7 +52,7 @@ class ElectronMVAID_Fall17:
             ROOT.gSystem.Load("libRecoEgammaElectronIdentification")
             if self.flavor=='noIso': self.estimator = ROOT.ElectronMVAEstimatorRun2Fall17(self.tag,self.name,False)
             elif self.flavor=='Iso': self.estimator = ROOT.ElectronMVAEstimatorRun2Fall17(self.tag,self.name,True)
-            else: raise RuntimeError, 'Undefined flavor of ElectronMVAID_Fall17'
+            else: raise RuntimeError('Undefined flavor of ElectronMVAID_Fall17')
             self.estimator.init(self.sxmls)
             self._init = True
         return self.estimator.mvaValue(ele,event)

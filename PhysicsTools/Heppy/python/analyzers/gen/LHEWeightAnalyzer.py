@@ -32,7 +32,7 @@ class LHEWeightAnalyzer( Analyzer ):
                                                   lazy=False )
         if self.cfg_ana.useLumiInfo:
             self.genLumiHandle = Handle("GenLumiInfoHeader")
-            if self.savePSweights: raise RuntimeError, 'this combination of options in LHEWeightAnalyzer is not supported'
+            if self.savePSweights: raise RuntimeError('this combination of options in LHEWeightAnalyzer is not supported')
 
         if self.cfg_ana.useLumiInfo or self.savePSweights:
             self.mchandles['GenInfos'] = AutoHandle('generator',

@@ -171,7 +171,7 @@ class NTupleObject:
         if self.mcOnly and not isMC: return
         if object is None:
             if self.nillable: return
-            raise RuntimeError, "Error, object not found or None when filling branch %s" % self.name
+            raise RuntimeError("Error, object not found or None when filling branch %s" % self.name)
         allvars = self.objectType.allVars(isMC)
         for v in allvars:
             treeNumpy.fill("%s_%s" % (self.name, v.name), v(object))
