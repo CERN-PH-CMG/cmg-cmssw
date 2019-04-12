@@ -2,7 +2,7 @@
 #define PhysicsTools_Heppy_FloatZipper_h
 
 #include <cstdint>
-#include "DataFormats/PatCandidates/interface/libminifloat.h"
+#include "DataFormats/Math/interface/libminifloat.h"
 
 namespace heppy {
     class FloatZipper {
