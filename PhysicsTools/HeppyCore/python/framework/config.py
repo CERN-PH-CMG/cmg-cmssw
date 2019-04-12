@@ -43,7 +43,7 @@ class CFG(object):
         header = '{type}: {name}'.format( type=self.__class__.__name__,
                                           name=self.name)
         varlines = ['\t{var:<15}:   {value}'.format(var=var, value=value) \
-                    for var,value in sorted(vars(six.iteritems(self))) \
+                    for var,value in sorted(six.iteritems(vars(self))) \
                     if var is not 'name']
         all = [ header ]
         all.extend(varlines)
