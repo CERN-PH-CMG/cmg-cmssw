@@ -320,7 +320,6 @@ private:
     {
         static constexpr bool check_all_set = false;
         static constexpr float default_value_for_set_check = -42;
-        static const TauIdMVAAuxiliaries clusterVariables;
 
         tensorflow::Tensor inputs(tensorflow::DT_FLOAT, { 1, dnn_inputs_2017v1::NumberOfInputs});
         const auto& get = [&](int var_index) -> float& { return inputs.matrix<float>()(0, var_index); };
@@ -358,14 +357,14 @@ private:
                 ? dPhi(leadChargedHadrCand->p4(), tau.p4()) : default_value;
         get(dnn::leadChargedHadrCand_mass) = leadChargedHadrCand
                 ? leadChargedHadrCand->p4().mass() : default_value;
-        get(dnn::pt_weighted_deta_strip) = clusterVariables.tau_pt_weighted_deta_strip(tau, tau.decayMode());
-        get(dnn::pt_weighted_dphi_strip) = clusterVariables.tau_pt_weighted_dphi_strip(tau, tau.decayMode());
-        get(dnn::pt_weighted_dr_signal) = clusterVariables.tau_pt_weighted_dr_signal(tau, tau.decayMode());
-        get(dnn::pt_weighted_dr_iso) = clusterVariables.tau_pt_weighted_dr_iso(tau, tau.decayMode());
+        get(dnn::pt_weighted_deta_strip) = reco::tau::mva::tau_pt_weighted_deta_strip(tau, tau.decayMode());
+        get(dnn::pt_weighted_dphi_strip) = reco::tau::mva::tau_pt_weighted_dphi_strip(tau, tau.decayMode());
+        get(dnn::pt_weighted_dr_signal) = reco::tau::mva::tau_pt_weighted_dr_signal(tau, tau.decayMode());
+        get(dnn::pt_weighted_dr_iso) = reco::tau::mva::tau_pt_weighted_dr_iso(tau, tau.decayMode());
         get(dnn::leadingTrackNormChi2) = tau.leadingTrackNormChi2();
-        get(dnn::e_ratio) = clusterVariables.tau_Eratio(tau);
+        get(dnn::e_ratio) = reco::tau::mva::tau_Eratio(tau);
         get(dnn::gj_angle_diff) = calculateGottfriedJacksonAngleDifference(tau);
-        get(dnn::n_photons) = clusterVariables.tau_n_photons_total(tau);
+        get(dnn::n_photons) = reco::tau::mva::tau_n_photons_total(tau);
         get(dnn::emFraction) = tau.emFraction_MVA();
         get(dnn::has_gsf_track) = leadChargedHadrCand && std::abs(leadChargedHadrCand->pdgId()) == 11;
         get(dnn::inside_ecal_crack) = isInEcalCrack(tau.p4().Eta());
