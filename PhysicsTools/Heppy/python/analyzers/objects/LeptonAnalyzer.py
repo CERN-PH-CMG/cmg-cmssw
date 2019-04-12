@@ -26,9 +26,9 @@ class LeptonAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(LeptonAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
         if hasattr(self.cfg_ana, 'doMuScleFitCorrections'):
-            raise RuntimeError, "doMuScleFitCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'MuScleFit', <name> )"
+            raise RuntimeError("doMuScleFitCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'MuScleFit', <name> )")
         if hasattr(self.cfg_ana, 'doRochesterCorrections'):
-            raise RuntimeError, "doRochesterCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'Rochester', <name> )"
+            raise RuntimeError("doRochesterCorrections is not supported. Please set instead doMuonScaleCorrections = ( 'Rochester', <name> )")
         if self.cfg_ana.doMuonScaleCorrections:
             algo, options = self.cfg_ana.doMuonScaleCorrections
             if algo == "Kalman":
@@ -43,11 +43,11 @@ class LeptonAnalyzer( Analyzer ):
             elif algo == "MuScleFit":
                 print("WARNING: the MuScleFit correction in heppy is still from Run 1 (and probably no longer functional)")
                 if options not in [ "prompt", "prompt-sync", "rereco", "rereco-sync" ]:
-                    raise RuntimeError, 'MuScleFit correction name must be one of [ "prompt", "prompt-sync", "rereco", "rereco-sync" ] '
+                    raise RuntimeError('MuScleFit correction name must be one of [ "prompt", "prompt-sync", "rereco", "rereco-sync" ] ')
                     rereco = ("prompt" not in self.cfg_ana.doMuScleFitCorrections)
                     sync   = ("sync"       in self.cfg_ana.doMuScleFitCorrections)
                     self.muonScaleCorrector = MuScleFitCorr(cfg_comp.isMC, rereco, sync)
-            else: raise RuntimeError, "Unknown muon scale correction algorithm"
+            else: raise RuntimeError("Unknown muon scale correction algorithm")
         else:
             self.muonScaleCorrector = None
 	#FIXME: only Embedded works
@@ -312,7 +312,7 @@ class LeptonAnalyzer( Analyzer ):
               elif aeta < 2.200: mu.EffectiveArea03 = 0.0119
               else:              mu.EffectiveArea03 = 0.0064
               mu.EffectiveArea04 = mu.EffectiveArea03*16./9. # not computed, scaled from dR=0.3
-          else: raise RuntimeError,  "Unsupported value for mu_effectiveAreas: can only use Data2012 (rho: ?) and Phys14_25ns_v1 or Spring15_25ns_v1 (rho: fixedGridRhoFastjetAll)"
+          else: raise RuntimeError("Unsupported value for mu_effectiveAreas: can only use Data2012 (rho: ?) and Phys14_25ns_v1 or Spring15_25ns_v1 (rho: fixedGridRhoFastjetAll)")
         # Attach the vertex to them, for dxy/dz calculation
         goodVertices = getattr(event, self.vertexChoice)
         for mu in allmuons:
@@ -434,7 +434,7 @@ class LeptonAnalyzer( Analyzer ):
               else:               ele.EffectiveArea03 = 0.1524
               # warning: EAs not computed for cone DR=0.4, use the values for DR=0.3 scaled by 16/9 instead
               ele.EffectiveArea04 = ele.EffectiveArea03*16./9.
-          else: raise RuntimeError,  "Unsupported value for ele_effectiveAreas: can only use Data2012 (rho: ?), Phys14_v1 and Spring15_v1 (rho: fixedGridRhoFastjetAll)"
+          else: raise RuntimeError("Unsupported value for ele_effectiveAreas: can only use Data2012 (rho: ?), Phys14_v1 and Spring15_v1 (rho: fixedGridRhoFastjetAll)")
 
         # Electron scale calibrations
         if self.cfg_ana.doElectronScaleCorrections:
@@ -540,7 +540,7 @@ class LeptonAnalyzer( Analyzer ):
                     mu.miniAbsIsoPU = self.IsolationComputer.puAbsIso(mu.physObj, mu.miniIsoR, 0.015 if what == "eleE" else 0.0, 0.0,self.IsolationComputer.selfVetoNone);
                 mu.miniAbsIsoNeutral = max(0.0, mu.miniAbsIsoNeutral - 0.5*mu.miniAbsIsoPU)
             elif puCorr != 'raw':
-                raise RuntimeError, "Unsupported miniIsolationCorr name '" + puCorr +  "'! For now only 'rhoArea', 'deltaBeta', 'raw', 'weights' are supported (and 'weights' is not tested)."
+                raise RuntimeError("Unsupported miniIsolationCorr name '" + puCorr +  "'! For now only 'rhoArea', 'deltaBeta', 'raw', 'weights' are supported (and 'weights' is not tested).")
 
         if self.doFixedConeIsoWithMiniIsoVeto:
             if what == "mu":
@@ -566,7 +566,7 @@ class LeptonAnalyzer( Analyzer ):
                 mu.AbsIsoMIVNeutral03 = max(0.0, mu.AbsIsoMIVNeutral03 - 0.5*mu.AbsIsoMIVPU03)
                 mu.AbsIsoMIVNeutral04 = max(0.0, mu.AbsIsoMIVNeutral04 - 0.5*mu.AbsIsoMIVPU04)
             elif puCorr != 'raw':
-                raise RuntimeError, "Unsupported isolationCorr name for MIV03/04 '" + puCorr +  "'! For now only 'rhoArea', 'deltaBeta', 'raw' are supported."
+                raise RuntimeError("Unsupported isolationCorr name for MIV03/04 '" + puCorr +  "'! For now only 'rhoArea', 'deltaBeta', 'raw' are supported.")
 
         mu.miniAbsIso = mu.miniAbsIsoCharged + mu.miniAbsIsoNeutral
         mu.miniRelIso = mu.miniAbsIso/mu.pt()

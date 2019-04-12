@@ -258,13 +258,13 @@ class Electron( Lepton ):
             if name == "NonTrigSpring15MiniAOD" and self.physObj.hasUserFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"):
                 self._mvaRun2[name] =  self.physObj.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values")
                 return self._mvaRun2[name]
-            if name not in ElectronMVAID_ByName: raise RuntimeError, "Unknown electron run2 mva id %s (known ones are: %s)\n" % (name, ElectronMVAID_ByName.keys())
+            if name not in ElectronMVAID_ByName: raise RuntimeError("Unknown electron run2 mva id %s (known ones are: %s)\n" % (name, ElectronMVAID_ByName.keys()))
             if name in ("Spring16HZZ","Spring16GP","Fall17noIso","Fall17Iso"):
-                if self.event == None: raise RuntimeError, "You need to set electron.event before calling any new MVA"
+                if self.event == None: raise RuntimeError("You need to set electron.event before calling any new MVA")
                 self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.event, self.associatedVertex, self.rho, debug)
             else:
-                if self.associatedVertex == None: raise RuntimeError, "You need to set electron.associatedVertex before calling any MVA"
-                if self.rho              == None: raise RuntimeError, "You need to set electron.rho before calling any MVA"
+                if self.associatedVertex == None: raise RuntimeError("You need to set electron.associatedVertex before calling any MVA")
+                if self.rho              == None: raise RuntimeError("You need to set electron.rho before calling any MVA")
                 # -v---- below is correct in Heppy 74X, but probably not functional anyway
                 self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.associatedVertex, self.rho, True, debug)
                 # -v---- below would be correct for CMGTools 74X witht the updated Spring15 MVA electron ID
@@ -331,7 +331,7 @@ class Electron( Lepton ):
                     if   (eta < 0.8)  : return self.mvaRun2(name) > 0.73;
                     elif (eta < 1.479): return self.mvaRun2(name) > 0.57;
                     else              : return self.mvaRun2(name) > 0.05;
-                else: raise RuntimeError, "Ele MVA ID Working point not found"
+                else: raise RuntimeError("Ele MVA ID Working point not found")
             elif name == "NonTrigPhys14Fix":
                 if wp == "HZZ":
                     if self.pt() <= 10:
@@ -342,7 +342,7 @@ class Electron( Lepton ):
                         if   eta < 0.8  : return self.mvaRun2(name) > -0.652;
                         elif eta < 1.479: return self.mvaRun2(name) > -0.701;
                         else            : return self.mvaRun2(name) > -0.350;
-                else: raise RuntimeError, "Ele MVA ID Working point not found"
+                else: raise RuntimeError("Ele MVA ID Working point not found")
             elif name in ("NonTrigSpring15","NonTrigSpring15MiniAOD"):
                 if wp=="VLoose":
                     if self.pt() <= 10:
@@ -392,7 +392,7 @@ class Electron( Lepton ):
                         if eta < 0.8: return self.mvaRun2(name) > -0.083313
                         elif eta < 1.479: return self.mvaRun2(name) > -0.235222
                         else: return self.mvaRun2(name) > -0.67099
-                else: raise RuntimeError, "Ele MVA ID Working point not found"
+                else: raise RuntimeError("Ele MVA ID Working point not found")
             elif name == "Spring16":
                 smooth_cut = False
                 if wp == "HZZ":
@@ -432,7 +432,7 @@ class Electron( Lepton ):
                     _low = [0.77,0.56,0.48]
                     _vlow = _low
                     _high = [0.52,0.11,-0.01]
-                if not smooth_cut: raise RuntimeError, "Ele MVA ID Working point not found"
+                if not smooth_cut: raise RuntimeError("Ele MVA ID Working point not found")
                 val = self.mvaRun2(name+'GP') if self.pt()>10 else self.mvaRun2(name+'HZZ')
                 if self.pt()<=10:
                     return (val > _vlow[(eta>=0.8)+(eta>=1.479)])
@@ -507,7 +507,7 @@ class Electron( Lepton ):
                     return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
                 elif wp == 'SUSYVLooseFO':
                     if self.pt()<5:
-                        raise RuntimeError, 'MVA_ID_nonIso_Fall17_SUSYVLooseFO electron ID cannot be called for objects with pt below 5 GeV'
+                        raise RuntimeError('MVA_ID_nonIso_Fall17_SUSYVLooseFO electron ID cannot be called for objects with pt below 5 GeV')
                     elif self.pt()<10:
                         if eta<0.8: _thiscut = -0.135
                         elif eta<1.479: _thiscut = -0.417
@@ -523,7 +523,7 @@ class Electron( Lepton ):
                     return self.mvaRun2(name) > _thiscut
                 elif wp == 'SUSYVLoose':
                     if self.pt()<5:
-                        raise RuntimeError, 'MVA_ID_nonIso_Fall17_SUSYVLoose electron ID cannot be called for objects with pt below 5 GeV'
+                        raise RuntimeError('MVA_ID_nonIso_Fall17_SUSYVLoose electron ID cannot be called for objects with pt below 5 GeV')
                     elif self.pt()<10:
                         if eta<0.8: _thiscut = 0.488
                         elif eta<1.479: _thiscut = -0.045
@@ -539,7 +539,7 @@ class Electron( Lepton ):
                     return self.mvaRun2(name) > _thiscut
                 elif wp == 'SUSYTight':
                     if self.pt()<10:
-                        raise RuntimeError, 'MVA_ID_nonIso_Fall17_SUSYTight electron ID cannot be called for objects with pt below 10 GeV'
+                        raise RuntimeError('MVA_ID_nonIso_Fall17_SUSYTight electron ID cannot be called for objects with pt below 10 GeV')
                     elif self.pt()<25:
                         if eta<0.8: _thiscut = 0.2+0.032*(self.pt()-10)
                         elif eta<1.479: _thiscut = 0.1+0.025*(self.pt()-10)
@@ -613,7 +613,7 @@ class Electron( Lepton ):
                         A = 2.2916152615134173
                     return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
 
-            else: raise RuntimeError, "Ele MVA ID type not found"
+            else: raise RuntimeError("Ele MVA ID type not found")
 
     def dEtaInSeed(self):
         if self.physObj.superCluster().isNonnull() and self.physObj.superCluster().seed().isNonnull(): return self.physObj.deltaEtaSuperClusterTrackAtVtx() - self.physObj.superCluster().eta() + self.physObj.superCluster().seed().eta()
