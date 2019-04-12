@@ -204,7 +204,7 @@ class Looper(object):
                         print 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time))
 
                 if at_firstEvent:
-                    self.logger.info('done')
+                    self.logger.info('done first event')
                     at_firstEvent = False
                 if iEv<self.nPrint:
                     print self.event

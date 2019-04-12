@@ -66,6 +66,13 @@ def shiftJERfactor(JERShift, aeta):
     elif aeta > 0.522: factor = 1.1948 + JERShift * 0.0652
     return factor
 
+def hasCommonSourceCandidatePtr(o1,o2):
+    for i in range(o1.numberOfSourceCandidatePtrs()):
+        p1 = o1.sourceCandidatePtr(i)
+        for j in range(o2.numberOfSourceCandidatePtrs()):
+            p2 = o2.sourceCandidatePtr(j)
+            if p1.key() == p2.key() and p1.refCore().id().productIndex() == p2.refCore().id().productIndex() and p1.refCore().id().processIndex() == p2.refCore().id().processIndex(): return True
+    return False
 
 
 
@@ -218,14 +225,9 @@ class JetAnalyzer( Analyzer ):
             #Check if lepton and jet have overlapping PF candidates 
             leps_with_overlaps = []
             if getattr(self.cfg_ana, 'checkLeptonPFOverlap', True):
-              for i in range(jet.numberOfSourceCandidatePtrs()):
-                p1 = jet.sourceCandidatePtr(i) #Ptr<Candidate> p1
                 for lep in leptons:
-                    for j in range(lep.numberOfSourceCandidatePtrs()):
-                        p2 = lep.sourceCandidatePtr(j)
-                        has_overlaps = p1.key() == p2.key() and p1.refCore().id().productIndex() == p2.refCore().id().productIndex() and p1.refCore().id().processIndex() == p2.refCore().id().processIndex()
-                        if has_overlaps:
-                            leps_with_overlaps += [lep]
+                    if hasCommonSourceCandidatePtr(jet,lep):
+                        leps_with_overlaps += [lep]
             if len(leps_with_overlaps)>0:
                 for lep in leps_with_overlaps:
                     lep.jetOverlap = jet
@@ -324,7 +326,8 @@ class JetAnalyzer( Analyzer ):
         
         ## Associate jets to leptons
         incleptons = event.inclusiveLeptons if hasattr(event, 'inclusiveLeptons') else event.selectedLeptons
-        jlpairs = matchObjectCollection(incleptons, allJets, self.jetLepDR**2)
+        matchJetToLepAndTauByPFRefOnly = getattr(self.cfg_ana,'matchJetToLepAndTauByPFRefOnly',False)
+        jlpairs = matchObjectCollection(incleptons, allJets, 9e9 if matchJetToLepAndTauByPFRefOnly else self.jetLepDR**2, filter = lambda l,j : hasCommonSourceCandidatePtr(l,j) if matchJetToLepAndTauByPFRefOnly else True)
 
         for jet in allJets:
             jet.leptons = [l for l in jlpairs if jlpairs[l] == jet ]
@@ -336,7 +339,7 @@ class JetAnalyzer( Analyzer ):
                 setattr(lep,"jet"+self.cfg_ana.collectionPostFix,jet)
         ## Associate jets to taus 
         taus = getattr(event,'selectedTaus',[])
-        jtaupairs = matchObjectCollection( taus, allJets, self.jetLepDR**2)
+        jtaupairs = matchObjectCollection( taus, allJets, 9e9 if matchJetToLepAndTauByPFRefOnly else self.jetLepDR**2, filter = lambda l,j : hasCommonSourceCandidatePtr(l,j) if matchJetToLepAndTauByPFRefOnly else True)
 
         for jet in allJets:
             jet.taus = [l for l in jtaupairs if jtaupairs[l] == jet ]

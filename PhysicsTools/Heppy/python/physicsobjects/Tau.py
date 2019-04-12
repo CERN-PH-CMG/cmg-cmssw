@@ -43,7 +43,27 @@ class Tau(Lepton):
         passes = self._mvaid_normscore > tau_mvaid.threshold(self.pt(), working_point)
         return 1. if passes else 0. # to match what MINIAOD discriminators return
 
+    def mva_score(self, norm=False):
+        '''returns the score of the isolation mva'''
+        if norm:
+            if self._mvaid_normscore is None:
+                self._mvaid_normscore = tau_mvaid.score_norm(self)
+            return self._mvaid_normscore
+        else:
+            if self._mvaid_score is None:
+                self._mvaid_score = tau_mvaid.score(self)
+            return self._mvaid_score
+
+    def mva_passes(self, working_point):
+        '''returns True if the tau passes the given working point of the isolation mva'''
+        if self._mvaid_normscore is None:
+            self.mva_score(norm=True)
+        passes = self._mvaid_normscore > tau_mvaid.threshold(self.pt(), working_point)
+        return 1. if passes else 0. # to match what MINIAOD discriminators return
+
     def dxy_approx(self, vertex=None):
+        # TEMPORARY FIX: always use dxy/dz from leadChargedHadrCand as in NanoAOD, ignoring vertex
+        return self.leadChargedHadrCand().dxy()
         '''Returns standard dxy for an arbitrary passed vertex'''
         if vertex is None:
             vertex = self.associatedVertex
@@ -110,6 +130,8 @@ class Tau(Lepton):
         Returns standard dxy calculation if the passed vertex differs from the
         one in the tau object.
         '''
+        # TEMPORARY FIX: always use dxy/dz from leadChargedHadrCand as in NanoAOD, ignoring vertex
+        return self.leadChargedHadrCand().dxy()
         if vertex is None:
             vertex = self.associatedVertex
         # x/y/z are directly saved in the tau object instead of a reference to 
@@ -120,6 +142,8 @@ class Tau(Lepton):
             return self.dxy_approx(vertex)
 
     def dz(self, vertex=None):
+        # TEMPORARY FIX: always use dxy/dz from leadChargedHadrCand as in NanoAOD, ignoring vertex
+        return self.leadChargedHadrCand().dz()
         if vertex is None:
             vertex = self.associatedVertex
         vtx = self.leadChargedHadrCand().vertex()
