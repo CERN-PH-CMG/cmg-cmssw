@@ -17,13 +17,13 @@ class Tau(Lepton):
         self._mvaid_score = None         #where 2017 MVAID score should be stored to not recompute everytime it is needed
         self._mvaid_normscore = None     #where 2017 MVAID normscore should be stored to not recompute everytime WPs are needed
         
-    def relIso(self, dBetaFactor=0, allCharged=0):
+    def relIso(self, cone_size, iso_type, dbeta_factor=None, all_charged=None):
         '''Just making the tau behave as a lepton, with dummy parameters.'''
-        return -1
+        return self.mva_score()
 
     def mvaId(self):
         '''For a transparent treatment of electrons, muons and taus. Returns -99'''
-        return -99
+        return self.mva_score()
 
     def mva_score(self, norm=False):
         '''returns the score of the isolation mva'''
