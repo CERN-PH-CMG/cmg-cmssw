@@ -494,15 +494,15 @@ class JetAnalyzer( Analyzer ):
                   jet.setP4(jet.p4()*ptscale)
                   # leave the uncorrected unchanged for sync
                   jet.setRawFactor(jet.rawFactor()/ptscale)
+               if (self.shiftJER==0) and (self.addJERShifts):
+                   setattr(jet, "corrJER", ptscale )
+                   factorJERUp= shiftJERfactor(1, aeta)
+                   ptscaleJERUp = max(0.0, (jetpt + (factorJERUp-1)*(jetpt-genpt))/jetpt)
+                   setattr(jet, "corrJERUp", ptscaleJERUp)
+                   factorJERDown= shiftJERfactor(-1, aeta)
+                   ptscaleJERDown = max(0.0, (jetpt + (factorJERDown-1)*(jetpt-genpt))/jetpt)
+                   setattr(jet, "corrJERDown", ptscaleJERDown)
             #else: print "jet with pt %.1d, eta %.2f is unmatched" % (jet.pt(), jet.eta())
-                if (self.shiftJER==0) and (self.addJERShifts):
-                    setattr(jet, "corrJER", ptscale )
-                    factorJERUp= shiftJERfactor(1, aeta)
-                    ptscaleJERUp = max(0.0, (jetpt + (factorJERUp-1)*(jetpt-genpt))/jetpt)
-                    setattr(jet, "corrJERUp", ptscaleJERUp)
-                    factorJERDown= shiftJERfactor(-1, aeta)
-                    ptscaleJERDown = max(0.0, (jetpt + (factorJERDown-1)*(jetpt-genpt))/jetpt)
-                    setattr(jet, "corrJERDown", ptscaleJERDown)
 
 
 

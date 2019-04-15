@@ -1,6 +1,6 @@
 from __future__ import print_function
 from PhysicsTools.Heppy.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
-from PhysicsTools.Heppy.analyzers.AutoHandle import AutoHandle
+from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
 from PhysicsTools.Heppy.physicsobjects.DiObject import DiElectron
 from PhysicsTools.Heppy.physicsobjects.PhysicsObjects import Electron
 

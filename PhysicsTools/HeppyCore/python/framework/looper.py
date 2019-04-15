@@ -102,7 +102,7 @@ class Looper(object):
         if stopFlag:
             import signal
             def doSigUsr2(sig,frame):
-                print 'SIGUSR2 received, signaling graceful stop'
+                print('SIGUSR2 received, signaling graceful stop')
                 self.stopFlag.value = 1
             signal.signal(signal.SIGUSR2, doSigUsr2)
         tree_name = None
@@ -128,7 +128,7 @@ class Looper(object):
                 self.firstEvent = firstEvent + fineSplitIndex * self.nEvents
                 if self.firstEvent + self.nEvents >= totevents:
                     self.nEvents = totevents - self.firstEvent 
-                #print "For component %s will process %d events starting from the %d one, ending at %d excluded" % (self.cfg_comp.name, self.nEvents, self.firstEvent, self.nEvents + self.firstEvent)
+                #print("For component %s will process %d events starting from the %d one, ending at %d excluded" % (self.cfg_comp.name, self.nEvents, self.firstEvent, self.nEvents + self.firstEvent))
         # self.event is set in self.process
         self.event = None
         services = dict()
@@ -153,7 +153,7 @@ class Looper(object):
         tmpname = name
         while True and index < 2000:
             try:
-                # print 'mkdir', self.name
+                # print('mkdir '+ self.name)
                 os.mkdir( tmpname )
                 break
             except OSError:
@@ -197,7 +197,7 @@ class Looper(object):
                     self.logger.info('processing first event')
                 self.process( iEv )
                 if iEv%100 ==0:
-                    # print 'event', iEv
+                    # print('event '+ iEv)
                     if not hasattr(self,'start_time'):
                         print('event', iEv)
                         self.start_time = timeit.default_timer()
@@ -209,9 +209,9 @@ class Looper(object):
                     self.logger.info('done first event')
                     at_firstEvent = False
                 if iEv<self.nPrint:
-                    print self.event
+                    print(self.event)
                 if self.stopFlag and self.stopFlag.value:
-                    print 'stopping gracefully at event %d' % (iEv)
+                    print('stopping gracefully at event %d' % (iEv))
                     break
 
         except UserWarning:

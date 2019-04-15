@@ -311,7 +311,7 @@ class BatchManager:
                 err = 'Cannot run %s on %s' % (batchCmd, hostName)
                 raise ValueError( err )
             else:
-                print 'running on CONDOR (using condor file transfer): %s from %s' % (batchCmd, hostName)
+                print('running on CONDOR (using condor file transfer): %s from %s' % (batchCmd, hostName))
                 return 'LXPLUS-CONDOR-TRANSFER'
 
         elif batchCmd == "run_condor_lpc.sh":

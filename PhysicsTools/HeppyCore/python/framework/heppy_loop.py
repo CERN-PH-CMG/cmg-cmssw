@@ -193,7 +193,7 @@ def main( options, args, parser ):
         pool.close()
         pool.join()
     elif len(selComps)==0:
-        print "ERROR: no components selected"
+        print("ERROR: no components selected")
         sys.exit(1)
     else:
         # when running only one loop, do not use multiprocessor module.

@@ -171,8 +171,8 @@ echo
           dirCopy = dirCopy
           )
    else:
-       print "chosen location not supported yet: ", remoteDir
-       print 'path must start with /store/'
+       print("chosen location not supported yet: "+ remoteDir)
+       print('path must start with /store/')
        sys.exit(1)
 
    script = """#!/bin/bash
@@ -193,8 +193,7 @@ echo
 rm Loop/cmsswPreProcessing.root 2> /dev/null
 {copy}
 """.format(copy=cpCmd, init=init)
-
-    return script
+   return script
 
 
 def batchScriptPSI( index, jobDir, remoteDir=''):
@@ -359,11 +358,11 @@ class MyBatchManager( BatchManager ):
        shutil.copyfile(cfgFileName, jobDir+'/pycfg.py')
 #      jobConfig = copy.deepcopy(config)
 #      jobConfig.components = [ components[value] ]
-        cfgFile = open(jobDir+'/config.pck','w')
-        pickle.dump(  components[value] , cfgFile )
-        # pickle.dump( cfo, cfgFile )
-        cfgFile.close()
-        if hasattr(self,"heppyOptions_"):
+       cfgFile = open(jobDir+'/config.pck','w')
+       pickle.dump(  components[value] , cfgFile )
+       # pickle.dump( cfo, cfgFile )
+       cfgFile.close()
+       if hasattr(self,"heppyOptions_"):
             optjsonfile = open(jobDir+'/options.json','w')
             optjsonfile.write(json.dumps(self.heppyOptions_))
             optjsonfile.close()

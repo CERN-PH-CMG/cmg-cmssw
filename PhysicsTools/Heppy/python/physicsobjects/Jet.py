@@ -305,8 +305,6 @@ class Jet(PhysicsObject):
             sum_dphi2 += dphi*dphi*weight         
 
 
-
-
         a = 0.
         b = 0.
         c = 0.
@@ -326,14 +324,10 @@ class Jet(PhysicsObject):
 
         if a+b-delta > 0: jet.axis2 = -math.log(math.sqrt(0.5*(a+b-delta)))
         else: jet.axis2 = -1.                                              
+        if a+b+delta > 0: jet.axis1 = -math.log(math.sqrt(0.5*(a+b+delta)))
+        else: jet.axis1 = -1.
+
         return jet
-
-       if a+b-delta > 0: jet.axis2 = -math.log(math.sqrt(0.5*(a+b-delta)))
-       else: jet.axis2 = -1.                                              
-       if a+b+delta > 0: jet.axis1 = -math.log(math.sqrt(0.5*(a+b+delta)))
-       else: jet.axis1 = -1.
-
-       return jet
    
 
 

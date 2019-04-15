@@ -225,7 +225,7 @@ class LeptonAnalyzer( Analyzer ):
         looseMuons = event.selectedLeptons[:]
         for ele in inclusiveElectrons:
                ele.looseIdOnly = ele.electronID(self.cfg_ana.loose_electron_id)
-               if ele.looseIdOnly < 0: print "Negative id for electron of pt %.1f, id %s, ret %r"  % (ele.pt(),self.cfg_ana.loose_electron_id, ele.looseIdOnly) 
+               if ele.looseIdOnly < 0: print("Negative id for electron of pt %.1f, id %s, ret %r"  % (ele.pt(),self.cfg_ana.loose_electron_id, ele.looseIdOnly))
                if (ele.looseIdOnly and
                          ele.pt()>self.cfg_ana.loose_electron_pt and abs(ele.eta())<self.cfg_ana.loose_electron_eta and 
                          abs(ele.dxy()) < self.cfg_ana.loose_electron_dxy and abs(ele.dz())<self.cfg_ana.loose_electron_dz and 

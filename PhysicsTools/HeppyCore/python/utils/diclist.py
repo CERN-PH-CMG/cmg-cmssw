@@ -27,7 +27,7 @@ class diclist( list ):
         try:
             # if index is an integer (the rank), use the list. 
             return super(diclist, self).__getitem__(index)
-        except TypeError, ValueError:
+        except TypeError as ValueError:
             # else it's the dictionary key.
             # use the internal dictionary to get the index, 
             # and return the corresponding value from the list

@@ -14,15 +14,15 @@ import subprocess
 def splitPFN(pfn):
     """Split the PFN in to { <protocol>, <host>, <path>, <opaque> }"""
     groups = re.match("^(\w+)://([^/]+)/(/[^?]+)(\?.*)?", pfn)
-    if not groups: raise RuntimeError, "Malformed pfn: '%s'" % pfn
+    if not groups: raise RuntimeError("Malformed pfn: '%s'" % pfn)
     return (groups.group(1), groups.group(2), groups.group(3), groups.group(4))
 
 def _runCommand(cmd):
     myCommand = subprocess.Popen( cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
     ( out, err ) = myCommand.communicate()
     if myCommand.returncode != 0:
-        print >> sys.stderr, "Command (%s) failed with return code: %d" % ( cmd, myCommand.returncode )
-        print >> sys.stderr, err
+        print("Command (%s) failed with return code: %d" % ( cmd, myCommand.returncode ), file=sys.stderr)
+        print(err, file=sys.stderr)
     return out,err,myCommand.returncode
 
 def runXRDCommand(path, cmd, *args):
@@ -31,12 +31,12 @@ def runXRDCommand(path, cmd, *args):
     !!! Will, what is happening in case of problem?
     ??? At some point, should return a list of lines instead of a string."""
     
-    #print "lfn:", lfn, cmd
+    #print( "lfn:", lfn, cmd )
     tokens = splitPFN(path)
     
     command = ['xrd', tokens[1], cmd, tokens[2]]
     command.extend(args)
-    # print ' '.join(command)
+    # print( ' '.join(command) )
     return _runCommand(command)
 
 def runEOSCommand(path, cmd, *args):
@@ -142,13 +142,13 @@ def fileExists( path ):
     eos = isEOSDir(path)
     result = False
     if eos:
-        # print 'eos', path
+        # print('eos: ' + path)
         result = isEOSFile(path)
     else:
-        # print 'not eos', path
+        # print('not eos: ' + path)
         #check locally
         result = os.path.exists(path)
-    # print result
+    # print(result)
     return result
 
 
@@ -168,7 +168,7 @@ def eosDirSize(path):
 def fileChecksum(path):
     '''Returns the checksum of a file (local or on EOS).'''
     checksum='ERROR'
-    if not fileExists(path): raise RuntimeError, 'File does not exist.'
+    if not fileExists(path): raise RuntimeError('File does not exist.')
     if isEOS(path):
         lfn = eosToLFN(path)
         res = runEOSCommand(lfn, 'find', '--checksum')
@@ -205,7 +205,7 @@ createCastorDir = createEOSDir
 
 def mkdir(path):
     """Create a directory, either on EOS or locally"""
-    # print 'mkdir', path
+    # print('mkdir '+ path)
     if isEOS( path ) or isLFN(path):
         createEOSDir(path)
     else:
@@ -272,7 +272,7 @@ def listFiles(path, rec = False, full_info = False):
             return result
     # -- listing on EOS --
     if not isEOSDir(path):
-        raise RuntimeError, "Bad path '%s': not existent, and not in EOS" % path
+        raise RuntimeError("Bad path '%s': not existent, and not in EOS" % path)
     cmd = 'dirlist'
     if rec:
         cmd = 'dirlistrec'
@@ -308,7 +308,7 @@ def rm(path, rec=False):
     """rm, works on EOS and locally.
 
     Colin: should implement a -f mode and a confirmation when deleting dirs recursively."""
-    # print 'rm ', path
+    # print('rm '+ path)
     path = lfnToEOS(path)
     if isEOS(path):
         if rec:
@@ -346,7 +346,7 @@ def cat(path):
     """cat, works on EOS and locally"""
     path = lfnToEOS(path)
     if isEOS(path):
-        #print "the file to cat is:", path
+        #print("the file to cat is:"+ path)
         out, err, _ = runXRDCommand(path,'cat') 
         lines = []
         if out:
@@ -406,11 +406,11 @@ def xrdcp(src, dest):
 
     command = ['xrdcp', '--force']
     if recursive:
-        # print 'recursive'
+        # print('recursive')
         topDir = src.rstrip('/').split('/')[-1]
         if topDir != '.':
             dest = '/'.join([dest, topDir])
-            # print 'mkdir ' + dest
+            # printr( 'mkdir ' + dest )
             mkdir( dest )
         files = listFiles(src, rec=True)
         # pprint.pprint( [file[4] for file in files] )
@@ -426,8 +426,8 @@ def xrdcp(src, dest):
             if isEOSDir(destFile):
                 lfnDestFile = eosToLFN(destFile)
                 pfnDestFile = lfnToPFN(lfnDestFile)
-            # print 'srcFile', pfnSrcFile
-            # print 'destFile', pfnDestFile
+            # print('srcFile '+pfnSrcFile)
+            # print('destFile '+pfnDestFile)
             if isFile(srcFile):
                 _xrdcpSingleFile(  pfnSrcFile, pfnDestFile )
             else:
@@ -442,7 +442,7 @@ def _xrdcpSingleFile( pfn_src, pfn_dest):
     command = ['xrdcp', '--force']
     command.append(pfn_src)
     command.append(pfn_dest)
-    # print ' '.join(command)
+    # print(' '.join(command))
     run = True
     if run: 
         out, err, ret = _runCommand(command)
@@ -462,11 +462,11 @@ def move(src, dest):
 def matchingFiles( path, regexp):
     """Return a list of files matching a regexp"""
 
-    # print path, regexp
+    # print(path + ' '+ regexp)
     pattern = re.compile( regexp )
     #files = ls_EOS(path)
     files = ls(path)
-    # print files
+    # print(files)
     return [f for f in files if pattern.match(os.path.basename(f)) is not None]
 
 def datasetNotEmpty( path, regexp ):
@@ -491,5 +491,5 @@ def cmsStage( absDestDir, files, force):
             command.append('-f')
         command.append(eosToLFN(fname))
         command.append(eosToLFN(absDestDir))
-        print ' '.join(command)
+        print(' '.join(command))
         _runCommand(command)
