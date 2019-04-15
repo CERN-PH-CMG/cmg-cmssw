@@ -137,6 +137,10 @@ class LeptonAnalyzer( Analyzer ):
             else:
                 self.mchandles['genPhotons'] = AutoHandle( 'prunedGenParticles', 'std::vector<reco::GenParticle>' )
 
+        # for new MVA ID implementation
+        self.handles['conversions'] = AutoHandle( 'reducedEgamma:reducedConversions', 'reco::ConversionCollection')
+        self.handles['beamspot'] = AutoHandle( 'offlineBeamSpot', 'reco::BeamSpot')
+
     def beginLoop(self, setup):
         super(LeptonAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('events')
@@ -355,9 +359,12 @@ class LeptonAnalyzer( Analyzer ):
         allelectrons = allelenodup
 
         # fill EA for rho-corrected isolation
+        convs, bspot = self.handles['conversions'].product(), self.handles['beamspot'].product()
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
           ele.rhoHLT = float(self.handles['rhoEleHLT'].product()[0])
+          ele.conversions = convs
+          ele.beamspot = bspot
           if self.eleEffectiveArea == "Data2012":
               # https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection?rev=14
               SCEta = abs(ele.superCluster().eta())
