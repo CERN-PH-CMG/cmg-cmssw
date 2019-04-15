@@ -74,6 +74,12 @@ MVA_WPLoose = EleMVA_WP(
     cutCategory5 =  "-0.7179265933023059"   # EE
     )
 
+workingPoints = dict(
+    wpLoose = MVA_WPLoose,
+    wp90 = MVA_WP90,
+    wp80 = MVA_WP80,
+)
+
 #
 # Finally, set up VID configuration for all cuts
 #

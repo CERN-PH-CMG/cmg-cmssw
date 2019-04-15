@@ -166,15 +166,24 @@ class WorkingPoints(object):
 
 from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_tools \
         import EleMVA_6CategoriesCuts, mvaVariablesFile, EleMVA_3CategoriesCuts
+from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff \
+        import mvaEleID_Fall17_noIso_V1_producer_config
+mvaVariablesFileFall17V1 = mvaEleID_Fall17_noIso_V1_producer_config.variableDefinition.value()
 
 from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff \
         import mvaWeightFiles as Fall17_iso_V2_weightFiles
 from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V2_cff \
         import mvaWeightFiles as Fall17_noIso_V2_weightFiles
+from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff \
+        import mvaFall17WeightFiles_V1 as Fall17_iso_V1_weightFiles
+from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff \
+        import mvaFall17WeightFiles_V1 as Fall17_noIso_V1_weightFiles
 from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff \
         import mvaSpring16WeightFiles_V1 as mvaSpring16GPWeightFiles_V1
 from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff \
         import mvaSpring16WeightFiles_V1 as mvaSpring16HZZWeightFiles_V1
+from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff \
+        import mvaSpring15NonTrigWeightFiles_V1 as mvaSpring15NonTrigWeightFiles_V1
 
 from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff \
         import workingPoints as mvaSpring16GP_V1_workingPoints
@@ -184,6 +193,12 @@ from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V
         import workingPoints as Fall17_iso_V2_workingPoints
 from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V2_cff \
         import workingPoints as Fall17_noIso_V2_workingPoints
+from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff \
+        import workingPoints as Fall17_iso_V1_workingPoints
+from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff \
+        import workingPoints as Fall17_noIso_V1_workingPoints
+from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff \
+        import workingPoints as Spring15_25ns_nonTrig_V1_workingPoints
 
 from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff \
         import WP_Veto_EB as cutBasedElectronID_Fall17_94X_V2_WP_Veto_EB
@@ -205,10 +220,16 @@ electron_mvas = {
                                     EleMVA_6CategoriesCuts, Fall17_iso_V2_weightFiles, mvaVariablesFile),
     "Fall17NoIsoV2" : ElectronMVAID("ElectronMVAEstimatorRun2","Fall17NoIsoV2",
                                     EleMVA_6CategoriesCuts, Fall17_noIso_V2_weightFiles, mvaVariablesFile),
+    "Fall17IsoV1"   : ElectronMVAID("ElectronMVAEstimatorRun2","Fall17IsoV1",
+                                    EleMVA_6CategoriesCuts, Fall17_iso_V1_weightFiles, mvaVariablesFileFall17V1),
+    "Fall17NoIsoV1" : ElectronMVAID("ElectronMVAEstimatorRun2","Fall17NoIsoV1",
+                                    EleMVA_6CategoriesCuts, Fall17_noIso_V1_weightFiles, mvaVariablesFileFall17V1),
     "Spring16HZZV1" : ElectronMVAID("ElectronMVAEstimatorRun2","Spring16HZZV1",
                                     EleMVA_6CategoriesCuts, mvaSpring16HZZWeightFiles_V1, mvaVariablesFile),
     "Spring16GPV1"    : ElectronMVAID("ElectronMVAEstimatorRun2","Spring16GeneralPurposeV1",
                                     EleMVA_3CategoriesCuts, mvaSpring16GPWeightFiles_V1, mvaVariablesFile),
+    "Spring15NonTrig25nsV1"    : ElectronMVAID("ElectronMVAEstimatorRun2","Spring15NonTrig25nsV1",
+                                    EleMVA_6CategoriesCuts, mvaSpring15NonTrigWeightFiles_V1, mvaVariablesFile),
     }
 
 working_points = {
@@ -216,11 +237,16 @@ working_points = {
                                     Fall17_iso_V2_workingPoints),
     "Fall17NoIsoV2" : WorkingPoints("ElectronMVAEstimatorRun2","Fall17NoIsoV2",
                                     Fall17_noIso_V2_workingPoints),
+    "Fall17IsoV1"   : WorkingPoints("ElectronMVAEstimatorRun2","Fall17IsoV1",
+                                    Fall17_iso_V1_workingPoints, logistic_transform=True),
+    "Fall17NoIsoV1" : WorkingPoints("ElectronMVAEstimatorRun2","Fall17NoIsoV1",
+                                    Fall17_noIso_V1_workingPoints, logistic_transform=True),
     "Spring16HZZV1" : WorkingPoints("ElectronMVAEstimatorRun2","Spring16HZZV1",
                                     mvaSpring16HZZ_V1_workingPoints, logistic_transform=True),
     "Spring16GPV1"    : WorkingPoints("ElectronMVAEstimatorRun2","Spring16GeneralPurposeV1",
                                     mvaSpring16GP_V1_workingPoints, logistic_transform=True),
-
+    "Spring15NonTrig25nsV1" : WorkingPoints("ElectronMVAEstimatorRun2","Spring15NonTrig25nsV1",
+                                    Spring15_25ns_nonTrig_V1_workingPoints, logistic_transform=True), 
     }
 
 electron_cut_based_IDs = {
