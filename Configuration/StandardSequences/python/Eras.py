@@ -20,6 +20,7 @@ class Eras (object):
                  'Run2_2016_trackingLowPU',
                  'Run2_2016_pA',
                  'Run2_2017',
+                 'Run2_2017_FastSim', #new modifier for Phase1 FastSim, skips the muon GEM sequence
                  'Run2_2017_trackingRun2',
                  'Run2_2017_trackingPhase1QuadProp',
                  'Run2_2017_trackingLowPU',
@@ -44,7 +45,7 @@ class Eras (object):
                            'phase2_timing_layer','phase2_hcal',
                            'trackingLowPU', 'trackingPhase1', 'trackingPhase1QuadProp', 'ctpps_2016', 'trackingPhase2PU140',
                            'tracker_apv_vfp30_2016', 'run2_miniAOD_80XLegacy', 'run2_miniAOD_94XFall17', 'run2_nanoAOD_92X',
-                           'run2_nanoAOD_94XMiniAODv1', 'run2_nanoAOD_94XMiniAODv2',
+                           'run2_nanoAOD_94XMiniAODv1', 'run2_nanoAOD_94XMiniAODv2', 'run2_nanoAOD_94X2016',
                            'hcalHardcodeConditions', 'hcalSkipPacker']
         internalUseModChains = ['run2_2017_noTrackingModifier']
 
