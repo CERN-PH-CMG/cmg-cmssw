@@ -438,14 +438,16 @@ baseDataSetRelease=[
     'CMSSW_7_3_0_pre1-PRE_LS172_V15_FastSim-v1',                   # 4 - fast sim GEN-SIM-DIGI-RAW-HLTDEBUG for id tests
     'CMSSW_9_0_0_pre4-PU25ns_90X_mcRun2_asymptotic_v1-v1',    # 5 - fullSim PU 25ns premix
     'CMSSW_8_1_0_pre15-PU50ns_81X_mcRun2_startup_v12-v1',        # 6 - fullSim PU 50ns premix
-    'CMSSW_9_4_0_pre3-94X_mcRun2_asymptotic_v0_FastSim-v1',    # 7 - fastSim MinBias for mixing
-    'CMSSW_9_4_0_pre3-PU25ns_94X_mcRun2_asymptotic_v0_FastSim-v1',# 8 - fastSim premixed MinBias
+    'CMSSW_9_4_11_cand2-94X_mcRun2_asymptotic_v3_FastSim-v1',    # 7 - fastSim MinBias for mixing
+    'CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1',# 8 - fastSim premixed MinBias
     'CMSSW_9_4_0_pre3-94X_mc2017_realistic_v4-v1',        # 9 - Run2 HI GEN-SIM for mixing
     'CMSSW_7_6_0-76X_mcRun2_asymptotic_v11-v1',                    # 10 - 13 TeV High Stats GEN-SIM
     'CMSSW_7_6_0_pre7-76X_mcRun2_asymptotic_v9_realBS-v1',         # 11 - 13 TeV High Stats MiniBias for mixing GEN-SIM
     'CMSSW_8_1_0_pre9_Geant4102-81X_mcRun2cosmics_startup_peak_v2-v1', # 12 - GEN-SIM input for 1307 cosmics wf from 810_p2
     'CMSSW_9_4_0_pre3-94X_mc2017_realistic_v4-v1',     # 13 - 13 TeV samples with GEN-SIM from PhaseI upgrade
     'CMSSW_9_4_0_pre3-PU25ns_94X_mc2017_realistic_v4-v1',     # 14 - fullSim PU 25ns UP17 premix
+    'CMSSW_9_4_11_cand2-94X_mc2017_realistic_v15_FastSim-v2',    # 15 - fastSim MinBias for mixing UP17
+    'CMSSW_9_4_11_cand2-PU25ns_94X_mc2017_realistic_v15_FastSim-v1',# 16 - fastSim premixed MinBias UP17
     ]
 
 
@@ -762,6 +764,21 @@ step1FastPUNewMixing =merge([{'-s':'GEN,SIM,RECOBEFMIX',
 step1FastUpg2015_trackingOnlyValidation = merge([{'-s':'GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,RECO,VALIDATION:@trackingOnlyValidation'},
                                                 step1FastUpg2015Defaults])
 
+step1FastUpg2017Defaults =merge([{'-s':'GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO,EI,VALIDATION:@standardValidation,DQM:@standardDQM',
+                           '--fast':'',
+                           '--conditions'  :'auto:phase1_2017_realistic',
+                           '--beamspot'    : 'Realistic25ns13TeVEarly2017Collision',
+                           '--era'         :'Run2_2017_FastSim',
+                           '--eventcontent':'FEVTDEBUGHLT,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQMIO',
+                           '--relval':'27000,3000'},
+                           step1Defaults])
+step1FastPU17NewMixing =merge([{'-s':'GEN,SIM,RECOBEFMIX',
+                           '--eventcontent':'FASTPU',
+                           '--datatier':'GEN-SIM-RECO'},
+                           step1FastUpg2017Defaults])
+step1FastUpg2017_trackingOnlyValidation = merge([{'-s':'GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,RECO,VALIDATION:@trackingOnlyValidation'},
+                                                step1FastUpg2017Defaults])
 
 #step1FastDefaults
 steps['TTbarFS']=merge([{'cfg':'TTbar_8TeV_TuneCUETP8M1_cfi'},Kby(100,1000),step1FastDefaults])
@@ -797,10 +814,31 @@ steps['SingleMuPt100FS_UP15']=merge([{'cfg':'SingleMuPt100_pythia8_cfi'},step1Fa
 ### FastSim: produce sample of minbias events for PU mixing
 steps['MinBiasFS_13_ForMixing']=merge([{'cfg':'MinBias_13TeV_pythia8_TuneCUETP8M1_cfi'},Kby(100,1000),step1FastPUNewMixing])
 
+#step1FastUpg2017Defaults                                                                                                                                                      
+steps['TTbarFS_13_UP17']=merge([{'cfg':'TTbar_13TeV_TuneCUETP8M1_cfi'},Kby(100,1000),step1FastUpg2017Defaults])
+steps['TTbarFS_13_trackingOnlyValidation_UP17']=merge([{'cfg':'TTbar_13TeV_TuneCUETP8M1_cfi'},Kby(100,1000),step1FastUpg2017_trackingOnlyValidation])
+steps['SMS-T1tttt_mGl-1500_mLSP-100FS_13_UP17']=merge([{'cfg':'SMS-T1tttt_mGl-1500_mLSP-100_13TeV-pythia8_cfi'},Kby(100,1000),step1FastUpg2017Defaults])
+steps['ZEEFS_13_UP17']=merge([{'cfg':'ZEE_13TeV_TuneCUETP8M1_cfi'},Kby(100,2000),step1FastUpg2017Defaults])
+steps['ZTTFS_13_UP17']=merge([{'cfg':'ZTT_All_hadronic_13TeV_TuneCUETP8M1_cfi'},Kby(100,2000),step1FastUpg2017Defaults])
+steps['ZMMFS_13_UP17']=merge([{'cfg':'ZMM_13TeV_TuneCUETP8M1_cfi'},Kby(100,2000),step1FastUpg2017Defaults])
+steps['QCDFlatPt153000FS_13_UP17']=merge([{'cfg':'QCDForPF_13TeV_TuneCUETP8M1_cfi'},Kby(27,2000),step1FastUpg2017Defaults])
+steps['QCD_Pt_80_120FS_13_UP17']=merge([{'cfg':'QCD_Pt_80_120_13TeV_TuneCUETP8M1_cfi'},Kby(100,500),step1FastUpg2017Defaults])
+steps['H125GGgluonfusionFS_13_UP17']=merge([{'cfg':'H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi'},step1FastUpg2017Defaults])
+steps['SingleMuPt10FS_UP17']=merge([{'cfg':'SingleMuPt10_pythia8_cfi'},step1FastUpg2017Defaults])
+steps['SingleMuPt100FS_UP17']=merge([{'cfg':'SingleMuPt100_pythia8_cfi'},step1FastUpg2017Defaults])
+
+### FastSim: produce sample of minbias events for PU mixing
+steps['MinBiasFS_13_UP17_ForMixing']=merge([{'cfg':'MinBias_13TeV_pythia8_TuneCUETP8M1_cfi'},Kby(100,1000),step1FastPU17NewMixing])
+
 ### FastSim: template to produce signal and overlay with minbias events
 PUFS25={'--pileup':'AVE_35_BX_25ns',
         '--pileup_input':'das:/RelValMinBiasFS_13_ForMixing/%s/GEN-SIM-RECO'%(baseDataSetRelease[7],)}
 FS_UP15_PU25_OVERLAY = merge([PUFS25,Kby(100,500),steps['TTbarFS_13']] )
+
+### FastSim: template to produce signal and overlay with minbias events #PU50
+PUFSAVE50={'--pileup':'AVE_50_BX_25ns',
+        '--pileup_input':'das:/RelValMinBiasFS_13_UP17_ForMixing/%s/GEN-SIM-RECO'%(baseDataSetRelease[15],)}
+FS_UP17_PU50_OVERLAY = merge([PUFSAVE50,Kby(100,500),steps['TTbarFS_13_UP17']] )
 
 ### FastSim: produce sample of premixed minbias events
 steps["FS_PREMIXUP15_PU25"] = merge([
@@ -837,6 +875,51 @@ for x in fs_proclist:
     key = "FS_" + x + "_UP15_PU25"
     steps[key] = merge([{"cfg":steps[x]["cfg"]},FS_UP15_PU25_OVERLAY])
 
+### FastSim: produce sample of premixed minbias events UP17
+steps["FS_PREMIXUP17_PU50"] = merge([
+        {"cfg":"SingleNuE10_cfi",
+         "--fast":"",
+         "--conditions":"auto:phase1_2017_realistic",
+         "-s":"GEN,SIM,RECOBEFMIX,DIGIPREMIX,L1,DIGI2RAW",
+         "--eventcontent":"PREMIX",
+         "--datatier":"GEN-SIM-DIGI-RAW",
+         "--era":"Run2_2017_FastSim",
+         },
+        PUFSAVE50,Kby(100,500)])
+
+### Fastsim: template to produce signal and overlay it with premixed minbias events
+FS_PREMIXUP17_PU50_OVERLAY = merge([
+#        {"-s" : "GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO,HLT:@relval2016,VALIDATION",
+        {"-s" : "GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO,VALIDATION",
+         "--datamix" : "PreMix",
+         "--pileup_input" : "dbs:/RelValFS_PREMIXUP17_PU50/%s/GEN-SIM-DIGI-RAW"%(baseDataSetRelease[16],),
+         },
+        Kby(100,500),step1FastUpg2017Defaults])
+
+# For combined premixing stage1+stage2 workflow
+FS_PREMIXUP17_PU50_LOCAL_OVERLAY = merge([
+        {"--pileup_input": "file:step1.root"
+         },
+        FS_PREMIXUP17_PU50_OVERLAY
+])
+
+### FastSim: list of processes used in FastSim validation
+fs_proclist = ["ZEE_13",'TTbar_13','H125GGgluonfusion_13','ZTT_13','ZMM_13','NuGun_UP17','QCD_FlatPt_15_3000HS_13','SMS-T1tttt_mGl-1500_mLSP-100_13']
+
+### FastSim: produces sample of signal events, overlayed with premixed minbias events
+for x in fs_proclist:
+    key = "FS_" + x + "_PRMXUP17_PU50"
+    steps[key] = merge([FS_PREMIXUP17_PU50_OVERLAY,{"cfg":steps[x]["cfg"]}])
+
+    key = key.replace("PRMXUP17", "PRMXLOCALUP17")
+    steps[key] = merge([FS_PREMIXUP17_PU50_LOCAL_OVERLAY,{"cfg":steps[x]["cfg"]}])
+
+### FastSim: produce sample of signal events, overlayed with minbias events
+for x in fs_proclist:
+    key = "FS_" + x + "_UP17_PU50"
+    steps[key] = merge([{"cfg":steps[x]["cfg"]},FS_UP17_PU50_OVERLAY])
+
+###end UP17
 ###
 steps['TTbarSFS']=merge([{'cfg':'TTbar_8TeV_TuneCUETP8M1_cfi'},
                         {'-s':'GEN,SIM',
@@ -1889,7 +1972,8 @@ steps['HARVESTUP15FS']={'-s':'HARVESTING:validationHarvesting',
                         '--filetype':'DQM',
                         '--scenario':'pp'}
 steps['HARVESTUP15FS_trackingOnly']=merge([{'-s': 'HARVESTING:@trackingOnlyValidation+@trackingOnlyDQM'}, steps['HARVESTUP15FS']])
-
+steps['HARVESTUP17FS']=merge([{'--conditions':'auto:phase1_2017_realistic','--era' : 'Run2_2017_FastSim'},steps['HARVESTUP15FS']])
+steps['HARVESTUP17FS_trackingOnly']=merge([{'-s': 'HARVESTING:@trackingOnlyValidation+@trackingOnlyDQM'}, steps['HARVESTUP17FS']])
 
 steps['ALCASPLIT']={'-s':'ALCAOUTPUT:@allForPrompt',
                     '--conditions':'auto:run1_data',
@@ -1960,12 +2044,15 @@ steps['REMINIAOD_data2016'] = merge([{'-s' : 'PAT,DQM:@miniAODDQM',
                                       '--data' : '',
                                       '--scenario' : 'pp',
                                       '--eventcontent' : 'MINIAOD,DQM',
-                                      '--datatier' : 'MINIAOD,DQMIO'
+                                      '--datatier' : 'MINIAOD,DQMIO',
+                                      '--customise_unsch' : 'PhysicsTools/PatAlgos/slimming/customizeMiniAOD_HcalFixLegacy2016.customizeAll'
                                       },stepMiniAODDefaults])
 
 steps['REMINIAOD_data2016_HIPM'] = merge([{'--era' : 'Run2_2016_HIPM,run2_miniAOD_80XLegacy'},steps['REMINIAOD_data2016']])
 
-steps['REMINIAOD_data2017'] = merge([{'--era' : 'Run2_2017,run2_miniAOD_94XFall17'},steps['REMINIAOD_data2016']])
+stepReMiniAODData17 = merge([{'--era' : 'Run2_2017,run2_miniAOD_94XFall17'},steps['REMINIAOD_data2016']])
+stepReMiniAODData17 = remove(stepReMiniAODData17,'--customise_unsch')
+steps['REMINIAOD_data2017'] = stepReMiniAODData17
 
 # Not sure whether the customisations are in the dict as "--customise" or "--era" so try to
 # remove both. Currently premixing uses "--customise" and everything else uses "--era".
@@ -2000,7 +2087,7 @@ steps['MINIAODMCUP15']     =merge([stepMiniAODMC])
 #steps['MINIAODMCUP15HI']   =merge([{'--conditions':'auto:run2_mc_hi','--era':'Run2_HI'},stepMiniAODMC])
 steps['MINIAODMCUP15FS']   =merge([{'--filein':'file:step1.root','--fast':''},stepMiniAODMC])
 steps['MINIAODMCUP15FS50'] =merge([{'--conditions':'auto:run2_mc_50ns','--era':'Run2_50ns'},steps['MINIAODMCUP15FS']])
-
+steps['MINIAODMCUP17FS']   =merge([{'--filein':'file:step1.root','--fast':'','--conditions':'auto:phase1_2017_realistic','--era':'Run2_2017_FastSim'},stepMiniAODMC])
 steps['DBLMINIAODMCUP15NODQM'] = merge([{'--conditions':'auto:run2_mc',
                                    '-s':'PAT',
                                    '--datatier' : 'MINIAODSIM',
