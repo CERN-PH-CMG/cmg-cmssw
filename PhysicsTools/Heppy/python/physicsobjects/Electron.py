@@ -1,9 +1,13 @@
 from PhysicsTools.Heppy.physicsobjects.Lepton import Lepton
-from PhysicsTools.Heppy.physicsutils.ElectronMVAID import *
+from RecoEgamma.ElectronIdentification.FWLite import electron_mvas, working_points, electron_cut_based_IDs
+from PhysicsTools.Heppy.physicsutils.electronID_Egamma_dict import wps_dict, methods_dict
 from PhysicsTools.HeppyCore.utils.deltar import deltaR
 import ROOT
 import sys
 from math import exp
+
+def raw_to_normalized(raw):
+    return 2.0/(1.0+exp(-2.0*raw))-1
 
 class Electron( Lepton ):
 
@@ -19,50 +23,41 @@ class Electron( Lepton ):
         self.associatedVertex = None
         self.rho              = None
         self.rhoHLT           = None
-        self._mvaNonTrigV0  = {True:None, False:None}
-        self._mvaTrigV0     = {True:None, False:None}
-        self._mvaTrigNoIPV0 = {True:None, False:None}
-        self._mvaRun2 = {}
+        self._mvaid_category = {}
+        self._mvaid_score = {}
+        self._mvaid_normscore = {}
+        self._mvaid_passed = {}
 
-    def electronID( self, id, vertex=None, rho=None ):
+    def electronID( self, id, wp=None):
         if id is None or id == "": return True
-        if vertex == None and hasattr(self,'associatedVertex') and self.associatedVertex != None: vertex = self.associatedVertex
-        if rho == None and hasattr(self,'rho') and self.rho != None: rho = self.rho
-        if hasattr(self,'rhoHLT') and self.rhoHLT != None: rhoHLT = self.rhoHLT
-        if   id == "POG_MVA_ID_NonTrig":  return self.mvaIDLoose()
-        elif id == "POG_MVA_ID_Trig":     return self.mvaIDTight()
-        elif id == "POG_MVA_ID_NonTrig_full5x5":  return self.mvaIDLoose(full5x5=True)
-        elif id == "POG_MVA_ID_Trig_full5x5":     return self.mvaIDTight(full5x5=True)
-        elif id == "POG_MVA_ID_Phys14_NonTrig_VLoose":   return self.mvaIDRun2("NonTrigPhys14","VLoose")
-        elif id == "POG_MVA_ID_Phys14_NonTrig_Loose":    return self.mvaIDRun2("NonTrigPhys14","Loose")
-        elif id == "POG_MVA_ID_Phys14_NonTrig_Tight":    return self.mvaIDRun2("NonTrigPhys14","Tight")
-        elif id == "POG_MVA_ID_Spring15_NonTrig_VLoose":   return self.mvaIDRun2("NonTrigSpring15MiniAOD","VLoose")
-        elif id == "POG_MVA_ID_Spring15_NonTrig_VLooseIdEmu":   return self.mvaIDRun2("NonTrigSpring15MiniAOD","VLooseIdEmu")
-        elif id == "POG_MVA_ID_Spring15_NonTrig_VLooseIdIsoEmu":   return self.mvaIDRun2("NonTrigSpring15MiniAOD","VLooseIdIsoEmu")
-        elif id == "POG_MVA_ID_Spring15_NonTrig_Tight":    return self.mvaIDRun2("NonTrigSpring15MiniAOD","Tight")
-        elif id == "MVA_ID_NonTrig_Phys14Fix_HZZ":     return self.mvaIDRun2("NonTrigPhys14Fix","HZZ")
-        elif id == "MVA_ID_NonTrig_Spring15_HZZ":     return self.mvaIDRun2("NonTrigSpring15MiniAOD","HZZ")
-        elif id == "MVA_ID_NonTrig_Spring16_HZZ":     return self.mvaIDRun2("Spring16","HZZ")
-        elif id == "MVA_ID_NonTrig_Spring16_VLoose":   return self.mvaIDRun2("Spring16","VLoose")
-        elif id == "MVA_ID_NonTrig_Spring16_VLooseIdEmu":   return self.mvaIDRun2("Spring16","VLooseIdEmu")
-        elif id == "MVA_ID_NonTrig_Spring16_Tight":    return self.mvaIDRun2("Spring16","Tight")
-        elif id == "MVA_ID_nonIso_Fall17_Loose":       return self.mvaIDRun2("Fall17noIso","Loose")
-        elif id == "MVA_ID_nonIso_Fall17_wp90":        return self.mvaIDRun2("Fall17noIso","wp90")
-        elif id == "MVA_ID_nonIso_Fall17_wp80":        return self.mvaIDRun2("Fall17noIso","wp80")
-        elif id == "MVA_ID_nonIso_Fall17_SUSYVLooseFO":       return self.mvaIDRun2("Fall17noIso","SUSYVLooseFO")
-        elif id == "MVA_ID_nonIso_Fall17_SUSYVLoose":       return self.mvaIDRun2("Fall17noIso","SUSYVLoose")
-        elif id == "MVA_ID_nonIso_Fall17_SUSYTight":       return self.mvaIDRun2("Fall17noIso","SUSYTight")
-        elif id == "MVA_ID_Iso_Fall17_Loose":       return self.mvaIDRun2("Fall17Iso","Loose")
-        elif id == "MVA_ID_Iso_Fall17_wp90":        return self.mvaIDRun2("Fall17Iso","wp90")
-        elif id == "MVA_ID_Iso_Fall17_wp80":        return self.mvaIDRun2("Fall17Iso","wp80")
+        if wp is not None:
+            return self.id_passes(id, wp)
+        if   id == "POG_MVA_ID_Spring15_NonTrig_VLoose":   return self.mvaIDRun2Custom("NonTrigSpring15MiniAOD","VLoose")
+        elif id == "POG_MVA_ID_Spring15_NonTrig_VLooseIdEmu":   return self.mvaIDRun2Custom("NonTrigSpring15MiniAOD","VLooseIdEmu")
+        elif id == "POG_MVA_ID_Spring15_NonTrig_VLooseIdIsoEmu":   return self.mvaIDRun2Custom("NonTrigSpring15MiniAOD","VLooseIdIsoEmu")
+        elif id == "POG_MVA_ID_Spring15_NonTrig_Tight":    return self.mvaIDRun2Custom("NonTrigSpring15MiniAOD","Tight")
+        elif id == "MVA_ID_NonTrig_Spring15_HZZ":     return self.id_passes("mvaEleID-Spring15-25ns-nonTrig-V1","wpLoose")
+        elif id == "MVA_ID_NonTrig_Spring16_HZZ":     return self.id_passes("mvaEleID-Spring16-HZZ-V1","wpLoose") 
+        elif id == "MVA_ID_NonTrig_Spring16_VLoose":   return self.mvaIDRun2Custom("Spring16","VLoose")
+        elif id == "MVA_ID_NonTrig_Spring16_VLooseIdEmu":   return self.mvaIDRun2Custom("Spring16","VLooseIdEmu")
+        elif id == "MVA_ID_NonTrig_Spring16_Tight":    return self.mvaIDRun2Custom("Spring16","Tight")
+        elif id == "MVA_ID_nonIso_Fall17_Loose":       return self.id_passes("mvaEleID-Fall17-noIso-V1","wpLoose")
+        elif id == "MVA_ID_nonIso_Fall17_wp90":        return self.id_passes("mvaEleID-Fall17-noIso-V1","wp90")
+        elif id == "MVA_ID_nonIso_Fall17_wp80":        return self.id_passes("mvaEleID-Fall17-noIso-V1","wp80")
+        elif id == "MVA_ID_nonIso_Fall17_SUSYVLooseFO": return self.mvaIDRun2Custom("Fall17noIso","SUSYVLooseFO")
+        elif id == "MVA_ID_nonIso_Fall17_SUSYVLoose":   return self.mvaIDRun2Custom("Fall17noIso","SUSYVLoose")
+        elif id == "MVA_ID_nonIso_Fall17_SUSYTight":    return self.mvaIDRun2Custom("Fall17noIso","SUSYTight")
+        elif id == "MVA_ID_Iso_Fall17_Loose":       return self.id_passes("mvaEleID-Fall17-iso-V1","wpLoose")
+        elif id == "MVA_ID_Iso_Fall17_wp90":        return self.id_passes("mvaEleID-Fall17-iso-V1","wp90")
+        elif id == "MVA_ID_Iso_Fall17_wp80":        return self.id_passes("mvaEleID-Fall17-iso-V1","wp80")
         elif id.startswith("POG_Cuts_ID_"):
-            return self.cutBasedId(id.replace("POG_Cuts_ID_","POG_"))
+                return self.cutBasedIdCustom(id.replace("POG_Cuts_ID_","POG_"))
         for ID in self.electronIDs():
             if ID.first == id:
                 return ID.second
         raise RuntimeError("Electron id '%s' not yet implemented in Electron.py" % id)
 
-    def cutBasedId(self, wp, showerShapes="auto"):
+    def cutBasedIdCustom(self, wp, showerShapes="auto"):
         if "_zs" in wp:
             showerShapes = "zs"
             wp = wp.replace("_zs","")
@@ -91,32 +86,6 @@ class Electron( Lepton ):
             'trkIso' : self.dr03TkSumPt()/self.pt(),
         }
         WP = {
-            ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification?rev=31
-            'POG_2012_Veto'   :  [('dEtaIn', [0.007, 0.01]),  ('dPhiIn', [0.8,  0.7 ]), ('sigmaIEtaIEta', [0.01, 0.03]), ('H/E', [0.15, 9e9]), ('1/E-1/p', [9e9,   9e9])],
-            'POG_2012_Loose'  :  [('dEtaIn', [0.007, 0.009]), ('dPhiIn', [0.15, 0.1 ]), ('sigmaIEtaIEta', [0.01, 0.03]), ('H/E', [0.12, 0.1]), ('1/E-1/p', [0.05, 0.05])],
-            'POG_2012_Medium' :  [('dEtaIn', [0.004, 0.007]), ('dPhiIn', [0.06, 0.03]), ('sigmaIEtaIEta', [0.01, 0.03]), ('H/E', [0.12, 0.1]), ('1/E-1/p', [0.05, 0.05])],
-            'POG_2012_Tight'  :  [('dEtaIn', [0.004, 0.005]), ('dPhiIn', [0.03, 0.02]), ('sigmaIEtaIEta', [0.01, 0.03]), ('H/E', [0.12, 0.1]), ('1/E-1/p', [0.05, 0.05])],
-            # RIC: in the EG POG WPs, isolation is included too. Here only the pure ID part.
-            # dz and d0 cuts are excluded here as well.
-            ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_CSA14_samples?rev=13
-            'POG_CSA14_25ns_v1_Veto'   :  [('dEtaIn', [0.017938, 0.014569]), ('dPhiIn', [0.182958, 0.230914]), ('sigmaIEtaIEta', [0.012708, 0.036384]), ('H/E', [0.335015, 0.200792]), ('1/E-1/p', [0.198287, 0.146856])],
-            'POG_CSA14_25ns_v1_Loose'  :  [('dEtaIn', [0.014928, 0.013045]), ('dPhiIn', [0.141050, 0.149017]), ('sigmaIEtaIEta', [0.011304, 0.035536]), ('H/E', [0.127690, 0.107898]), ('1/E-1/p', [0.097806, 0.102261])],
-            'POG_CSA14_25ns_v1_Medium' :  [('dEtaIn', [0.013071, 0.010006]), ('dPhiIn', [0.132113, 0.052321]), ('sigmaIEtaIEta', [0.010726, 0.032882]), ('H/E', [0.109761, 0.101755]), ('1/E-1/p', [0.032639, 0.041427])],
-            'POG_CSA14_25ns_v1_Tight'  :  [('dEtaIn', [0.012671, 0.008823]), ('dPhiIn', [0.025218, 0.027286]), ('sigmaIEtaIEta', [0.010061, 0.030222]), ('H/E', [0.065085, 0.090710]), ('1/E-1/p', [0.027873, 0.019404])],
-            'POG_CSA14_50ns_v1_Veto'   :  [('dEtaIn', [0.021, 0.028]), ('dPhiIn', [0.25 , 0.23 ]), ('sigmaIEtaIEta', [0.012, 0.035]), ('H/E', [0.24 , 0.19 ]), ('1/E-1/p', [0.32 , 0.13 ])],
-            'POG_CSA14_50ns_v1_Loose'  :  [('dEtaIn', [0.016, 0.025]), ('dPhiIn', [0.080, 0.097]), ('sigmaIEtaIEta', [0.012, 0.032]), ('H/E', [0.15 , 0.12 ]), ('1/E-1/p', [0.11 , 0.11 ])],
-            'POG_CSA14_50ns_v1_Medium' :  [('dEtaIn', [0.015, 0.023]), ('dPhiIn', [0.051, 0.056]), ('sigmaIEtaIEta', [0.010, 0.030]), ('H/E', [0.10 , 0.099]), ('1/E-1/p', [0.053, 0.11 ])],
-            'POG_CSA14_50ns_v1_Tight'  :  [('dEtaIn', [0.012, 0.019]), ('dPhiIn', [0.024, 0.043]), ('sigmaIEtaIEta', [0.010, 0.029]), ('H/E', [0.074, 0.080]), ('1/E-1/p', [0.026, 0.076])],
-            ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_PHYS14_sample?rev=13
-            'POG_PHYS14_25ns_v1_Veto'   :  [('dEtaIn', [0.016315, 0.010671]), ('dPhiIn', [0.252044, 0.245263]), ('sigmaIEtaIEta', [0.011100 , 0.033987]), ('H/E', [0.345843, 0.134691]), ('1/E-1/p', [0.248070, 0.157160])],
-            'POG_PHYS14_25ns_v1_Loose'  :  [('dEtaIn', [0.012442, 0.010654]), ('dPhiIn', [0.072624, 0.145129]), ('sigmaIEtaIEta', [0.010557 , 0.032602]), ('H/E', [0.121476, 0.131862]), ('1/E-1/p', [0.221803, 0.142283])],
-            'POG_PHYS14_25ns_v1_Medium' :  [('dEtaIn', [0.007641, 0.009285]), ('dPhiIn', [0.032643, 0.042447]), ('sigmaIEtaIEta', [0.010399 , 0.029524]), ('H/E', [0.060662, 0.104263]), ('1/E-1/p', [0.153897, 0.137468])],
-            'POG_PHYS14_25ns_v1_Tight'  :  [('dEtaIn', [0.006574, 0.005681]), ('dPhiIn', [0.022868, 0.032046]), ('sigmaIEtaIEta', [0.010181 , 0.028766]), ('H/E', [0.037553, 0.081902]), ('1/E-1/p', [0.131191, 0.106055])],
-            ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_PHYS14_sample?rev=17
-            'POG_PHYS14_25ns_v2_Veto'   :  [('dEtaIn', [0.013625, 0.011932]), ('dPhiIn', [0.230374, 0.255450]), ('sigmaIEtaIEta', [0.011586 , 0.031849]), ('H/E', [0.181130, 0.223870]), ('1/E-1/p', [0.295751, 0.155501])],
-            'POG_PHYS14_25ns_v2_Loose'  :  [('dEtaIn', [0.009277, 0.009833]), ('dPhiIn', [0.094739, 0.149934]), ('sigmaIEtaIEta', [0.010331 , 0.031838]), ('H/E', [0.093068, 0.115754]), ('1/E-1/p', [0.189968, 0.140662])],
-            'POG_PHYS14_25ns_v2_Medium' :  [('dEtaIn', [0.008925, 0.007429]), ('dPhiIn', [0.035973, 0.067879]), ('sigmaIEtaIEta', [0.009996 , 0.030135]), ('H/E', [0.050537, 0.086782]), ('1/E-1/p', [0.091942, 0.100683])],
-            'POG_PHYS14_25ns_v2_Tight'  :  [('dEtaIn', [0.006046, 0.007057]), ('dPhiIn', [0.028092, 0.030159]), ('sigmaIEtaIEta', [0.009947 , 0.028237]), ('H/E', [0.045772, 0.067778]), ('1/E-1/p', [0.020118, 0.098919])],
             ## ------- https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2?rev=24#Working_points_for_Spring15_MC_s
             'POG_SPRING15_50ns_v2_Veto'   :  [('dEtaIn', [0.01260, 0.01090]), ('dPhiIn', [0.1070, 0.2190]), ('sigmaIEtaIEta', [0.0120, 0.0339]), ('H/E', [0.1860, 0.0962]), ('1/E-1/p', [0.2390, 0.141])],
             'POG_SPRING15_50ns_v2_Loose'  :  [('dEtaIn', [0.00976, 0.00952]), ('dPhiIn', [0.0929, 0.1810]), ('sigmaIEtaIEta', [0.0105, 0.0318]), ('H/E', [0.0765, 0.0824]), ('1/E-1/p', [0.1840, 0.125])],
@@ -140,25 +109,6 @@ class Electron( Lepton ):
         }
         WP_conversion_veto = {
             # missing Hits incremented by 1 because we return False if >=, note the '='
-            ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_CSA14_samples?rev=13
-            'POG_CSA14_25ns_v1_ConvVeto_Veto'   :  WP['POG_CSA14_25ns_v1_Veto'  ]+[('conversionVeto', [True, True]), ('missingHits', [3, 4])],
-            'POG_CSA14_25ns_v1_ConvVeto_Loose'  :  WP['POG_CSA14_25ns_v1_Loose' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            'POG_CSA14_25ns_v1_ConvVeto_Medium' :  WP['POG_CSA14_25ns_v1_Medium']+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            'POG_CSA14_25ns_v1_ConvVeto_Tight'  :  WP['POG_CSA14_25ns_v1_Tight' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            'POG_CSA14_50ns_v1_ConvVeto_Veto'   :  WP['POG_CSA14_50ns_v1_Veto'  ]+[('conversionVeto', [True, True]), ('missingHits', [3, 4])],
-            'POG_CSA14_50ns_v1_ConvVeto_Loose'  :  WP['POG_CSA14_50ns_v1_Loose' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            'POG_CSA14_50ns_v1_ConvVeto_Medium' :  WP['POG_CSA14_50ns_v1_Medium']+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            'POG_CSA14_50ns_v1_ConvVeto_Tight'  :  WP['POG_CSA14_50ns_v1_Tight' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_PHYS14_sample?rev=13
-            'POG_PHYS14_25ns_v1_ConvVeto_Veto'   :  WP['POG_PHYS14_25ns_v1_Veto'  ]+[('conversionVeto', [True, True]), ('missingHits', [3, 4])],
-            'POG_PHYS14_25ns_v1_ConvVeto_Loose'  :  WP['POG_PHYS14_25ns_v1_Loose' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            'POG_PHYS14_25ns_v1_ConvVeto_Medium' :  WP['POG_PHYS14_25ns_v1_Medium']+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            'POG_PHYS14_25ns_v1_ConvVeto_Tight'  :  WP['POG_PHYS14_25ns_v1_Tight' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_PHYS14_sample?rev=17
-            'POG_PHYS14_25ns_v2_ConvVeto_Veto'   :  WP['POG_PHYS14_25ns_v2_Veto'  ]+[('conversionVeto', [True, True]), ('missingHits', [3, 4])],
-            'POG_PHYS14_25ns_v2_ConvVeto_Loose'  :  WP['POG_PHYS14_25ns_v2_Loose' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            'POG_PHYS14_25ns_v2_ConvVeto_Medium' :  WP['POG_PHYS14_25ns_v2_Medium']+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
-            'POG_PHYS14_25ns_v2_ConvVeto_Tight'  :  WP['POG_PHYS14_25ns_v2_Tight' ]+[('conversionVeto', [True, True]), ('missingHits', [2, 2])],
             ## ------- https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2?rev=24#Working_points_for_Spring15_MC_s
             'POG_SPRING15_50ns_v2_ConvVeto_Veto'   :  WP['POG_SPRING15_50ns_v2_Veto'  ]+[('conversionVeto', [True, True]), ('missingHits', [3, 4])],
             'POG_SPRING15_50ns_v2_ConvVeto_Loose'  :  WP['POG_SPRING15_50ns_v2_Loose' ]+[('conversionVeto', [True, True]), ('missingHits', [3, 2])],
@@ -183,16 +133,6 @@ class Electron( Lepton ):
         WP.update(WP_conversion_veto)
 
         WP_conversion_veto_DxyDz = {
-            ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_PHYS14_sample
-            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Veto'   :  WP['POG_PHYS14_25ns_v1_ConvVeto_Veto'  ]+[('dxy',[0.060279, 0.273097]), ('dz',[0.800538, 0.885860])],
-            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Loose'  :  WP['POG_PHYS14_25ns_v1_ConvVeto_Loose' ]+[('dxy',[0.022664, 0.097358]), ('dz',[0.173670, 0.198444])],
-            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Medium' :  WP['POG_PHYS14_25ns_v1_ConvVeto_Medium']+[('dxy',[0.011811, 0.051682]), ('dz',[0.070775, 0.180720])],
-            'POG_PHYS14_25ns_v1_ConvVetoDxyDz_Tight'  :  WP['POG_PHYS14_25ns_v1_ConvVeto_Tight' ]+[('dxy',[0.009924, 0.027261]), ('dz',[0.015310, 0.147154])],
-            ## ------- https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_PHYS14_sample?rev=17
-            'POG_PHYS14_25ns_v2_ConvVetoDxyDz_Veto'   :  WP['POG_PHYS14_25ns_v2_ConvVeto_Veto'  ]+[('dxy',[0.094095, 0.342293]), ('dz',[0.713070, 0.953461])],
-            'POG_PHYS14_25ns_v2_ConvVetoDxyDz_Loose'  :  WP['POG_PHYS14_25ns_v2_ConvVeto_Loose' ]+[('dxy',[0.035904, 0.099266]), ('dz',[0.075496, 0.197897])],
-            'POG_PHYS14_25ns_v2_ConvVetoDxyDz_Medium' :  WP['POG_PHYS14_25ns_v2_ConvVeto_Medium']+[('dxy',[0.012235, 0.036719]), ('dz',[0.042020, 0.138142])],
-            'POG_PHYS14_25ns_v2_ConvVetoDxyDz_Tight'  :  WP['POG_PHYS14_25ns_v2_ConvVeto_Tight' ]+[('dxy',[0.008790, 0.027984]), ('dz',[0.021226, 0.133431])],
             ## ------- https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2?rev=24#Working_points_for_Spring15_MC_s
             'POG_SPRING15_50ns_v2_ConvVetoDxyDz_Veto'   :  WP['POG_SPRING15_50ns_v2_ConvVeto_Veto'  ]+[('dxy',[0.0621, 0.2790]), ('dz',[0.613, 0.947])],
             'POG_SPRING15_50ns_v2_ConvVetoDxyDz_Loose'  :  WP['POG_SPRING15_50ns_v2_ConvVeto_Loose' ]+[('dxy',[0.0227, 0.2420]), ('dz',[0.379, 0.921])],
@@ -223,127 +163,37 @@ class Electron( Lepton ):
                 return False
         return True
 
-    def mvaId( self ):
-        return self.mvaNonTrigV0()
-
     def tightId( self ):
         return self.tightIdResult
 
     def hltId( self ):
         return self.hltSafeIdResult
 
-    def mvaNonTrigV0( self, full5x5=False, debug = False ):
-        if self._mvaNonTrigV0[full5x5] == None:
-            if self.associatedVertex == None: raise RuntimeError("You need to set electron.associatedVertex before calling any MVA")
-            if self.rho              == None: raise RuntimeError("You need to set electron.rho before calling any MVA")
-            self._mvaNonTrigV0[full5x5] = ElectronMVAID_NonTrig(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
-        return self._mvaNonTrigV0[full5x5]
-
-    def mvaTrigV0( self, full5x5=False, debug = False ):
-        if self._mvaTrigV0[full5x5] == None:
-            if self.associatedVertex == None: raise RuntimeError("You need to set electron.associatedVertex before calling any MVA")
-            if self.rho              == None: raise RuntimeError("You need to set electron.rho before calling any MVA")
-            self._mvaTrigV0[full5x5] = ElectronMVAID_Trig(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
-        return self._mvaTrigV0[full5x5]
-
-    def mvaTrigNoIPV0( self, full5x5=False, debug = False ):
-        if self._mvaTrigNoIPV0[full5x5] == None:
-            if self.associatedVertex == None: raise RuntimeError("You need to set electron.associatedVertex before calling any MVA")
-            if self.rho              == None: raise RuntimeError("You need to set electron.rho before calling any MVA")
-            self._mvaTrigNoIPV0[full5x5] = ElectronMVAID_TrigNoIP(self.physObj, self.associatedVertex, self.rho, full5x5, debug)
-        return self._mvaTrigNoIPV0[full5x5]
-
-    def mvaRun2( self, name, debug = False ):
-        if name not in self._mvaRun2:
-            if name == "NonTrigSpring15MiniAOD" and self.physObj.hasUserFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"):
-                self._mvaRun2[name] =  self.physObj.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values")
-                return self._mvaRun2[name]
-            if name not in ElectronMVAID_ByName: raise RuntimeError("Unknown electron run2 mva id %s (known ones are: %s)\n" % (name, ElectronMVAID_ByName.keys()))
-            if name in ("Spring16HZZ","Spring16GP","Fall17noIso","Fall17Iso"):
-                if self.event == None: raise RuntimeError("You need to set electron.event before calling any new MVA")
-                self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.event, self.associatedVertex, self.rho, debug)
+    def mvaRun2(self, name):
+        '''Returns the normalized score of an MVA ID (range: [-1,1])'''
+        if name.startswith("mvaEleID-"):
+            return self.mva_score(name, norm=True)
+        elif name == "NonTrigSpring15MiniAOD":
+            return self.physObj.userFloat("ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values")
+        else:
+            ShortNames = { "NonTrigSpring15" : "mvaEleID-Spring15-25ns-nonTrig-V1",
+                           "Fall17noIso" : "mvaEleID-Fall17-noIso-V1",
+                           "Fall17Iso" : "mvaEleID-Fall17-iso-V1",
+                           "Fall17V1noIso" : "mvaEleID-Fall17-noIso-V1",
+                           "Fall17V1Iso" : "mvaEleID-Fall17-iso-V1",
+                           "Fall17V2noIso" : "mvaEleID-Fall17-noIso-V2",
+                           "Fall17V2Iso" : "mvaEleID-Fall17-iso-V2",
+                           "Spring16GP" : "mvaEleID-Spring16-GeneralPurpose-V1",
+                           "Spring16HZZ" : "mvaEleID-Spring16-HZZ-V1" }
+            if name in ShortNames:
+                return self.mva_score(ShortNames[name], norm=True)
             else:
-                if self.associatedVertex == None: raise RuntimeError("You need to set electron.associatedVertex before calling any MVA")
-                if self.rho              == None: raise RuntimeError("You need to set electron.rho before calling any MVA")
-                # -v---- below is correct in Heppy 74X, but probably not functional anyway
-                self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.associatedVertex, self.rho, True, debug)
-                # -v---- below would be correct for CMGTools 74X witht the updated Spring15 MVA electron ID
-                #if self.event            == None: raise RuntimeError, "You need to set electron.event before calling any MVA"
-                #self._mvaRun2[name] = ElectronMVAID_ByName[name](self.physObj, self.associatedVertex, self.event, self.rho, True, debug)
-        return self._mvaRun2[name]
+                raise RuntimeError("Can't do %s at the moment" % name)
 
-    def mvaIDTight(self, full5x5=False):
-        eta = abs(self.superCluster().eta())
-        if self.pt() < 20:
-            if   (eta < 0.8)  : return self.mvaTrigV0(full5x5) > +0.00;
-            elif (eta < 1.479): return self.mvaTrigV0(full5x5) > +0.10;
-            else              : return self.mvaTrigV0(full5x5) > +0.62;
-        else:
-            if   (eta < 0.8)  : return self.mvaTrigV0(full5x5) > +0.94;
-            elif (eta < 1.479): return self.mvaTrigV0(full5x5) > +0.85;
-            else              : return self.mvaTrigV0(full5x5) > +0.92;
-
-    def mvaIDLoose(self, full5x5=False):
-        eta = abs(self.superCluster().eta())
-        if self.pt() < 10:
-            if   (eta < 0.8)  : return self.mvaNonTrigV0(full5x5) > +0.47;
-            elif (eta < 1.479): return self.mvaNonTrigV0(full5x5) > +0.004;
-            else              : return self.mvaNonTrigV0(full5x5) > +0.295;
-        else:
-            if   (eta < 0.8)  : return self.mvaNonTrigV0(full5x5) > -0.34;
-            elif (eta < 1.479): return self.mvaNonTrigV0(full5x5) > -0.65;
-            else              : return self.mvaNonTrigV0(full5x5) > +0.60;
-
-    def mvaIDRun2(self, name, wp):
-        eta = abs(self.superCluster().eta())
-        if name == "NonTrigPhys14":
-            if wp=="Loose":
-                if   (eta < 0.8)  : return self.mvaRun2(name) > +0.35;
-                elif (eta < 1.479): return self.mvaRun2(name) > +0.20;
-                else              : return self.mvaRun2(name) > -0.52;
-            elif wp=="VLoose":
-                if   (eta < 0.8)  : return self.mvaRun2(name) > -0.11;
-                elif (eta < 1.479): return self.mvaRun2(name) > -0.35;
-                else              : return self.mvaRun2(name) > -0.55;
-            elif wp=="Tight":
-                if   (eta < 0.8)  : return self.mvaRun2(name) > 0.73;
-                elif (eta < 1.479): return self.mvaRun2(name) > 0.57;
-                else              : return self.mvaRun2(name) > 0.05;
-            else: raise RuntimeError("Ele MVA ID Working point not found")
-        elif name == "NonTrigPhys14Fix":
-            if wp == "HZZ":
-                if self.pt() <= 10:
-                    if   eta < 0.8  : return self.mvaRun2(name) > -0.586;
-                    elif eta < 1.479: return self.mvaRun2(name) > -0.712;
-                    else            : return self.mvaRun2(name) > -0.662;
-                else:
-                    if   eta < 0.8  : return self.mvaRun2(name) > -0.652;
-                    elif eta < 1.479: return self.mvaRun2(name) > -0.701;
-                    else            : return self.mvaRun2(name) > -0.350;
-            else: raise RuntimeError("Ele MVA ID Working point not found")
-        elif name in ("NonTrigSpring15","NonTrigSpring15MiniAOD"):
-            if wp=="VLoose":
-                if self.pt() <= 10:
-                    if   (eta < 0.8)  : return self.mvaRun2(name) > -0.11;
-                    elif (eta < 1.479): return self.mvaRun2(name) > -0.35;
-                    else              : return self.mvaRun2(name) > -0.55;
-                elif wp=="Tight":
-                    if   (eta < 0.8)  : return self.mvaRun2(name) > 0.73;
-                    elif (eta < 1.479): return self.mvaRun2(name) > 0.57;
-                    else              : return self.mvaRun2(name) > 0.05;
-                else: raise RuntimeError("Ele MVA ID Working point not found")
-            elif name == "NonTrigPhys14Fix":
-                if wp == "HZZ":
-                    if self.pt() <= 10:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.586;
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.712;
-                        else            : return self.mvaRun2(name) > -0.662;
-                    else:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.652;
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.701;
-                        else            : return self.mvaRun2(name) > -0.350;
-                else: raise RuntimeError("Ele MVA ID Working point not found")
-            elif name in ("NonTrigSpring15","NonTrigSpring15MiniAOD"):
+    def mvaIDRun2Custom(self, name, wp):
+            '''Checks whether an electron passes a custom working point of an MVA ID not provided by VID'''
+            eta = abs(self.superCluster().eta())
+            if name in ("NonTrigSpring15","NonTrigSpring15MiniAOD"):
                 if wp=="VLoose":
                     if self.pt() <= 10:
                         if   (eta < 0.8)  : return self.mvaRun2(name) > -0.11;
@@ -366,57 +216,20 @@ class Electron( Lepton ):
                     elif (eta < 1.479): return self.mvaRun2(name) > 0.60;
                     else              : return self.mvaRun2(name) > 0.17;
                 elif wp == "HZZ":
-                    if self.pt() <= 10:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.265;
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.556;
-                        else            : return self.mvaRun2(name) > -0.551;
-                    else:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.072;
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.286;
-                        else            : return self.mvaRun2(name) > -0.267;
+                    return self.id_passes("mvaEleID-Spring15-25ns-nonTrig-V1","wpLoose")
                 elif wp == "POG80":
-                    if self.pt() > 10.:
-                        if eta < 0.8: return self.mvaRun2(name) > 0.967083
-                        elif eta < 1.479: return self.mvaRun2(name) > 0.929117
-                        else: return self.mvaRun2(name) > 0.726311
-                    else: # pt <= 10
-                        if eta < 0.8: return self.mvaRun2(name) > 0.287435
-                        elif eta < 1.479: return self.mvaRun2(name) > 0.221846
-                        else: return self.mvaRun2(name) > -0.303263
+                    return self.id_passes("mvaEleID-Spring15-25ns-nonTrig-V1","wp80")
                 elif wp == "POG90":
-                    if self.pt() > 10.:
-                        if eta < 0.8: return self.mvaRun2(name) > 0.913286
-                        elif eta < 1.479: return self.mvaRun2(name) > 0.805013
-                        else: return self.mvaRun2(name) > 0.358969
-                    else: # pt <= 10
-                        if eta < 0.8: return self.mvaRun2(name) > -0.083313
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.235222
-                        else: return self.mvaRun2(name) > -0.67099
-                else: raise RuntimeError("Ele MVA ID Working point not found")
+                    return self.id_passes("mvaEleID-Spring15-25ns-nonTrig-V1","wp90")
+                else: raise RuntimeError("Ele MVA ID Working point '%s' of '%s' not found" % (wp, name))
             elif name == "Spring16":
                 smooth_cut = False
                 if wp == "HZZ":
-                    if self.pt() <= 10:
-                        if   eta < 0.8  : return self.mvaRun2(name+'HZZ') > -0.211;
-                        elif eta < 1.479: return self.mvaRun2(name+'HZZ') > -0.396;
-                        else            : return self.mvaRun2(name+'HZZ') > -0.215;
-                    else:
-                        if   eta < 0.8  : return self.mvaRun2(name+'HZZ') > -0.870;
-                        elif eta < 1.479: return self.mvaRun2(name+'HZZ') > -0.838;
-                        else            : return self.mvaRun2(name+'HZZ') > -0.763;
-                elif wp == "POG80": 
-                    # for pt < 10 the performance is suboptimal, 
-                    #see https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2 for updates on this category
-                    if   eta < 0.8  : return self.mvaRun2(name+'GP') > 0.940962684155;
-                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.899208843708;
-                    else            : return self.mvaRun2(name+'GP') > 0.758484721184;
-
+                    return self.id_passes("mvaEleID-Spring16-HZZ-V1","wpLoose")
+                elif wp == "POG80":
+                    return self.id_passes("mvaEleID-Spring16-GeneralPurpose-V1","wp80")
                 elif wp == "POG90":
-                    # for pt < 10 the performance is suboptimal, 
-                    #see https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2 for updates on this category
-                    if eta < 0.8: return self.mvaRun2(name+'GP') > 0.836695742607
-                    elif eta < 1.479: return self.mvaRun2(name+'GP') > 0.715337944031
-                    else: return self.mvaRun2(name+'GP') > 0.356799721718
+                    return self.id_passes("mvaEleID-Spring16-GeneralPurpose-V1","wp90")
                 elif wp=="VLoose":
                     smooth_cut = True
                     _vlow = [0.46,-0.03,0.06]
@@ -432,7 +245,7 @@ class Electron( Lepton ):
                     _low = [0.77,0.56,0.48]
                     _vlow = _low
                     _high = [0.52,0.11,-0.01]
-                if not smooth_cut: raise RuntimeError("Ele MVA ID Working point not found")
+                if not smooth_cut: raise RuntimeError("Ele MVA ID Working point '%s' not found for '%s'" % (wp, name))
                 val = self.mvaRun2(name+'GP') if self.pt()>10 else self.mvaRun2(name+'HZZ')
                 if self.pt()<=10:
                     return (val > _vlow[(eta>=0.8)+(eta>=1.479)])
@@ -442,69 +255,13 @@ class Electron( Lepton ):
                     c = (a-b)/10
                     cut = min(a,max(b,a-c*(self.pt()-15))) # warning: the _high WP must be looser than the _low one
                     return (val>cut)
-
             elif name == "Fall17noIso":
                 if wp == 'Loose':
-                    if self.pt() <= 10:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.13285867293779202
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.31765300958836074
-                        else            : return self.mvaRun2(name) > -0.0799205914718861
-                    else:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.856871961305474
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.8107642141584835
-                        else            : return self.mvaRun2(name) > -0.7179265933023059
+                    return self.id_passes("mvaEleID-Fall17-noIso-V1","wpLoose")
                 elif wp == 'wp90':
-                    if self.pt()<=10 and eta<0.8:
-                        c = 0.9165112826974601
-                        tau = 2.7381703555094217
-                        A = 1.03549199648109
-                    elif self.pt()>10 and eta<0.8:
-                        c = 0.9616542816132922
-                        tau = 8.757943837889817
-                        A = 3.1390200321591206
-                    elif self.pt()<=10 and eta<1.479:
-                        c = 0.8655738322220173
-                        tau = 2.4027944652597073
-                        A = 0.7975615613282494
-                    elif self.pt()>10 and eta<1.479:
-                        c = 0.9319258011430132
-                        tau = 8.846057432565809
-                        A = 3.5985063793347787
-                    elif self.pt()<=10:
-                        c = -3016.035055227131
-                        tau = -52140.61856333602
-                        A = -3016.3029387236506
-                    elif self.pt()>10:
-                        c = 0.8899260780999244
-                        tau = 10.124234115859881
-                        A = 4.352791250718547
-                    return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
+                    return self.id_passes("mvaEleID-Fall17-noIso-V1","wp90")
                 elif wp == 'wp80':
-                    if self.pt()<=10 and eta<0.8:
-                        c = 0.9530240956555949
-                        tau = 2.7591425841003647
-                        A = 0.4669644718545271
-                    elif self.pt()>10 and eta<0.8:
-                        c = 0.9825268564943458
-                        tau = 8.702601455860762
-                        A = 1.1974861596609097
-                    elif self.pt()<=10 and eta<1.479:
-                        c = 0.9336564763961019
-                        tau = 2.709276284272272
-                        A = 0.33512286599215946
-                    elif self.pt()>10 and eta<1.479:
-                        c = 0.9727509457929913
-                        tau = 8.179525631018565
-                        A = 1.7111755094657688
-                    elif self.pt()<=10:
-                        c = 0.9313133688365339
-                        tau = 1.5821934800715558
-                        A = 3.8889462619659265
-                    elif self.pt()>10:
-                        c = 0.9562619539540145
-                        tau = 8.109845366281608
-                        A = 3.013927699126942
-                    return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
+                    return self.id_passes("mvaEleID-Fall17-noIso-V1","wp80")
                 elif wp == 'SUSYVLooseFO':
                     if self.pt()<5:
                         raise RuntimeError('MVA_ID_nonIso_Fall17_SUSYVLooseFO electron ID cannot be called for objects with pt below 5 GeV')
@@ -549,71 +306,128 @@ class Electron( Lepton ):
                         elif eta<1.479: _thiscut = 0.475
                         else: _thiscut = 0.32
                     return self.mvaRun2(name) > _thiscut
-
+                else: raise RuntimeError("Unsupported WP '%s' for '%s'" % (wp, name))
             elif name == "Fall17Iso":
                 if wp == 'Loose':
-                    if self.pt() <= 10:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.09564086146419018
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.28229916981926795
-                        else            : return self.mvaRun2(name) > -0.05466682296962322
-                    else:
-                        if   eta < 0.8  : return self.mvaRun2(name) > -0.833466688584422
-                        elif eta < 1.479: return self.mvaRun2(name) > -0.7677000247570116
-                        else            : return self.mvaRun2(name) > -0.6917305995653829
+                    return self.id_passes("mvaEleID-Fall17-iso-V1","wpLoose")
                 elif wp == 'wp90':
-                    if self.pt()<=10 and eta<0.8:
-                        c = 0.9387070396095831
-                        tau = 2.6525585228167636
-                        A = 0.8222647164151365
-                    elif self.pt()>10 and eta<0.8:
-                        c = 0.9717674837607253
-                        tau = 8.912850985100356
-                        A = 1.9712414940437244
-                    elif self.pt()<=10 and eta<1.479:
-                        c = 0.8948802925677235
-                        tau = 2.7645670358783523
-                        A = 0.4123381218697539
-                    elif self.pt()>10 and eta<1.479:
-                        c = 0.9458745023265976
-                        tau = 8.83104420392795
-                        A = 2.40849932040698
-                    elif self.pt()<=10:
-                        c = -1830.8583661119892
-                        tau = -36578.11055382301
-                        A = -1831.2083578116517
-                    elif self.pt()>10:
-                        c = 0.8979112012086751
-                        tau = 9.814082144168015
-                        A = 4.171581694893849
-                    return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
+                    return self.id_passes("mvaEleID-Fall17-iso-V1","wp90")
                 elif wp == 'wp80':
-                    if self.pt()<=10 and eta<0.8:
-                        c = 0.9725509559754997
-                        tau = 2.976593261509491
-                        A = 0.2653858736397496
-                    elif self.pt()>10 and eta<0.8:
-                        c = 0.9896562087723659
-                        tau = 10.342490511998674
-                        A = 0.40204156417414094
-                    elif self.pt()<=10 and eta<1.479:
-                        c = 0.9508038141601247
-                        tau = 2.6633500558725713
-                        A = 0.2355820499260076
-                    elif self.pt()>10 and eta<1.479:
-                        c = 0.9819232656533827
-                        tau = 9.05548836482051
-                        A = 0.772674931169389
-                    elif self.pt()<=10:
-                        c = 0.9365037167596238
-                        tau = 1.5765442323949856
-                        A = 3.067015289215309
-                    elif self.pt()>10:
-                        c = 0.9625098201744635
-                        tau = 8.42589315557279
-                        A = 2.2916152615134173
-                    return self.mvaRun2(name) > c-A*exp(-self.pt()/tau)
+                    return self.id_passes("mvaEleID-Fall17-iso-V1","wp80")
+                else: raise RuntimeError("Unsupported WP '%s' for '%s'" % (wp, name))
 
-            else: raise RuntimeError("Ele MVA ID type not found")
+            else: raise RuntimeError("Ele MVA ID '%s' not found" % name)
+
+    def mva_category(self, name):
+        '''takes an mva name and returns the category of the electron,
+        only available using FWLite and Egamma code.'''
+        if 'cutBased' in name :
+            return None
+        if name not in self._mvaid_category :
+            self._fill_mva_score_and_category(name)
+        return self._mvaid_category[name]
+
+    def mvaId(self, name):
+        '''For a transparent treatment of electrons, muons and taus.'''
+        return self.mva_score(name)
+
+    def mva_score(self, name, norm=False):
+        '''returns the score of the given mva,
+        only available using FWLite and Egamma code.'''
+        if 'cutBased' in name :
+            return None
+        if norm :
+            if name not in self._mvaid_normscore :
+                self._fill_mva_score_and_category(name)
+            return self._mvaid_normscore[name]
+        else:
+            if name not in self._mvaid_score :
+                self._fill_mva_score_and_category(name)
+            return self._mvaid_score[name]
+
+    def id_passes(self, name, wp):
+        '''returns True if the electron passes the given working point of the identification'''
+        id = name + '-' + wp
+        if id not in self._mvaid_passed :
+            miniAODids = [miniAODid[0] for miniAODid in self.electronIDs()]
+            if id in miniAODids :
+                passed = self.electronIDs()[miniAODids.index(id)][1]
+            elif id in wps_dict.keys() :
+                FWLitename, FWLitewp = wps_dict[id]
+                if 'cutBased' in name :
+                    passed = electron_cut_based_IDs[FWLitename].passed(
+                        self.physObj,
+                        self.rho,
+                        FWLitewp
+                        )
+                else :
+                    if name not in self._mvaid_score or name not in self._mvaid_category:
+                        self._fill_mva_score_and_category(name)
+                    passed = working_points[FWLitename].passed(
+                        self.physObj,
+                        self._mvaid_score[name],
+                        self._mvaid_category[name],
+                        FWLitewp
+                        )
+            else:
+                raise RuntimeError(
+                    "Electron id " + id \
+                        + " not yet implemented in Electron.py, availables are:" \
+                        + "\n\n from miniAOD:\n {}".format(miniAODids) \
+                        + "\n\n from FWLite:\n {}".format(wps_dict.keys())
+                    )
+            self._mvaid_passed[id] = 1. if passed else 0.
+        return self._mvaid_passed[id]
+
+    def countWP(self,name,WPs=None,skipMissing=False):
+        '''Returns the number of Working Points 
+        that are passed for given ID name.
+        
+        For example if an electron only passes Loose, and 80,
+        Working Points, this will return 2.
+        Uses self.electronID() to evaluate the WPs.
+        If WPs are not specified:
+            for mva IDs it will test ['wp90', 'wp80', 'wpLoose']
+            for cutbased IDs it will test [ "veto","loose","medium","tight" ]
+            if any WP is not available it is skipped.
+        '''
+        if WPs is None:
+            skipMissing = True
+            if name.startswith("mvaEleID-"):
+                WPs = ['wp90', 'wp80', 'wpLoose']
+            elif name.startswith("cutBasedElectronID-"):
+                WPs = ["veto","loose","medium","tight" ]
+            else:
+                raise RuntimeError("Can't figure out WPs for %s" % name)
+        n_WP = 0
+        for WP in WPs:
+            try:
+                if self.electronID(name, WP):
+                    n_WP += 1
+            except RuntimeError:
+                if not skipMissing: raise
+                continue #WP not found so it is skipped
+        return n_WP
+
+    def _fill_mva_score_and_category(self, name):
+        '''Returns the mva score and the electron category for the given mva'''
+        if name in methods_dict.keys() :
+            FWLitename = methods_dict[name]
+            score_raw, category = electron_mvas[FWLitename](
+                self.physObj,
+                self.conversions,
+                self.beamspot,
+                [self.rho]
+                )
+            self._mvaid_category[name] = category
+            self._mvaid_score[name] = score_raw
+            self._mvaid_normscore[name] = raw_to_normalized(score_raw)
+        else:
+            raise RuntimeError(
+                "Electron mva " + name \
+                + " not available in FWLite,\n" \
+                + "availables are:\n {}".format(methods_dict.keys())
+                )
 
     def dEtaInSeed(self):
         if self.physObj.superCluster().isNonnull() and self.physObj.superCluster().seed().isNonnull(): return self.physObj.deltaEtaSuperClusterTrackAtVtx() - self.physObj.superCluster().eta() + self.physObj.superCluster().seed().eta()

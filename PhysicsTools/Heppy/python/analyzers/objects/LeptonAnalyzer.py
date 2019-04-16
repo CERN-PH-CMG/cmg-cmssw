@@ -138,6 +138,10 @@ class LeptonAnalyzer( Analyzer ):
             else:
                 self.mchandles['genPhotons'] = AutoHandle( 'prunedGenParticles', 'std::vector<reco::GenParticle>' )
 
+        # for new MVA ID implementation
+        self.handles['conversions'] = AutoHandle( 'reducedEgamma:reducedConversions', 'reco::ConversionCollection')
+        self.handles['beamspot'] = AutoHandle( 'offlineBeamSpot', 'reco::BeamSpot')
+
     def beginLoop(self, setup):
         super(LeptonAnalyzer,self).beginLoop(setup)
         self.counters.addCounter('events')
@@ -356,9 +360,12 @@ class LeptonAnalyzer( Analyzer ):
         allelectrons = allelenodup
 
         # fill EA for rho-corrected isolation
+        convs, bspot = self.handles['conversions'].product(), self.handles['beamspot'].product()
         for ele in allelectrons:
           ele.rho = float(self.handles['rhoEle'].product()[0])
           ele.rhoHLT = float(self.handles['rhoEleHLT'].product()[0])
+          ele.conversions = convs
+          ele.beamspot = bspot
           if self.eleEffectiveArea == "Data2012":
               # https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection?rev=14
               SCEta = abs(ele.superCluster().eta())
@@ -465,19 +472,16 @@ class LeptonAnalyzer( Analyzer ):
 
         # Set tight MVA id
         for ele in allelectrons:
-            if self.cfg_ana.ele_tightId=="MVA" :
-                 ele.tightIdResult = ele.electronID("POG_MVA_ID_Trig_full5x5")
-            elif self.cfg_ana.ele_tightId=="Cuts_2012" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_2012_Veto") + 1*ele.electronID("POG_Cuts_ID_2012_Loose") + 1*ele.electronID("POG_Cuts_ID_2012_Medium") + 1*ele.electronID("POG_Cuts_ID_2012_Tight")
-            elif self.cfg_ana.ele_tightId=="Cuts_PHYS14_25ns_v1_ConvVetoDxyDz" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_PHYS14_25ns_v1_ConvVetoDxyDz_Tight")
-            elif self.cfg_ana.ele_tightId=="Cuts_SPRING15_25ns_v1_ConvVetoDxyDz" :
-                 ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight")
+            if self.cfg_ana.ele_tightId=="Cuts_SPRING15_25ns_v1_ConvVetoDxyDz" :
+                 ele.tightIdResult = -1 + ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight")
             elif self.cfg_ana.ele_tightId=="Cuts_SPRING16_25ns_v1_ConvVetoDxyDz" :
                  ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_SPRING16_25ns_v1_ConvVetoDxyDz_Tight")
             elif self.cfg_ana.ele_tightId=="Cuts_FALL17_94X_v1_ConvVetoDxyDz" :
                  ele.tightIdResult = -1 + 1*ele.electronID("POG_Cuts_ID_FALL17_94X_v1_ConvVetoDxyDz_Veto") + 1*ele.electronID("POG_Cuts_ID_FALL17_94X_v1_ConvVetoDxyDz_Loose") + 1*ele.electronID("POG_Cuts_ID_FALL17_94X_v1_ConvVetoDxyDz_Medium") + 1*ele.electronID("POG_Cuts_ID_FALL17_94X_v1_ConvVetoDxyDz_Tight")
-
+            elif self.cfg_ana.ele_tightId.startswith("mvaEleID-") and ("-wp" not in self.cfg_ana.ele_tightId):
+                 ele.tightIdResult = ele.countWP(self.cfg_ana.ele_tightId, WPs=["wpLoose", "wp90", "wp80"])
+            elif self.cfg_ana.ele_tightId.startswith("cutBasedElectronID-") and (self.cfg_ana.ele_tightId.split("-")[-1] in ["V1","V2"]):
+                 ele.tightIdResult = ele.countWP(self.cfg_ana.ele_tightId, WPs=["veto", "loose", "medium", "tight"])
             else :
                  try:
                      ele.tightIdResult = ele.electronID(self.cfg_ana.ele_tightId)
@@ -793,7 +797,7 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     # electron isolation correction method (can be "rhoArea" or "deltaBeta")
     ele_isoCorr = "rhoArea" ,
     ele_effectiveAreas = "Spring15_25ns_v1" , #(can be 'Data2012' or 'Phys14_25ns_v1', or 'Spring15_50ns_v1' or 'Spring15_25ns_v1')
-    ele_tightId = "Cuts_2012" ,
+    ele_tightId = "Cuts_SPRING15_25ns_v1_ConvVetoDxyDz" ,
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
     min_dr_electron_muon = 0.02,
     # Mini-isolation, with pT dependent cone: will fill in the miniRelIso, miniRelIsoCharged, miniRelIsoNeutral variables of the leptons (see https://indico.cern.ch/event/368826/ )
