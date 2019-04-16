@@ -1,5 +1,5 @@
-from heppy.framework.analyzer import Analyzer
-from heppy.utils.deltar import matchObjectCollection, deltaR
+from PhysicsTools.HeppyCore.framework.analyzer import Analyzer
+from PhysicsTools.HeppyCore.utils.deltar import matchObjectCollection, deltaR
 
 import collections
 

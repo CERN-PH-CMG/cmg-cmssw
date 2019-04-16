@@ -1,4 +1,4 @@
-from PhysicsTools.Heppy.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from PhysicsTools.Heppy.analyzers.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 
 def var( tree, varName, type=float ):
     tree.var(varName, type)

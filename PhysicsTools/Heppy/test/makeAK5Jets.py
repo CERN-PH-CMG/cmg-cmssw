@@ -13,13 +13,13 @@ process.OUT = cms.OutputModule("PoolOutputModule",
 )
 process.endpath= cms.EndPath(process.OUT)
 
-from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
+from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets
 
 # Select candidates that would pass CHS requirements
 process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV"))
 
 #makes chs ak5 jets   (instead of ak4 that are default in miniAOD 70X)
-process.ak5PFJetsCHS = ak5PFJets.clone(src = 'chs')
+process.ak5PFJetsCHS = ak4PFJets.clone(src = 'chs', rParam = 0.5)
 process.OUT.outputCommands.append("keep *_ak5PFJetsCHS_*_EX")
 
 process.options = cms.untracked.PSet( 

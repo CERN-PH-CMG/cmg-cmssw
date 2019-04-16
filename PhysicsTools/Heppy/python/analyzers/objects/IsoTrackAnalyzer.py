@@ -77,13 +77,13 @@ class IsoTrackAnalyzer( Analyzer ):
     #------------------
     def makeIsoTrack(self, event):
 
-        
+
         event.selectedIsoTrack = []
 
         alltrack = self.handles['isolatedTracks'].product()
         for track in alltrack:
-		track.absIso = track.pfIsolationDR03().chargedHadronIso()
-		event.selectedIsoTrack.append(track)
+            track.absIso = track.pfIsolationDR03().chargedHadronIso()
+            event.selectedIsoTrack.append(track)
 
         event.selectedIsoTrack.sort(key = lambda l : l.pt(), reverse = True)
         self.counters.counter('events').inc('all events')
@@ -115,8 +115,8 @@ class IsoTrackAnalyzer( Analyzer ):
 
 ## ===> require is not the leading lepton and opposite to the leading lepton 
             if( (self.cfg_ana.doSecondVeto) and len(event.selectedLeptons)>0) : 
-               if( deltaR(event.selectedLeptons[0].eta(), event.selectedLeptons[0].phi(), track.eta(), track.phi()) <0.01) : continue
-               if ( (abs(track.pdgId())!=11) and (abs(track.pdgId())!=13) and (track.charge()*event.selectedLeptons[0].charge()) ): continue
+                if( deltaR(event.selectedLeptons[0].eta(), event.selectedLeptons[0].phi(), track.eta(), track.phi()) <0.01) : continue
+                if ( (abs(track.pdgId())!=11) and (abs(track.pdgId())!=13) and (track.charge()*event.selectedLeptons[0].charge()) ): continue
 
 
 ## ===> Redundant:: require the Track Candidate with a  minimum dz
