@@ -83,8 +83,10 @@ class JetReCalibrator:
                     self.JetUncertaintyBySources[source].setJetEta(jet.eta())
                     self.JetUncertaintyBySources[source].setJetPt(corr * jet.pt() * jet.rawFactor())
                     unc = self.JetUncertaintyBySources[source].getUncertainty(True if delta>0. else False)
-                    group_shift += unc*unc
-                group_shift = sqrt(group_shift)
+                    if len(sources) == 1:
+                        group_shift = unc
+                    else:
+                        group_shift = sqrt(group_shift*group_shift + unc*unc)
                 corr *= max(0, 1+delta*group_shift)
             else:
                 if not self.JetUncertainty: raise RuntimeError("Jet energy scale uncertainty shifts requested, but not available")
