@@ -2,6 +2,13 @@
 
 wps_dict = {
   "cutBasedElectronID-Fall17-94X-V2-veto"    : ("Fall1794XV2", "veto"),
+  "cutBasedElectronID-Fall17-94X-V2-loose"   : ("Fall1794XV2", "loose"),
+  "cutBasedElectronID-Fall17-94X-V2-medium"  : ("Fall1794XV2", "medium"),
+  "cutBasedElectronID-Fall17-94X-V2-tight"   : ("Fall1794XV2", "tight"),
+  "cutBasedElectronID-Fall17-94X-V1-veto"    : ("Fall1794XV1", "veto"),
+  "cutBasedElectronID-Fall17-94X-V1-loose"   : ("Fall1794XV1", "loose"),
+  "cutBasedElectronID-Fall17-94X-V1-medium"  : ("Fall1794XV1", "medium"),
+  "cutBasedElectronID-Fall17-94X-V1-tight"   : ("Fall1794XV1", "tight"),
   "mvaEleID-Fall17-noIso-V2-Loose"           : ("Fall17NoIsoV2", "wpLoose"), # kept alternate name for compatibility with H->tau tau code
   "mvaEleID-Fall17-noIso-V2-wpLoose"         : ("Fall17NoIsoV2", "wpLoose"), # official E/gamma name is wpLoose
   "mvaEleID-Fall17-noIso-V2-wp90"            : ("Fall17NoIsoV2", "wp90"),

@@ -380,23 +380,33 @@ class Electron( Lepton ):
             self._mvaid_passed[id] = 1. if passed else 0.
         return self._mvaid_passed[id]
 
-    def countWP(self,name):
+    def countWP(self,name,WPs=None,skipMissing=False):
         '''Returns the number of Working Points 
         that are passed for given ID name.
         
         For example if an electron only passes Loose, and 80,
         Working Points, this will return 2.
         Uses self.electronID() to evaluate the WPs.
-        Will test all WPs in ['wp90', 'wp80', 'wpLoose'].
-        If any WP is not available it is skipped.
+        If WPs are not specified:
+            for mva IDs it will test ['wp90', 'wp80', 'wpLoose']
+            for cutbased IDs it will test [ "veto","loose","medium","tight" ]
+            if any WP is not available it is skipped.
         '''
-        WPs = ['wp90', 'wp80', 'Loose']
+        if WPs is None:
+            skipMissing = True
+            if name.startswith("mvaEleID-"):
+                WPs = ['wp90', 'wp80', 'wpLoose']
+            elif name.startswith("cutBasedElectronID-"):
+                WPs = ["veto","loose","medium","tight" ]
+            else:
+                raise RuntimeError("Can't figure out WPs for %s" % name)
         n_WP = 0
         for WP in WPs:
             try:
                 if self.electronID(name, WP):
                     n_WP += 1
             except RuntimeError:
+                if not skipMissing: raise
                 continue #WP not found so it is skipped
         return n_WP
 
