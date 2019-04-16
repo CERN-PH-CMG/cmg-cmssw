@@ -1,13 +1,32 @@
 import ROOT
 import ctypes
-import pprint
+import os.path
 from numpy import exp
 import sys
-
-from PhysicsTools.Heppy.physicsutils.EffectiveAreas import effective_area_table, effective_area, areas
+import RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_tools
 
 # Python wrappers around the Electron MVAs.
 # Usage example in RecoEgamma/ElectronIdentification/test
+
+def loadEffectiveAreasFile(filename):
+    EAs = None
+    for path in [ "$CMSSW_BASE/src", "$CMSSW_RELEASE_BASE/src", "$CMSSW_RELEASE_BASE/external/$SCRAM_ARCH/data" ]:
+        fpath = os.path.expandvars(path)+"/"+filename
+        if os.path.exists(fpath):
+            EAs = []
+            for line in open(fpath, 'r'):
+                line = line.strip()
+                if line.startswith("#"): continue
+                try:
+                    (etamin, etamax, ea) = map(float, line.split())
+                    if len(EAs) > 0 and etamin != EAs[-1][0]: print "WARNING: in EA file %s: gap between eta ranges." % filename
+                    EAs.append((etamax,ea))
+                except:
+                    print "WARNING: skipping malformed line %s in EA file %s" % (filename, line)
+            if len(EAs) == 0: raise RuntimeError("ERROR: found no valid EA lines in file %s" % filename)
+            break
+    if not EAs: RuntimeError("ERROR: can't locate EA file "+filename)
+    return EAs
 
 class ElectronCutBasedID(object):
     """ Electron cut based ID wrapper class. Allows testing cut based ID working points
@@ -17,7 +36,16 @@ class ElectronCutBasedID(object):
         self.name = name 
         self.tag = tag
         self.working_points = working_points
-
+        self._isoInputs = {}
+    def effectiveArea(self, ele, eaFile):
+        if eaFile not in self._isoInputs:
+            self._isoInputs[eaFile] = loadEffectiveAreasFile(eaFile)
+        table = self._isoInputs[eaFile]
+        eta = abs(ele.superCluster().eta())
+        for etamax, ea in table:
+            if eta < etamax:
+                return ea
+        return table[-1][1]
     def passed(self, ele, rho, wp):
         '''return true if the electron passes the cut based ID working point.
         see https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Offline_selection_criteria_for_V
@@ -40,6 +68,13 @@ class ElectronCutBasedID(object):
             WP = self.working_points[wp][0]
         else:
             WP = self.working_points[wp][1]
+
+        if isinstance(WP, RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_tools.EleWorkingPoint_V4):
+            WPtype = 4
+        elif isinstance(WP, RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_tools.EleWorkingPoint_V5):
+            WPtype = 5
+        else:
+            raise RuntimeError("WP type of %s for %s-%s is not supported." % (WP, self.tag, wp))
         isoInputs = self.working_points[wp][2]
 
         full5x5_sigmaIetaIeta = ele.full5x5_sigmaIetaIeta()
@@ -57,12 +92,16 @@ class ElectronCutBasedID(object):
         chad = pfIso.sumChargedHadronPt
         nhad = pfIso.sumNeutralHadronEt
         pho  = pfIso.sumPhotonEt
-        area_key = [key for key in areas.keys() if key in WP.idName][0]
-        ea_table = effective_area_table(ele, area_key)
-        eA  = effective_area(ele, '03', ea_table)
+        eA  = self.effectiveArea(ele, isoInputs.isoEffAreas)
         iso  = chad + max([0.0, nhad + pho - rho*eA])
         relIsoWithEA = iso/ele.pt()
-        relIsoWithEA_cut = WP.relCombIsolationWithEACut_C0+WP.relCombIsolationWithEACut_Cpt/ele.pt()
+        if WPtype == 5:
+            relIsoWithEA_cut = WP.relCombIsolationWithEACut_C0+WP.relCombIsolationWithEACut_Cpt/ele.pt()
+        elif WPtype == 4:
+            if ele.pt() < 20.: # this 20 GeV value is not in the parameter set
+                relIsoWithEA_cut = WP.relCombIsolationWithEAHighPtCut
+            else:
+                relIsoWithEA_cut = WP.relCombIsolationWithEALowPtCut
 
         ecal_energy_inverse = 1.0/ele.ecalEnergy()
         eSCoverP = ele.eSuperClusterOverP()
@@ -201,17 +240,10 @@ from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25n
         import workingPoints as Spring15_25ns_nonTrig_V1_workingPoints
 
 from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff \
-        import WP_Veto_EB as cutBasedElectronID_Fall17_94X_V2_WP_Veto_EB
-from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff \
-        import WP_Veto_EE as cutBasedElectronID_Fall17_94X_V2_WP_Veto_EE
-from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff \
-        import isoInputs as cutBasedElectronID_Fall17_94X_V2_isoInputs
+        import workingPoints as cutBasedElectronID_Fall17_94X_V2_wps
+from RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff \
+        import workingPoints as cutBasedElectronID_Fall17_94X_V1_wps
 
-cutBasedElectronID_Fall17_94X_V2_wps = dict(
-    veto = (cutBasedElectronID_Fall17_94X_V2_WP_Veto_EB,
-            cutBasedElectronID_Fall17_94X_V2_WP_Veto_EE,
-            cutBasedElectronID_Fall17_94X_V2_isoInputs),
-)
 
 # Dictionary with the relecant e/gmma MVAs
 
@@ -252,4 +284,6 @@ working_points = {
 electron_cut_based_IDs = {
     "Fall1794XV2"   : ElectronCutBasedID("ElectronMVAEstimatorRun2","Fall1794XV2",
                                          cutBasedElectronID_Fall17_94X_V2_wps),
+    "Fall1794XV1"   : ElectronCutBasedID("ElectronMVAEstimatorRun2","Fall1794XV1",
+                                         cutBasedElectronID_Fall17_94X_V1_wps),
 }
