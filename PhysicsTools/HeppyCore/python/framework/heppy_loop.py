@@ -183,7 +183,7 @@ def main( options, args, parser ):
         sys.exit(0)
     if len(selComps)>1:
         shutil.copy( cfgFileName, outDir )
-        pool = multiprocessing.Pool(processes=min(len(selComps),options.ntasks))
+        pool = multiprocessing.Pool(processes=min(len(selComps),options.ntasks,multiprocessing.cpu_count()))
         ## workaround for a scoping problem in ipython+multiprocessing
         import PhysicsTools.HeppyCore.framework.heppy_loop as ML 
         for comp in selComps:
