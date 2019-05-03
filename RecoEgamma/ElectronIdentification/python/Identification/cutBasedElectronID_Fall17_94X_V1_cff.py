@@ -159,6 +159,13 @@ isoInputs = IsolationCutInputs_V2(
 #
 # Set up VID configuration for all cuts and working points
 #
+workingPoints = dict( 
+    veto = (WP_Veto_EB,   WP_Veto_EE, isoInputs),
+    loose = (WP_Loose_EB,   WP_Loose_EE, isoInputs),
+    medium = (WP_Medium_EB,   WP_Medium_EE, isoInputs),
+    tight = (WP_Tight_EB,   WP_Tight_EE, isoInputs)
+)
+
 
 cutBasedElectronID_Fall17_94X_V1_veto = configureVIDCutBasedEleID_V4(WP_Veto_EB, WP_Veto_EE, isoInputs)
 cutBasedElectronID_Fall17_94X_V1_loose = configureVIDCutBasedEleID_V4(WP_Loose_EB, WP_Loose_EE, isoInputs)

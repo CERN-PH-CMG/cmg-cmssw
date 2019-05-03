@@ -10,6 +10,8 @@ import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_G
 import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff as ele_spring16_hzz_v1
 import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff as ele_fall17_iso_v1
 import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff as ele_fall17_noIso_v1
+import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff as ele_fall17_iso_v2
+import RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V2_cff as ele_fall17_noIso_v2
 
 #photon mva ids
 import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring15_25ns_nonTrig_V2p1_cff as pho_spring15_25_nt
@@ -17,7 +19,7 @@ import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring15_50ns_
 import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Spring16_nonTrig_V1_cff as pho_spring16_nt_v1
 import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V1_cff as pho_fall17_94X_v1
 import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V1p1_cff as pho_fall17_94X_v1p1
-
+import RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V2_cff as pho_fall17_94X_v2
 
 ele_mva_prod_name = 'electronMVAValueMapProducer'
 pho_mva_prod_name = 'photonMVAValueMapProducer'
@@ -47,62 +49,53 @@ egamma_modifications = cms.VPSet(
 setup_mva(egamma_modifications[0].electron_config,
           egamma_modifications[1].electron_config,
           ele_mva_prod_name,
-          ele_spring15_nt.mvaSpring15NonTrigClassName+ele_spring15_nt.mvaTag)
+          ele_spring15_nt.mvaClassName+ele_spring15_nt.mvaTag)
 
 setup_mva(egamma_modifications[0].electron_config,
           egamma_modifications[1].electron_config,
           ele_mva_prod_name,
-          ele_spring15_50_t.mvaSpring15TrigClassName+ele_spring15_50_t.mvaTag)
+          ele_spring15_50_t.mvaClassName+ele_spring15_50_t.mvaTag)
 
 setup_mva(egamma_modifications[0].electron_config,
           egamma_modifications[1].electron_config,
           ele_mva_prod_name,
-          ele_spring15_25_t.mvaSpring15TrigClassName+ele_spring15_25_t.mvaTag)
-
-setup_mva(egamma_modifications[0].electron_config,
-          egamma_modifications[1].electron_config,
-          ele_mva_prod_name,
-          ele_spring16_gp_v1.mvaSpring16ClassName+ele_spring16_gp_v1.mvaTag)
-
-setup_mva(egamma_modifications[0].electron_config,
-          egamma_modifications[1].electron_config,
-          ele_mva_prod_name,
-          ele_spring16_hzz_v1.mvaSpring16ClassName+ele_spring16_hzz_v1.mvaTag)
-
-setup_mva(egamma_modifications[0].electron_config,
-          egamma_modifications[1].electron_config,
-          ele_mva_prod_name,
-          ele_fall17_iso_v1.mvaFall17ClassName+ele_fall17_iso_v1.mvaTag)
-
-setup_mva(egamma_modifications[0].electron_config,
-          egamma_modifications[1].electron_config,
-          ele_mva_prod_name,
-          ele_fall17_noIso_v1.mvaFall17ClassName+ele_fall17_noIso_v1.mvaTag)
+          ele_spring15_25_t.mvaClassName+ele_spring15_25_t.mvaTag)
 
 setup_mva(egamma_modifications[0].photon_config,
           egamma_modifications[1].photon_config,
           pho_mva_prod_name,
-          pho_spring15_25_nt.mvaSpring15NonTrigClassName+pho_spring15_25_nt.mvaTag)
+          pho_spring15_25_nt.mvaClassName+pho_spring15_25_nt.mvaTag)
 
 setup_mva(egamma_modifications[0].photon_config,
           egamma_modifications[1].photon_config,
           pho_mva_prod_name,
-          pho_spring15_50_nt.mvaSpring15NonTrigClassName+pho_spring15_50_nt.mvaTag)
+          pho_spring15_50_nt.mvaClassName+pho_spring15_50_nt.mvaTag)
 
-setup_mva(egamma_modifications[0].photon_config,
-          egamma_modifications[1].photon_config,
-          pho_mva_prod_name,
-          pho_spring16_nt_v1.mvaSpring16NonTrigClassName+pho_spring16_nt_v1.mvaTag)
+for ele_mva_cff in [
+          ele_spring16_gp_v1,
+          ele_spring16_hzz_v1,
+          ele_fall17_iso_v1,
+          ele_fall17_noIso_v1,
+          ele_fall17_iso_v2,
+          ele_fall17_noIso_v2,
+        ]:
 
-setup_mva(egamma_modifications[0].photon_config,
-          egamma_modifications[1].photon_config,
-          pho_mva_prod_name,
-          pho_fall17_94X_v1.mvaFall17v1ClassName+pho_fall17_94X_v1.mvaTag)
+    setup_mva(egamma_modifications[0].electron_config,
+              egamma_modifications[1].electron_config,
+              ele_mva_prod_name,
+              ele_mva_cff.mvaClassName + ele_mva_cff.mvaTag)
 
-setup_mva(egamma_modifications[0].photon_config,
-          egamma_modifications[1].photon_config,
-          pho_mva_prod_name,
-          pho_fall17_94X_v1p1.mvaFall17v1p1ClassName+pho_fall17_94X_v1p1.mvaTag)
+for pho_mva_cff in [
+          pho_spring16_nt_v1,
+          pho_fall17_94X_v1,
+          pho_fall17_94X_v1p1,
+          pho_fall17_94X_v2,
+        ]:
+
+    setup_mva(egamma_modifications[0].photon_config,
+              egamma_modifications[1].photon_config,
+              pho_mva_prod_name,
+              pho_mva_cff.mvaClassName + pho_mva_cff.mvaTag)
 
 #############################################################
 # REGRESSION MODIFIERS
