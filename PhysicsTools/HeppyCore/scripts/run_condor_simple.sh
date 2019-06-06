@@ -24,6 +24,11 @@ if [[ "$1" == "-t" && "$2" != "" ]]; then
     maxruntime=$(( $2 * 60 ));
     shift; shift
 fi
+acc=""
+if [[ "$1" == "-a" && "$2" != "" ]]; then
+    acc="$2"
+    shift; shift;
+fi
 
 here=$(pwd)
 if [[ "$bulk" != "" ]]; then
@@ -51,7 +56,7 @@ EOF
 
 [[ "${flavour}" != "" ]] && echo "+JobFlavour = \"${flavour}\"" >> $jobdesc
 [[ "${maxruntime}" != "" ]] && echo "+MaxRuntime = ${maxruntime}" >> $jobdesc
-
+[[ "${acc}" != "" ]] && echo "+AccountingGroup = \"${acc}\"" >> $jobdesc
 if [[ "$bulk" != "" ]]; then
     echo "queue Chunk matching dirs ${bulk}_Chunk*" >> $jobdesc
 else
