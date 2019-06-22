@@ -50,14 +50,13 @@ transfer_input_files=${transfer_input_files},chunk.tar.gz
 cat > ./job_desc.cfg <<EOF
 Universe = vanilla
 Executable = ${scriptName}
-x509userproxy = \$ENV(X509_USER_PROXY)
 Log        = condor_job_\$(ProcId).log
 Output     = condor_job_\$(ProcId).out
 Error      = condor_job_\$(ProcId).error
 should_transfer_files   = YES 
 when_to_transfer_output = ON_EXIT
 transfer_input_files = ${transfer_input_files}
-request_memory = 2000
+request_memory = 4000
 EOF
 
 [[ "${flavour}" != "" ]] && echo "+JobFlavour = \"${flavour}\"" >> ./job_desc.cfg
@@ -66,4 +65,4 @@ EOF
 echo "queue 1" >> ./job_desc.cfg
 
 # Submit job
-/usr/bin/condor_submit job_desc.cfg
+/usr/local/bin/condor_submit job_desc.cfg
