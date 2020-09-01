@@ -6,7 +6,8 @@ from PhysicsTools.HeppyCore.utils.deltar import *
 class JetReCalibrator:
     def __init__(self,globalTag,jetFlavour,doResidualJECs,jecPath,upToLevel=3,
                  calculateSeparateCorrections=False,
-                 calculateType1METCorrection=False, type1METParams={'jetPtThreshold':15., 'skipEMfractionThreshold':0.9, 'skipMuons':True} ):
+                 calculateType1METCorrection=False, type1METParams={'jetPtThreshold':15., 'skipEMfractionThreshold':0.9, 'skipMuons':True},
+                 groupForUncertaintySources = {}):
         """Create a corrector object that reads the payloads from the text dumps of a global tag under
             CMGTools/RootTools/data/jec  (see the getJec.py there to make the dumps).
            It will apply the L1,L2,L3 and possibly the residual corrections to the jets.
@@ -18,6 +19,7 @@ class JetReCalibrator:
         self.upToLevel = upToLevel
         self.calculateType1METCorr = calculateType1METCorrection
         self.type1METParams  = type1METParams
+        self.groupForUncertaintySources = groupForUncertaintySources
         # Make base corrections
         path = os.path.expandvars(jecPath) #"%s/src/CMGTools/RootTools/data/jec" % os.environ['CMSSW_BASE'];
         self.L1JetPar  = ROOT.JetCorrectorParameters("%s/%s_L1FastJet_%s.txt" % (path,globalTag,jetFlavour),"");
@@ -35,6 +37,12 @@ class JetReCalibrator:
         self.JetCorrector = ROOT.FactorizedJetCorrector(self.vPar)
         if os.path.exists("%s/%s_Uncertainty_%s.txt" % (path,globalTag,jetFlavour)):
             self.JetUncertainty = ROOT.JetCorrectionUncertainty("%s/%s_Uncertainty_%s.txt" % (path,globalTag,jetFlavour));
+            if os.path.exists("%s/%s_Uncertainty%s_%s.txt" % (path,globalTag,'Sources',jetFlavour)) and self.groupForUncertaintySources:
+                self.JetUncertaintyBySources = {}
+                for group, sources in groupForUncertaintySources.iteritems():
+                    for source in sources:
+                        params = ROOT.JetCorrectorParameters("%s/%s_UncertaintySources_%s.txt" % (path,globalTag,jetFlavour),source)
+                        self.JetUncertaintyBySources[source] = ROOT.JetCorrectionUncertainty(params)
         elif os.path.exists("%s/Uncertainty_FAKE.txt" % path):
             self.JetUncertainty = ROOT.JetCorrectionUncertainty("%s/Uncertainty_FAKE.txt" % path);
         else:
@@ -58,7 +66,7 @@ class JetReCalibrator:
                 for i in [self.L1JetPar,self.L2JetPar,self.L3JetPar,self.ResJetPar]: self.vParL3Res.push_back(i)
                 self.separateJetCorrectors["L1L2L3Res"] = ROOT.FactorizedJetCorrector(self.vParL3Res)
 
-    def getCorrection(self,jet,rho,delta=0,corrector=None):
+    def getCorrection(self,jet,rho,delta=0,corrector=None, sources=[]):
         if not corrector: corrector = self.JetCorrector
         if corrector != self.JetCorrector and delta!=0: raise RuntimeError('Configuration not supported')
         corrector.setJetEta(jet.eta())
@@ -67,16 +75,29 @@ class JetReCalibrator:
         corrector.setRho(rho)
         corr = corrector.getCorrection()
         if delta != 0:
-            if not self.JetUncertainty: raise RuntimeError("Jet energy scale uncertainty shifts requested, but not available")
-            self.JetUncertainty.setJetEta(jet.eta())
-            self.JetUncertainty.setJetPt(corr * jet.pt() * jet.rawFactor())
-            try:
-                jet.jetEnergyCorrUncertainty = self.JetUncertainty.getUncertainty(True) 
-            except RuntimeError as r:
-                print "Caught %s when getting uncertainty for jet of pt %.1f, eta %.2f\n" % (r,corr * jet.pt() * jet.rawFactor(),jet.eta())
-                jet.jetEnergyCorrUncertainty = 0.5
-            #print "   jet with corr pt %6.2f has an uncertainty %.2f " % (jet.pt()*jet.rawFactor()*corr, jet.jetEnergyCorrUncertainty)
-            corr *= max(0, 1+delta*jet.jetEnergyCorrUncertainty)
+            if sources:
+                group_shift = 0.
+                for source in sources:
+                    if source not in self.JetUncertaintyBySources:
+                        raise RuntimeError("Jet energy scale uncertainty source requested, but not available")
+                    self.JetUncertaintyBySources[source].setJetEta(jet.eta())
+                    self.JetUncertaintyBySources[source].setJetPt(corr * jet.pt() * jet.rawFactor())
+                    unc = self.JetUncertaintyBySources[source].getUncertainty(True if delta>0. else False)
+                    if len(sources) == 1:
+                        group_shift = unc
+                    else:
+                        group_shift = sqrt(group_shift*group_shift + unc*unc)
+                corr *= max(0, 1+delta*group_shift)
+            else:
+                if not self.JetUncertainty: raise RuntimeError("Jet energy scale uncertainty shifts requested, but not available")
+                self.JetUncertainty.setJetEta(jet.eta())
+                self.JetUncertainty.setJetPt(corr * jet.pt() * jet.rawFactor())
+                try:
+                    jet.jetEnergyCorrUncertainty = self.JetUncertainty.getUncertainty(True if delta>0. else False) 
+                except RuntimeError as r:
+                    print "Caught %s when getting uncertainty for jet of pt %.1f, eta %.2f\n" % (r,corr * jet.pt() * jet.rawFactor(),jet.eta())
+                    jet.jetEnergyCorrUncertainty = 0.5
+                corr *= max(0, 1+delta*jet.jetEnergyCorrUncertainty)
         return corr
 
     def rawP4forType1MET_(self, jet):
@@ -125,6 +146,12 @@ class JetReCalibrator:
             for cdelta,shift in [(1.0, "JECUp"), (-1.0, "JECDown")]:
                 cshift = self.getCorrection(jet,rho,delta+cdelta)
                 setattr(jet, "corr"+shift, cshift)
+            if self.groupForUncertaintySources:
+                for group, sources in self.groupForUncertaintySources.iteritems():
+                    shift_up = self.getCorrection(jet,rho,delta+1.0,sources=sources)
+                    shift_down = self.getCorrection(jet,rho,delta-1.0,sources=sources)
+                    setattr(jet, "corr_"+group+"_JEC_up", shift_up)
+                    setattr(jet, "corr_"+group+"_JEC_down", shift_down)
         if corr <= 0:
             return False
         newpt = jet.pt()*raw*corr
